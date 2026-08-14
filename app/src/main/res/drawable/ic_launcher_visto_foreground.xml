@@ -5,21 +5,21 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#2F6B49"
+        android:fillColor="#C9CCFF"
         android:pathData="M32,34 L76,34 Q81,34 81,39 L81,70 Q81,78 73,78 L35,78 Q27,78 27,70 L27,39 Q27,34 32,34 Z" />
     <path
-        android:fillColor="#BFD3A7"
+        android:fillColor="#B9BEFF"
         android:pathData="M27,48 L81,48 L81,70 Q81,78 73,78 L35,78 Q27,78 27,70 Z" />
     <path
-        android:fillColor="#F4F1DF"
+        android:fillColor="#4C57A9"
         android:pathData="M38,29 L45,29 L45,42 L38,42 Z M63,29 L70,29 L70,42 L63,42 Z" />
     <path
-        android:fillColor="#23563A"
+        android:fillColor="#414B91"
         android:pathData="M86,64 A14,14 0,1 1,58 64 A14,14 0,1 1,86 64 Z" />
     <path
         android:fillColor="#00000000"
         android:pathData="M65,64 L70,69 L79,60"
-        android:strokeColor="#F4F1DF"
+        android:strokeColor="#D8DAFF"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:strokeWidth="4.5" />

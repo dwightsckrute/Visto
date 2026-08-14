@@ -10,9 +10,12 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,8 +24,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +38,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -42,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,6 +81,7 @@ fun SearchScreenContent(
     watchlistViewModel: WatchlistViewModel,
 ) {
     val scope = rememberCoroutineScope()
+    var searchActive by rememberSaveable { mutableStateOf(viewModel.query.isNotBlank()) }
     val state = when {
         viewModel.query.isBlank() -> SearchContentState.START
         viewModel.loading -> SearchContentState.LOADING
@@ -83,19 +91,35 @@ fun SearchScreenContent(
         else -> SearchContentState.START
     }
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .imePadding(),
     ) {
-        VistoSearchField(viewModel, searchType)
+        val searchAreaHeight = 84.dp
+        val searchOffset by animateDpAsState(
+            targetValue = if (searchActive) 0.dp
+            else (maxHeight - searchAreaHeight).coerceAtLeast(0.dp),
+            animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+            label = "search-position",
+        )
+        val contentTopPadding by animateDpAsState(
+            targetValue = if (searchActive) searchAreaHeight else 0.dp,
+            animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+            label = "search-content-top-padding",
+        )
+        val contentBottomPadding by animateDpAsState(
+            targetValue = if (searchActive) 0.dp else searchAreaHeight,
+            animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+            label = "search-content-bottom-padding",
+        )
 
         AnimatedContent(
             targetState = state,
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                .fillMaxSize()
+                .padding(top = contentTopPadding, bottom = contentBottomPadding),
             transitionSpec = {
                 (fadeIn() + slideInVertically { it / 12 }) togetherWith
                     (fadeOut() + slideOutVertically { -it / 12 })
@@ -181,6 +205,19 @@ fun SearchScreenContent(
                 }
             }
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = searchOffset),
+        ) {
+            VistoSearchField(
+                viewModel = viewModel,
+                searchType = searchType,
+                active = searchActive,
+                onActivate = { searchActive = true },
+            )
+        }
     }
 }
 
@@ -188,6 +225,8 @@ fun SearchScreenContent(
 private fun VistoSearchField(
     viewModel: SearchViewModel,
     searchType: SearchType,
+    active: Boolean,
+    onActivate: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -203,73 +242,112 @@ private fun VistoSearchField(
         SearchType.MULTI -> localized("Película, serie o persona…", "Movie, TV show, or person…")
     }
 
-    LaunchedEffect(Unit) {
-        delay(180)
-        focusRequester.requestFocus()
-        keyboard?.show()
+    LaunchedEffect(active) {
+        if (active) {
+            delay(320)
+            focusRequester.requestFocus()
+            keyboard?.show()
+        }
     }
 
-    TextField(
-        value = viewModel.query,
-        onValueChange = { viewModel.onQueryChange(it, searchType) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-            .height(64.dp)
-            .shadow(elevation, shape)
-            .focusRequester(focusRequester)
-            .onFocusChanged { focused = it.isFocused },
-        shape = shape,
-        placeholder = {
-            Text(placeholder, maxLines = 1)
-        },
-        leadingIcon = {
-            Symbol(
-                icon = R.drawable.search_24px,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        },
-        trailingIcon = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AnimatedVisibility(
-                    visible = viewModel.loading,
-                    enter = fadeIn() + scaleIn(),
-                    exit = fadeOut() + scaleOut(),
-                ) {
-                    LoadingIndicator(modifier = Modifier.size(24.dp))
-                }
-                AnimatedVisibility(
-                    visible = viewModel.query.isNotEmpty(),
-                    enter = fadeIn() + scaleIn(),
-                    exit = fadeOut() + scaleOut(),
-                ) {
-                    IconButton(onClick = {
-                        viewModel.onQueryChange("", searchType)
-                        focusRequester.requestFocus()
-                        keyboard?.show()
-                    }) {
-                        Symbol(
-                            icon = R.drawable.close_24px,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+    AnimatedContent(
+        targetState = active,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "search-field-mode",
+    ) { isActive ->
+        if (isActive) {
+            TextField(
+                value = viewModel.query,
+                onValueChange = { viewModel.onQueryChange(it, searchType) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .height(64.dp)
+                    .shadow(elevation, shape)
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { focused = it.isFocused },
+                shape = shape,
+                placeholder = {
+                    Text(placeholder, maxLines = 1)
+                },
+                leadingIcon = {
+                    Symbol(
+                        icon = R.drawable.search_24px,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                },
+                trailingIcon = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AnimatedVisibility(
+                            visible = viewModel.loading,
+                            enter = fadeIn() + scaleIn(),
+                            exit = fadeOut() + scaleOut(),
+                        ) {
+                            LoadingIndicator(modifier = Modifier.size(24.dp))
+                        }
+                        AnimatedVisibility(
+                            visible = viewModel.query.isNotEmpty(),
+                            enter = fadeIn() + scaleIn(),
+                            exit = fadeOut() + scaleOut(),
+                        ) {
+                            IconButton(onClick = {
+                                viewModel.onQueryChange("", searchType)
+                                focusRequester.requestFocus()
+                                keyboard?.show()
+                            }) {
+                                Symbol(
+                                    icon = R.drawable.close_24px,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
                     }
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = {
+                    viewModel.search(searchType)
+                    focusManager.clearFocus()
+                    keyboard?.hide()
+                }),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+            )
+        } else {
+            Surface(
+                onClick = onActivate,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .height(64.dp)
+                    .shadow(2.dp, RoundedCornerShape(30.dp)),
+                shape = RoundedCornerShape(30.dp),
+                color = MaterialTheme.colorScheme.surfaceBright,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Symbol(
+                        icon = R.drawable.search_24px,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.width(14.dp))
+                    Text(
+                        text = placeholder,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                    )
                 }
             }
-        },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = {
-            viewModel.search(searchType)
-            focusManager.clearFocus()
-            keyboard?.hide()
-        }),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-        ),
-    )
+        }
+    }
 }
 
 @Composable
