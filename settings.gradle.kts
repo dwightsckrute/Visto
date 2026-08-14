@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "WatchMaster"
+rootProject.name = "Visto"
 include(":app")

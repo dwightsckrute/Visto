@@ -1,8 +1,8 @@
 <img src="https://github.com/PranshulGG/WatchMaster/blob/master/app/src/main/res/drawable/app_icon.png" width="150"/>
 
-# WatchMaster
+# Visto
 
-> Personal Spanish fork: see [README_ES.md](README_ES.md).
+> Versión personal en español de WatchMaster. Consulta [README_ES.md](README_ES.md).
 
 WatchMaster is an Android watchlist app for tracking TV shows and movies.  
 Built with **Kotlin**, **Jetpack Compose**, and **Material 3 Expressive**, powered by **TMDB**.
@@ -32,4 +32,3 @@ Organize what you watch. That’s it. That’s the app.
 - **UI:** Jetpack Compose
 - **Design System:** Material 3 Expressive
 - **API:** [TMDB](https://www.themoviedb.org/)
-

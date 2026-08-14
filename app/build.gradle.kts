@@ -30,13 +30,13 @@ android {
     compileSdk = 36
     android.buildFeatures.buildConfig = true
     defaultConfig {
-        // A different application id lets WatchMaster ES coexist with the
+        // A different application id lets Visto coexist with the
         // original app, so installing this fork never replaces its local data.
-        applicationId = "com.dwightsckrute.watchmaster"
+        applicationId = "com.dwightsckrute.visto"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0.0-es"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

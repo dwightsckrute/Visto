@@ -1,6 +1,6 @@
-# WatchMaster ES
+# Visto
 
-Versión personal en español de [WatchMaster](https://github.com/PranshulGG/WatchMaster), una aplicación Android para organizar películas y series. El proyecto original se distribuye bajo licencia GPL-3.0.
+**Visto** es una versión personal en español de [WatchMaster](https://github.com/PranshulGG/WatchMaster), una aplicación Android para organizar películas y series. El proyecto original se distribuye bajo licencia GPL-3.0.
 
 ## Qué cambia en este fork
 
@@ -8,18 +8,18 @@ Versión personal en español de [WatchMaster](https://github.com/PranshulGG/Wat
 - Consultas a TMDB en español de España (`es-ES`).
 - Proveedores de streaming disponibles en España.
 - Fechas con formato español.
-- Identificador Android independiente: `com.dwightsckrute.watchmaster`.
+- Nombre e identidad propios: **Visto**, con identificador `com.dwightsckrute.visto`.
 - Importación compatible con las copias JSON v4 de WatchMaster 1.8.0.
 
-El identificador independiente permite instalar **WatchMaster ES y WatchMaster a la vez**. La instalación de este fork no sustituye ni borra la base de datos privada de la aplicación original.
+El identificador independiente permite instalar **Visto y WatchMaster a la vez**. La instalación de este fork no sustituye ni borra la base de datos privada de la aplicación original.
 
 ## Migrar tus datos sin perderlos
 
 1. No desinstales WatchMaster ni borres sus datos.
 2. En la aplicación original abre **Settings > Data > Export app data**.
 3. Activa **Include lists** y guarda el archivo JSON en una ubicación que puedas localizar.
-4. Instala WatchMaster ES. Verás ambas aplicaciones en el móvil.
-5. En WatchMaster ES abre **Ajustes > Datos > Importar datos de la aplicación** y selecciona el JSON.
+4. Instala Visto. Verás ambas aplicaciones en el móvil.
+5. En Visto abre **Ajustes > Datos > Importar datos de la aplicación** y selecciona el JSON.
 6. Comprueba películas, series, temporadas, estados, valoraciones, notas y listas antes de plantearte eliminar la aplicación original.
 7. Conserva el JSON como copia de seguridad.
 
@@ -44,8 +44,8 @@ El APK de depuración solo debe usarse para probar. Antes de instalar tu versió
 
 ```bash
 keytool -genkeypair -v \
-  -keystore watchmaster-es-release.jks \
-  -alias watchmaster-es \
+  -keystore visto-release.jks \
+  -alias visto \
   -keyalg RSA -keysize 4096 -validity 10000
 cp keystore.properties.example keystore.properties
 ```
@@ -56,7 +56,7 @@ Completa en `keystore.properties` las contraseñas que hayas elegido y compila c
 ./gradlew assembleRelease
 ```
 
-El APK definitivo estará en `app/build/outputs/apk/release/app-release.apk`. Guarda una copia segura de `watchmaster-es-release.jks`, del alias y de sus contraseñas. **Si pierdes esa clave, Android no permitirá actualizar WatchMaster ES con otra firma**; tendrías que exportar los datos, desinstalar e importar de nuevo. Los archivos de firma y sus contraseñas están excluidos de Git.
+El APK definitivo estará en `app/build/outputs/apk/release/app-release.apk`. Guarda una copia segura de `visto-release.jks`, del alias y de sus contraseñas. **Si pierdes esa clave, Android no permitirá actualizar Visto con otra firma**; tendrías que exportar los datos, desinstalar e importar de nuevo. Los archivos de firma y sus contraseñas están excluidos de Git.
 
 ## Mantener el fork actualizado
 
@@ -68,7 +68,7 @@ git fetch upstream
 git merge upstream/master
 ```
 
-Antes de publicar una versión nueva, incrementa `versionCode` y `versionName`, compila y prueba la importación usando una copia del JSON. No cambies el `applicationId` después de empezar a usar WatchMaster ES: Android lo trataría como una tercera aplicación sin acceso a sus datos.
+Antes de publicar una versión nueva, incrementa `versionCode` y `versionName`, compila y prueba la importación usando una copia del JSON. No cambies el `applicationId` después de empezar a usar Visto: Android lo trataría como una tercera aplicación sin acceso a sus datos.
 
 ## Licencia y atribución
 
