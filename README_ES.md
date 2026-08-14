@@ -8,7 +8,7 @@ Versión personal en español de [WatchMaster](https://github.com/PranshulGG/Wat
 - Consultas a TMDB en español de España (`es-ES`).
 - Proveedores de streaming disponibles en España.
 - Fechas con formato español.
-- Identificador Android independiente: `com.franciscoredondokuik.watchmaster`.
+- Identificador Android independiente: `com.dwightsckrute.watchmaster`.
 - Importación compatible con las copias JSON v4 de WatchMaster 1.8.0.
 
 El identificador independiente permite instalar **WatchMaster ES y WatchMaster a la vez**. La instalación de este fork no sustituye ni borra la base de datos privada de la aplicación original.

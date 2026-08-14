@@ -32,7 +32,7 @@ android {
     defaultConfig {
         // A different application id lets WatchMaster ES coexist with the
         // original app, so installing this fork never replaces its local data.
-        applicationId = "com.franciscoredondokuik.watchmaster"
+        applicationId = "com.dwightsckrute.watchmaster"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
