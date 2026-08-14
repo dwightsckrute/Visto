@@ -11,7 +11,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -37,6 +39,7 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -51,16 +54,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -245,6 +251,11 @@ private fun VistoSearchField(
         animationSpec = motionScheme.fastEffectsSpec(),
         label = "search-field-elevation",
     )
+    val borderWidth by animateDpAsState(
+        targetValue = if (active) 1.dp else 2.dp,
+        animationSpec = motionScheme.fastEffectsSpec(),
+        label = "search-field-border-width",
+    )
     val placeholder = when (searchType) {
         SearchType.MOVIE -> localized("Título de la película…", "Movie title…")
         SearchType.TV -> localized("Título de la serie…", "TV show title…")
@@ -260,85 +271,114 @@ private fun VistoSearchField(
         }
     }
 
-    TextField(
-        value = viewModel.query,
-        onValueChange = { viewModel.onQueryChange(it, searchType) },
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-            .height(SearchBarDefaults.InputFieldHeight)
-            .shadow(
-                elevation = elevation,
-                shape = SearchBarDefaults.inputFieldShape,
-            )
-            .then(
-                if (active) Modifier else Modifier.pointerInput(Unit) {
-                    detectTapGestures(onTap = { onActivate() })
-                },
-            )
-            .focusProperties { canFocus = active }
-            .focusRequester(focusRequester)
-            .semantics { traversalIndex = -1f },
-        readOnly = !active,
-        singleLine = true,
-        shape = SearchBarDefaults.inputFieldShape,
-        placeholder = {
-            Text(
-                text = placeholder,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-            )
-        },
-        leadingIcon = {
-            Symbol(
-                icon = R.drawable.search_24px,
-                color = MaterialTheme.colorScheme.primary,
-            )
-        },
-        trailingIcon = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                AnimatedVisibility(
-                    visible = viewModel.loading,
-                    enter = fadeIn() + scaleIn(),
-                    exit = fadeOut() + scaleOut(),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+    ) {
+        TextField(
+            value = viewModel.query,
+            onValueChange = { viewModel.onQueryChange(it, searchType) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(SearchBarDefaults.InputFieldHeight)
+                .shadow(
+                    elevation = elevation,
+                    shape = SearchBarDefaults.inputFieldShape,
+                )
+                .border(
+                    width = borderWidth,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = SearchBarDefaults.inputFieldShape,
+                )
+                .focusProperties { canFocus = active }
+                .focusRequester(focusRequester)
+                .semantics { traversalIndex = -1f },
+            readOnly = !active,
+            singleLine = true,
+            shape = SearchBarDefaults.inputFieldShape,
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                )
+            },
+            leadingIcon = {
+                Surface(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape,
                 ) {
-                    LoadingIndicator(modifier = Modifier.size(24.dp))
-                }
-                AnimatedVisibility(
-                    visible = viewModel.query.isNotEmpty(),
-                    enter = fadeIn() + scaleIn(),
-                    exit = fadeOut() + scaleOut(),
-                ) {
-                    IconButton(onClick = {
-                        viewModel.onQueryChange("", searchType)
-                        focusRequester.requestFocus()
-                        keyboard?.show()
-                    }) {
+                    Box(
+                        modifier = Modifier.size(36.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         Symbol(
-                            icon = R.drawable.close_24px,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            icon = R.drawable.search_24px,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            size = 20.dp,
                         )
                     }
                 }
-            }
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                viewModel.search(searchType)
-                focusManager.clearFocus()
-                keyboard?.hide()
             },
-        ),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-        ),
-    )
+            trailingIcon = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    AnimatedVisibility(
+                        visible = viewModel.loading,
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut(),
+                    ) {
+                        LoadingIndicator(modifier = Modifier.size(24.dp))
+                    }
+                    AnimatedVisibility(
+                        visible = viewModel.query.isNotEmpty(),
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut(),
+                    ) {
+                        IconButton(onClick = {
+                            viewModel.onQueryChange("", searchType)
+                            focusRequester.requestFocus()
+                            keyboard?.show()
+                        }) {
+                            Symbol(
+                                icon = R.drawable.close_24px,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    viewModel.search(searchType)
+                    focusManager.clearFocus()
+                    keyboard?.hide()
+                },
+            ),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+            ),
+        )
+
+        if (!active) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(SearchBarDefaults.inputFieldShape)
+                    .clickable(role = Role.Button, onClick = onActivate)
+                    .semantics {
+                        contentDescription = placeholder
+                        traversalIndex = -1f
+                    },
+            )
+        }
+    }
 }
 
 @Composable
