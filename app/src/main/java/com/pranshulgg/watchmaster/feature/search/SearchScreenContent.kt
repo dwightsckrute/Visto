@@ -133,7 +133,10 @@ fun SearchScreenContent(
             targetState = state,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = contentTopPadding, bottom = contentBottomPadding),
+                .padding(
+                    top = contentTopPadding.coerceIn(0.dp, searchAreaHeight),
+                    bottom = contentBottomPadding.coerceIn(0.dp, searchAreaHeight),
+                ),
             transitionSpec = {
                 (fadeIn() + slideInVertically { it / 12 }) togetherWith
                     (fadeOut() + slideOutVertically { -it / 12 })
