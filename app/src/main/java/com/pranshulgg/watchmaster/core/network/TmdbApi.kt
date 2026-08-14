@@ -153,20 +153,20 @@ interface TmdbApi {
         @Query("query") query: String,
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean = false,
-        @Query("language") language: String = "en-US"
+        @Query("language") language: String = "es-ES"
     ): Response<MultiSearchResponse>
 
     @GET("tv/{tv_id}")
     suspend fun getTvSeasons(
         @Path("tv_id") tvId: Long,
-        @Query("language") language: String = "en-US"
+        @Query("language") language: String = "es-ES"
     ): Response<TvSeasonsResponse>
 
     @GET("tv/{tv_id}/season/{season_number}")
     suspend fun getTvSeasonEpisodes(
         @Path("tv_id") tvId: Long,
         @Path("season_number") seasonNumber: Int,
-        @Query("language") language: String = "en-US"
+        @Query("language") language: String = "es-ES"
     ): Response<TvSeasonEpisodesResponse>
 
     @GET("movie/{movie_id}")
@@ -174,7 +174,7 @@ interface TmdbApi {
         @Path("movie_id") movieId: Long,
         @Query("append_to_response") append: String =
             "credits,videos,images,watch/providers,similar,recommendations,reviews,release_dates",
-        @Query("language") language: String = "en-US"
+        @Query("language") language: String = "es-ES"
     ): Response<MovieBundleDto>
 
 
@@ -183,19 +183,20 @@ interface TmdbApi {
         @Path("tv_id") tvId: Long,
         @Query("append_to_response") append: String =
             "credits,videos,images,watch/providers,similar,recommendations,reviews,content_ratings,external_ids",
-        @Query("language") language: String = "en-US"
+        @Query("language") language: String = "es-ES"
     ): Response<TvBundleDto>
 
     @GET("person/{person_id}")
     suspend fun getPersonData(
-        @Path("person_id") personId: Long
+        @Path("person_id") personId: Long,
+        @Query("language") language: String = "es-ES"
     ): Response<PersonEntity>
 
     @GET("trending/{media}/day")
     suspend fun getTrendingDay(
         @Path("media") media: String,
         @Query("page") page: Int = 1,
-        @Query("language") language: String = "en-US"
+        @Query("language") language: String = "es-ES"
     ): Response<TrendingDayDto>
 
 

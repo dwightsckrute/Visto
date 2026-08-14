@@ -27,7 +27,7 @@ fun MediaNoteDialogContent(
 ) {
     DialogBasic(
         show = show,
-        title = "Add a note",
+        title = "Añadir una nota",
         showDefaultActions = true,
         onDismiss = {
             onDismiss()
@@ -36,7 +36,7 @@ fun MediaNoteDialogContent(
         onConfirm = {
             onConfirm(note)
         },
-        confirmText = "Save",
+        confirmText = "Guardar",
         content = {
             OutlinedTextField(
                 modifier = Modifier
@@ -45,7 +45,7 @@ fun MediaNoteDialogContent(
                 shape = RoundedCornerShape(ShapeRadius.Large),
                 value = note,
                 onValueChange = onNoteChange,
-                placeholder = { Text("Note...") }
+                placeholder = { Text("Nota…") }
             )
         }
     )
@@ -62,7 +62,7 @@ fun MediaRatingDialogContent(
 ) {
     DialogBasic(
         show = show,
-        title = if (isUpdateRating) "Update rating" else if (isTv) "Rate this season" else "Rate this movie",
+        title = if (isUpdateRating) "Actualizar valoración" else if (isTv) "Valorar esta temporada" else "Valorar esta película",
         showDefaultActions = false,
         onDismiss = {
             onDismiss()
@@ -94,17 +94,17 @@ fun MediaConfirmationDialogContent(
     customMessage: String? = null
 ) {
 
-    val text = if (isTv) "season" else "movie"
+    val text = if (isTv) "temporada" else "película"
 
-    val headline = if (status != null) "Watch status" else "Delete $text"
+    val headline = if (status != null) "Estado de visualización" else "Eliminar $text"
     val message = status?.dialogMessage(isTv)
-        ?: "Are you sure you want to delete this $text? this action cannot be undone"
+        ?: "¿Seguro que quieres eliminar esta $text? Esta acción no se puede deshacer."
 
     TextAlertDialog(
         show = show,
         title = customHeadline ?: headline,
         message = customMessage ?: message,
-        confirmText = "Confirm",
+        confirmText = "Confirmar",
         onConfirm = {
             onConfirm()
         },

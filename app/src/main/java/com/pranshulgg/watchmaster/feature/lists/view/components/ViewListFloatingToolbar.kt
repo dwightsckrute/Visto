@@ -63,7 +63,7 @@ fun ViewListFloatingToolbar(
 ) {
 
 
-    val labelList = listOf("Movies", "TV series")
+    val labelList = listOf("Películas", "Series")
     val unSelectedIcons = listOf(
         R.drawable.movie_24px,
         R.drawable.tv_24px,
@@ -174,9 +174,9 @@ private fun ListActions(
 ) {
 
     val menuItemOptionList = listOf(
-        Triple(R.drawable.edit_24px, "Edit", "EDIT_ACTION"),
-        Triple(R.drawable.delete_24px, "Delete", "DELETE_ACTION"),
-        Triple(R.drawable.keep_24px, if (isPinned) "Unpin" else "Pin", "PIN_ACTION")
+        Triple(R.drawable.edit_24px, "Editar", "EDIT_ACTION"),
+        Triple(R.drawable.delete_24px, "Eliminar", "DELETE_ACTION"),
+        Triple(R.drawable.keep_24px, if (isPinned) "Desfijar" else "Fijar", "PIN_ACTION")
     )
     val menuItemContentColor = MaterialTheme.colorScheme.onTertiaryContainer
     val menuItemContentTextStyle = MaterialTheme.typography.labelLarge

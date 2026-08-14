@@ -112,7 +112,7 @@ fun TvWatchlistRow(
 
                         )
                     Text(
-                        item.overview ?: "No overview found",
+                        item.overview ?: "No se encontró ninguna sinopsis",
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.bodyMedium,

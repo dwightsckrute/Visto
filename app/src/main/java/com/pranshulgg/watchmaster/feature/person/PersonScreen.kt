@@ -66,7 +66,7 @@ fun PersonScreen(id: Long, navController: NavController) {
                 isError = false
                 viewModel.fetchPersonData(id, onError = { isError = true })
             },
-            errorDescription = "Failed to fetch person data"
+            errorDescription = "No se pudieron obtener los datos de la persona"
         )
     }
 
@@ -77,7 +77,7 @@ fun PersonScreen(id: Long, navController: NavController) {
     if (data != null)
 
         LargeTopBarScaffold(
-            title = "Person",
+            title = "Persona",
             navigationIcon = {
                 NavigateUpBtn(navController)
             },
@@ -116,7 +116,7 @@ fun PersonScreen(id: Long, navController: NavController) {
                         PersonDetailChip(data.birthday, R.drawable.cake_24px)
                         Gap(horizontal = 5.dp)
                         PersonDetailChip(
-                            if (data.gender == 1) "Female" else "Male",
+                            if (data.gender == 1) "Mujer" else "Hombre",
                             if (data.gender == 1) R.drawable.female_24px else R.drawable.male_24px
                         )
                     }
@@ -124,7 +124,7 @@ fun PersonScreen(id: Long, navController: NavController) {
                     Gap(16.dp)
 
                     MediaSectionCard(
-                        title = "Biography",
+                        title = "Biografía",
                         titleIcon = R.drawable.article_person_24px
                     ) {
                         Text(

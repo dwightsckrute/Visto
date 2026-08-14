@@ -73,12 +73,11 @@ fun TvDetailsConfirmationDialog(
                 } else {
                     watchlistViewModel.deleteSeason(seasonIt.seasonId)
                 }
-                SnackbarManager.show("Season deleted ${seasonIt.name}")
+                SnackbarManager.show("Temporada eliminada: ${seasonIt.name}")
                 navController.popBackStack()
             },
             isTv = true
         )
     }
 }
-
 

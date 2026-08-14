@@ -1,0 +1,5 @@
+# Ruta del SDK de Android en tu equipo
+sdk.dir=/ruta/a/Android/Sdk
+
+# Clave personal de TMDB (no subas la clave real al repositorio)
+TMDB_API_KEY=TU_CLAVE_TMDB

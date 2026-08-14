@@ -75,7 +75,7 @@ fun DialogTextFieldTile(
                     },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Save", style = MaterialTheme.typography.labelLarge)
+                    Text("Guardar", style = MaterialTheme.typography.labelLarge)
                 }
             },
             dismissButton = {
@@ -83,7 +83,7 @@ fun DialogTextFieldTile(
                     onClick = { showDialog = false },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Cancel", style = MaterialTheme.typography.labelLarge)
+                    Text("Cancelar", style = MaterialTheme.typography.labelLarge)
                 }
             }
         )

@@ -49,7 +49,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
     return when (this) {
         WatchStatus.WATCHING -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Started • ${item.startedDate?.formatDate()}",
+                statusLabel = "Empezada • ${item.startedDate?.formatDate()}",
                 containerColor = statusColor.warning.bg,
                 contentColor = statusColor.warning.on
             )
@@ -57,7 +57,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         WatchStatus.FINISHED -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Finished • ${item.finishedDate?.formatDate()}",
+                statusLabel = "Terminada • ${item.finishedDate?.formatDate()}",
                 containerColor = statusColor.success.bg,
                 contentColor = statusColor.success.on
             )
@@ -65,7 +65,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         WatchStatus.INTERRUPTED -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Interrupted • ${item.interruptedDate?.formatDate()}",
+                statusLabel = "Interrumpida • ${item.interruptedDate?.formatDate()}",
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
@@ -73,7 +73,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         else -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Added • ${item.addedDate.formatDate()}",
+                statusLabel = "Añadida • ${item.addedDate.formatDate()}",
                 containerColor = statusColor.pending.bg,
                 contentColor = statusColor.pending.on
             )

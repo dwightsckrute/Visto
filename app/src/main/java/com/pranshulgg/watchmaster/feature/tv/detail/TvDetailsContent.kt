@@ -76,11 +76,11 @@ fun TvDetailsContent(
             isRefreshing = true
 
             if (season != null && (episodes.isEmpty() || refreshUnlocked)) {
-                SnackbarManager.show("Fetching...")
+                SnackbarManager.show("Obteniendo datos…")
                 viewModel.refreshSeasonData(season)
                 isRefreshing = false
             } else {
-                SnackbarManager.show("Data is already up to date")
+                SnackbarManager.show("Los datos ya están actualizados")
                 isRefreshing = false
             }
         },
@@ -111,14 +111,14 @@ fun TvDetailsContent(
                         userRating = season.seasonUserRating,
                         onUpdateRating = { newRating ->
                             watchlistViewModel.setSeasonUserRating(season.seasonId, newRating)
-                            SnackbarManager.show("User rating updated")
+                            SnackbarManager.show("Valoración actualizada")
                         }
                     )
 
 
                     MediaStatusSection(
                         status = season.status,
-                        onClick = { viewModel.showWatchProviderSheet(tvItem.watchProviders?.results["US"]) })
+                        onClick = { viewModel.showWatchProviderSheet(tvItem.watchProviders?.results["ES"]) })
                     OverviewSection(tvItem.overview)
                     NotesSection(
                         season.seasonNotes.isNullOrBlank(),
@@ -139,7 +139,7 @@ fun TvDetailsContent(
                     })
                     Spacer(modifier = Modifier.height(56.dp))
                 } else {
-                    Text("No season found")
+                    Text("No se encontró ninguna temporada")
                 }
             }
         }

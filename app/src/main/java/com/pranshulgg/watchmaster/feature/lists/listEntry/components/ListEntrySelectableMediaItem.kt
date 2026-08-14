@@ -131,7 +131,7 @@ fun ListEntrySelectableMediaItem(
                     }
                 )
                 Text(
-                    item.overview ?: "No overview found",
+                    item.overview ?: "No se encontró ninguna sinopsis",
                     maxLines = overviewMaxLines.intValue,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
@@ -146,7 +146,7 @@ fun ListEntrySelectableMediaItem(
 @Composable
 private fun SelectedStatusPill(selected: Boolean = false) {
     MediaChip(
-        text = if (selected) "Selected" else "Add",
+        text = if (selected) "Seleccionado" else "Añadir",
         containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerLowest,
         contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
         icon = if (selected) R.drawable.check_24px else R.drawable.add_24px,

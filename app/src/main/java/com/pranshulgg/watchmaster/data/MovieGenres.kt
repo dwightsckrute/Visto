@@ -6,42 +6,42 @@ data class MovieGenre(
 )
 
 val LOCAL_MOVIE_GENRES = listOf(
-    MovieGenre(28, "Action"),
-    MovieGenre(12, "Adventure"),
-    MovieGenre(10759, "Action & Adventure"),
+    MovieGenre(28, "Acción"),
+    MovieGenre(12, "Aventura"),
+    MovieGenre(10759, "Acción y aventura"),
 
-    MovieGenre(16, "Animation"),
-    MovieGenre(35, "Comedy"),
-    MovieGenre(80, "Crime"),
-    MovieGenre(99, "Documentary"),
+    MovieGenre(16, "Animación"),
+    MovieGenre(35, "Comedia"),
+    MovieGenre(80, "Crimen"),
+    MovieGenre(99, "Documental"),
     MovieGenre(18, "Drama"),
 
-    MovieGenre(10751, "Family"),
-    MovieGenre(10762, "Kids"),
+    MovieGenre(10751, "Familia"),
+    MovieGenre(10762, "Infantil"),
 
-    MovieGenre(14, "Fantasy"),
-    MovieGenre(10765, "Sci-Fi & Fantasy"),
-    MovieGenre(878, "Science Fiction"),
+    MovieGenre(14, "Fantasía"),
+    MovieGenre(10765, "Ciencia ficción y fantasía"),
+    MovieGenre(878, "Ciencia ficción"),
 
-    MovieGenre(36, "History"),
-    MovieGenre(27, "Horror"),
-    MovieGenre(10402, "Music"),
+    MovieGenre(36, "Historia"),
+    MovieGenre(27, "Terror"),
+    MovieGenre(10402, "Música"),
 
-    MovieGenre(9648, "Mystery"),
+    MovieGenre(9648, "Misterio"),
     MovieGenre(10749, "Romance"),
 
-    MovieGenre(53, "Thriller"),
-    MovieGenre(10752, "War"),
-    MovieGenre(10768, "War & Politics"),
+    MovieGenre(53, "Suspense"),
+    MovieGenre(10752, "Bélica"),
+    MovieGenre(10768, "Guerra y política"),
 
-    MovieGenre(37, "Western"),
+    MovieGenre(37, "Wéstern"),
 
-    MovieGenre(10763, "News"),
-    MovieGenre(10764, "Reality"),
-    MovieGenre(10766, "Soap"),
-    MovieGenre(10767, "Talk"),
+    MovieGenre(10763, "Noticias"),
+    MovieGenre(10764, "Telerrealidad"),
+    MovieGenre(10766, "Telenovela"),
+    MovieGenre(10767, "Programa de entrevistas"),
 
-    MovieGenre(10770, "TV Movie")
+    MovieGenre(10770, "Película para televisión")
 )
 
 val GENRE_MAP: Map<Int, String> =

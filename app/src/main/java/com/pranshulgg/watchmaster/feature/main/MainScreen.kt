@@ -35,7 +35,7 @@ fun MainScreen(
     val viewModel: MainScreenNavViewModel = viewModel()
 
     val selectedItem = viewModel.selectedItem
-    val appBarTitles = listOf("Home", "Movies", "TV series")
+    val appBarTitles = listOf("Inicio", "Películas", "Series")
 
     val scrollBehavior =
         FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = Bottom)
@@ -56,12 +56,12 @@ fun MainScreen(
                     TooltipIconBtn(
                         onClick = { navController.navigate(NavRoutes.LISTS_SCREEN) },
                         icon = R.drawable.lists_24px,
-                        tooltipText = "Lists"
+                        tooltipText = "Listas"
                     )
                     TooltipIconBtn(
                         onClick = { navController.navigate(NavRoutes.SETTINGS) },
                         icon = R.drawable.settings_24px,
-                        tooltipText = "Settings"
+                        tooltipText = "Ajustes"
                     )
                 }
             )

@@ -78,21 +78,21 @@ fun MediaActionsFloatingToolbar(
 
     val menuItemOptionList = listOf(
         MenuItemOptionList(
-            "Interrupt",
+            "Interrumpir",
             R.drawable.pause_24px,
             { actions.interruptWatching() }, isInterruptOption = true
         ),
         MenuItemOptionList(
-            if (isPinned) "Unpin" else "Pin",
+            if (isPinned) "Desfijar" else "Fijar",
             R.drawable.keep_24px,
             {
                 actions.togglePin()
-                SnackbarManager.show(if (!isPinned) "Media pinned" else "Media unpinned")
+                SnackbarManager.show(if (!isPinned) "Contenido fijado" else "Contenido desfijado")
             }),
-        MenuItemOptionList("List", R.drawable.lists_24px, {}),
-        MenuItemOptionList("Share", R.drawable.share_24px, {}),
+        MenuItemOptionList("Lista", R.drawable.lists_24px, {}),
+        MenuItemOptionList("Compartir", R.drawable.share_24px, {}),
         MenuItemOptionList(
-            "Delete",
+            "Eliminar",
             R.drawable.delete_24px,
             { actions.delete() })
     )
@@ -183,9 +183,9 @@ fun MediaActionsFloatingToolbar(
 
     TextAlertDialog(
         show = uiState.showDialog,
-        title = "Watch status",
+        title = "Estado de visualización",
         message = itemStatus.dialogMessage(isTv = isTv),
-        confirmText = "Confirm",
+        confirmText = "Confirmar",
         onConfirm = {
             itemStatus.confirmAction(
                 start = { actions.startWatching() },

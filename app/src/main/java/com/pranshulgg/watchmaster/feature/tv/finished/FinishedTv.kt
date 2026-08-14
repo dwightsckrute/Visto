@@ -48,8 +48,8 @@ fun FinishedTv(
     if (filteredItems.isEmpty()) {
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
-            "No completed series",
-            description = "You haven’t completed anything yet. Time to start and finish a series!"
+            "No hay series terminadas",
+            description = "Aún no has terminado ninguna. ¡Es hora de empezar y acabar una serie!"
         )
     }
 

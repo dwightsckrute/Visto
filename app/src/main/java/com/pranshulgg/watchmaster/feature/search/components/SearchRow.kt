@@ -124,7 +124,7 @@ fun SearchRow(
                     }
                 )
                 Text(
-                    item.overview ?: "No overview found",
+                    item.overview ?: "No se encontró ninguna sinopsis",
                     maxLines = overviewMaxLines.intValue,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
@@ -134,7 +134,7 @@ fun SearchRow(
                 Row {
                     StarDateChip(
                         if (item.releaseDate == "" || item.releaseDate == null) {
-                            "No date"
+                            "Sin fecha"
                         } else {
                             item.releaseDate.take(
                                 4

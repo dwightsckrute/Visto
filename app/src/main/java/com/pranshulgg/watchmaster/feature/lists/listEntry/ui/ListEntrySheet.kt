@@ -54,8 +54,8 @@ fun ListEntrySheet(
     val uiState = viewModel.uiState.value
 
     val options = listOf(
-        Option(SelectedTab.MOVIES, "Movies"),
-        Option(SelectedTab.TV_SERIES, "TV series")
+        Option(SelectedTab.MOVIES, "Películas"),
+        Option(SelectedTab.TV_SERIES, "Series")
     )
 
     var selected by remember { mutableStateOf(SelectedTab.MOVIES) }

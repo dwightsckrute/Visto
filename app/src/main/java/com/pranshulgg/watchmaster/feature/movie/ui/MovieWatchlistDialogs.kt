@@ -26,7 +26,7 @@ fun MovieWatchlistConfirmationDialog(
             movieHomeViewModel::hideConfirmationDialog,
             onConfirm = {
                 watchlistViewModel.delete(item.id)
-                SnackbarManager.show("Movie deleted ${item.title}")
+                SnackbarManager.show("Película eliminada: ${item.title}")
             }
         )
     }
@@ -49,7 +49,7 @@ fun MovieWatchlistRatingDialog(
             onConfirm = { rating ->
                 watchlistViewModel.setUserRating(item.id, rating)
                 watchlistViewModel.finish(item.id)
-                if (uiState.isUpdateRating) SnackbarManager.show("User rating updated")
+                if (uiState.isUpdateRating) SnackbarManager.show("Valoración actualizada")
             }
         )
     }

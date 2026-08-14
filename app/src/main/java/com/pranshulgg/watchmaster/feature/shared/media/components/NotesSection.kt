@@ -20,13 +20,13 @@ import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 @Composable
 fun NotesSection(isSeasonNoteNull: Boolean = true, action: () -> Unit, noteText: String) {
     MediaSectionCard(
-        title = "Notes",
+        title = "Notas",
         titleIcon = R.drawable.sticky_note_2_24px,
         showAction = true,
         actionOnClick = {
             action()
         },
-        actionText = "Edit note"
+        actionText = "Editar nota"
     ) {
         if (!isSeasonNoteNull) {
             Column(

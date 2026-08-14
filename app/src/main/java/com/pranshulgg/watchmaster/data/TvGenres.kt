@@ -6,22 +6,22 @@ data class TvGenre(
 )
 
 val LOCAL_TV_GENRES = listOf(
-    TvGenre(10759, "Action & Adventure"),
-    TvGenre(16, "Animation"),
-    TvGenre(35, "Comedy"),
-    TvGenre(80, "Crime"),
-    TvGenre(99, "Documentary"),
+    TvGenre(10759, "Acción y aventura"),
+    TvGenre(16, "Animación"),
+    TvGenre(35, "Comedia"),
+    TvGenre(80, "Crimen"),
+    TvGenre(99, "Documental"),
     TvGenre(18, "Drama"),
-    TvGenre(10751, "Family"),
-    TvGenre(10762, "Kids"),
-    TvGenre(9648, "Mystery"),
-    TvGenre(10763, "News"),
-    TvGenre(10764, "Reality"),
-    TvGenre(10765, "Sci-Fi & Fantasy"),
-    TvGenre(10766, "Soap"),
-    TvGenre(10767, "Talk"),
-    TvGenre(10768, "War & Politics"),
-    TvGenre(37, "Western")
+    TvGenre(10751, "Familia"),
+    TvGenre(10762, "Infantil"),
+    TvGenre(9648, "Misterio"),
+    TvGenre(10763, "Noticias"),
+    TvGenre(10764, "Telerrealidad"),
+    TvGenre(10765, "Ciencia ficción y fantasía"),
+    TvGenre(10766, "Telenovela"),
+    TvGenre(10767, "Programa de entrevistas"),
+    TvGenre(10768, "Guerra y política"),
+    TvGenre(37, "Wéstern")
 )
 
 val TV_GENRE_MAP: Map<Int, String> =

@@ -50,7 +50,7 @@ fun MovieDetailPage(
         ErrorContainer(onRetry = {
             showError = false
             viewModel.load(id, onError = { showError = true })
-        }, errorDescription = "Failed to load movie details. Please try again")
+        }, errorDescription = "No se pudieron cargar los detalles de la película. Inténtalo de nuevo.")
     }
 
 

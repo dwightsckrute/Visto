@@ -7,12 +7,12 @@ import com.pranshulgg.watchmaster.core.utils.PreferencesHelper
 import com.pranshulgg.watchmaster.core.ui.theme.ThemeVariantType
 
 object AppPrefs {
-    private val _appTheme = mutableStateOf("System")
+    private val _appTheme = mutableStateOf("Sistema")
     private val _themeColor = mutableStateOf("#2196f3")
     private val _isCustomTheme = mutableStateOf(false)
     private val _useDynamicColor = mutableStateOf(false)
 
-    private val _defaultTab = mutableStateOf("Home")
+    private val _defaultTab = mutableStateOf("Inicio")
 
     private val _themeVariant =
         mutableStateOf(ThemeVariantType.EXPRESSIVE)
@@ -22,7 +22,7 @@ object AppPrefs {
         PreferencesHelper.init(context)
 
         _appTheme.value =
-            PreferencesHelper.getString("app_theme") ?: "System"
+            PreferencesHelper.getString("app_theme") ?: "Sistema"
         _themeColor.value = PreferencesHelper.getString("theme_color") ?: "#2196f3"
         _isCustomTheme.value = PreferencesHelper.getBool("isCustomTheme") ?: false
         _useDynamicColor.value = PreferencesHelper.getBool("useDynamicColor") ?: false
@@ -32,7 +32,7 @@ object AppPrefs {
                     runCatching { ThemeVariantType.valueOf(it) }.getOrNull()
                 }
                 ?: ThemeVariantType.EXPRESSIVE
-        _defaultTab.value = PreferencesHelper.getString("default_tab") ?: "Home"
+        _defaultTab.value = PreferencesHelper.getString("default_tab") ?: "Inicio"
     }
 
     @Composable

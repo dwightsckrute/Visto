@@ -48,7 +48,7 @@ fun SearchScreenContent(
 
     LaunchedEffect(viewModel.showNoResultsSnack) {
         if (viewModel.showNoResultsSnack) {
-            SnackbarManager.show("No matches found. Try a different title")
+            SnackbarManager.show("No se encontraron resultados. Prueba con otro título.")
         }
     }
 
@@ -71,8 +71,8 @@ fun SearchScreenContent(
             results.isEmpty() -> {
                 EmptyContainerPlaceholder(
                     R.drawable.search_24px,
-                    if (searchType == SearchType.MOVIE) "Search movies" else "Search tv series",
-                    description = "Search through the database"
+                    if (searchType == SearchType.MOVIE) "Buscar películas" else "Buscar series",
+                    description = "Busca en el catálogo"
                 )
             }
 

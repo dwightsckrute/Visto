@@ -140,7 +140,7 @@ fun MovieWatchlistRow(
 
                 )
                 Text(
-                    item.overview ?: "No overview found",
+                    item.overview ?: "No se encontró ninguna sinopsis",
                     maxLines = overviewMaxLines.intValue,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,

@@ -145,10 +145,10 @@ fun SelectableThemeColors(onThemeColorChanged: (String) -> Unit) {
         Box(Modifier.height(16.dp))
 
         val options = listOf(
-            "Tonal Spot" to ThemeVariantType.TONAL_SPOT,
-            "Neutral" to ThemeVariantType.NEUTRAL,
-            "Vibrant" to ThemeVariantType.VIBRANT,
-            "Expressive" to ThemeVariantType.EXPRESSIVE,
+            "Tonos puntuales" to ThemeVariantType.TONAL_SPOT,
+            "Neutro" to ThemeVariantType.NEUTRAL,
+            "Vibrante" to ThemeVariantType.VIBRANT,
+            "Expresivo" to ThemeVariantType.EXPRESSIVE,
         )
 
         var selected by remember { mutableStateOf(prefs.themeVariant) }

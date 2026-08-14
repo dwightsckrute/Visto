@@ -155,7 +155,7 @@ class SearchViewModel @Inject constructor(
             if (item.mediaType == "tv" && tvDetails != null) {
                 addSeasonToWatchlist(item.id, tvDetails)
             } else if (item.mediaType == "tv") {
-                SnackbarManager.show("No season found")
+                SnackbarManager.show("No se encontró ninguna temporada")
             }
         }
     }
@@ -172,7 +172,7 @@ class SearchViewModel @Inject constructor(
     ) {
         if (watchlistViewModel.exists(item.id) && item.mediaType != "tv") {
             SnackbarManager.show(
-                "Already in watchlist",
+                "Ya está en pendientes",
             )
         } else {
             updateSelectedItem(item)

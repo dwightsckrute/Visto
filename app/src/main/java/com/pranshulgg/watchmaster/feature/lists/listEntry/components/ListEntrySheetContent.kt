@@ -45,7 +45,7 @@ fun ListEntrySheetContent(
             Column {
                 Gap(15.dp)
                 EmptyContainerPlaceholder(
-                    text = "No media found",
+                    text = "No se encontró contenido",
                     icon = R.drawable.movie_info_24px,
                     size = 0.8f
                 )
@@ -93,7 +93,7 @@ fun ListEntrySheetContent(
                     },
                 ) {
                     Text(
-                        "Cancel",
+                        "Cancelar",
                         color = MaterialTheme.colorScheme.onErrorContainer,
                         fontSize = 16.sp
                     )
@@ -108,7 +108,7 @@ fun ListEntrySheetContent(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 ) {
                     Text(
-                        "Save", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp
+                        "Guardar", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp
                     )
                 }
             }

@@ -30,8 +30,8 @@ fun WatchlistMovies(
     if (items.isEmpty()) {
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
-            "No movies found",
-            description = "Your watchlist is empty. Add some movies to start building it!"
+            "No se encontraron películas",
+            description = "Tu lista está vacía. Añade alguna película para empezar a crearla."
         )
     }
 

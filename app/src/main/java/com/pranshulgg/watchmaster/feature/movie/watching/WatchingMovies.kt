@@ -30,8 +30,8 @@ fun WatchingMovies(
     if (items.isEmpty()) {
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
-            "Nothing in progress",
-            description = "Looks like you haven’t started watching anything. Find your next binge!"
+            "Nada en curso",
+            description = "Parece que aún no has empezado a ver nada. ¡Encuentra tu próximo maratón!"
         )
     }
 

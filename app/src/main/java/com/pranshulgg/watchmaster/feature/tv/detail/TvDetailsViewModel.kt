@@ -72,7 +72,7 @@ class TvDetailsViewModel @Inject constructor(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 SnackbarManager.show(
-                    "Failed to fetch season data"
+                    "No se pudieron obtener los datos de la temporada"
                 )
             } finally {
                 isLoadingEps = false
@@ -82,7 +82,7 @@ class TvDetailsViewModel @Inject constructor(
 
     fun refreshSeasonData(season: SeasonEntity) {
         if (loading) return
-        SnackbarManager.show("Refreshing...")
+        SnackbarManager.show("Actualizando…")
         loading = true
         viewModelScope.launch {
             try {
@@ -90,7 +90,7 @@ class TvDetailsViewModel @Inject constructor(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 SnackbarManager.show(
-                    "Refresh failed",
+                    "No se pudo actualizar",
                 )
             } finally {
                 loading = false

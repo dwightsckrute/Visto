@@ -89,7 +89,7 @@ fun DialogSliderTile(
                     },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Save", style = MaterialTheme.typography.labelLarge)
+                    Text("Guardar", style = MaterialTheme.typography.labelLarge)
                 }
             },
             dismissButton = {
@@ -97,7 +97,7 @@ fun DialogSliderTile(
                     onClick = { showDialog = false },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Cancel", style = MaterialTheme.typography.labelLarge)
+                    Text("Cancelar", style = MaterialTheme.typography.labelLarge)
                 }
 
             }

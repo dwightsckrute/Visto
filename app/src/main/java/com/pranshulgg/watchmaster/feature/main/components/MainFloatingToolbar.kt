@@ -56,7 +56,7 @@ fun MainFloatingToolbar(
     navController: NavController,
     scrollBehavior: FloatingToolbarScrollBehavior
 ) {
-    val labelList = listOf("Home", "Movies", "TV series")
+    val labelList = listOf("Inicio", "Películas", "Series")
     val unSelectedIcons = listOf(
         R.drawable.home_24px,
         R.drawable.movie_24px,
@@ -147,7 +147,7 @@ fun MainFloatingToolbar(
                         }
                     }
                     Tooltip(
-                        if (selectedItem == 1) "Add movie" else "Add tv series",
+                        if (selectedItem == 1) "Añadir película" else "Añadir serie",
                         preferredPosition = TooltipAnchorPosition.Above,
                         spacing = 10.dp
                     ) {

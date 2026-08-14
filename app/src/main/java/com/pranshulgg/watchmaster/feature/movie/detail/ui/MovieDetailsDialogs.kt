@@ -68,7 +68,7 @@ fun MovieDetailsConfirmationDialog(
             viewModel::hideConfirmationDialog,
             onConfirm = {
                 watchlistViewModel.delete(item.id)
-                SnackbarManager.show("Movie deleted ${item.title}")
+                SnackbarManager.show("Película eliminada: ${item.title}")
                 navController.popBackStack()
             }
         )

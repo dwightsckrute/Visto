@@ -23,7 +23,7 @@ fun TvDetailsEpisodeInfoSheet(
             onCancel = { onDismiss() },
             onConfirm = { onConfirm() },
             confirmBtnMaxWidth = true,
-            confirmText = if (episode.isWatched) "Mark as unwatched" else "Mark as watched"
+            confirmText = if (episode.isWatched) "Marcar como no visto" else "Marcar como visto"
         ) {
             EpisodeInfoSheetContent(episode)
         }

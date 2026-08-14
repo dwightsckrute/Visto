@@ -15,7 +15,7 @@ import com.pranshulgg.watchmaster.R
 @Composable
 fun NavigateUpBtn(navController: NavController) {
     Tooltip(
-        "Navigate up",
+        "Volver",
         preferredPosition = TooltipAnchorPosition.Below,
         spacing = 10.dp
     ) {
@@ -25,7 +25,7 @@ fun NavigateUpBtn(navController: NavController) {
         ) {
             Symbol(
                 R.drawable.arrow_back_24px,
-                desc = "settings icon",
+                desc = "icono de ajustes",
                 color = MaterialTheme.colorScheme.onSurface
             )
         }

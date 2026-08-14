@@ -120,7 +120,7 @@ fun RateMediaDialogContent(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
             shapes = ButtonDefaults.shapes()
         ) {
-            Text("Cancel", color = MaterialTheme.colorScheme.onErrorContainer)
+            Text("Cancelar", color = MaterialTheme.colorScheme.onErrorContainer)
         }
         Button(
             enabled = rating > 0f,
@@ -132,7 +132,7 @@ fun RateMediaDialogContent(
             },
             shapes = ButtonDefaults.shapes()
         ) {
-            Text(if (updateRating) "Update" else "Mark as finished")
+            Text(if (updateRating) "Actualizar" else "Marcar como terminada")
         }
 
     }

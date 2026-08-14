@@ -12,6 +12,13 @@ val localProps = Properties().apply {
     if (f.exists()) f.inputStream().use { load(it) }
 }
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+
 val tmdbApiKey: String = localProps.getProperty("TMDB_API_KEY")
     ?: throw GradleException(
         "TMDB_API_KEY not found! Add it to local.properties in the project root."
@@ -23,19 +30,33 @@ android {
     compileSdk = 36
     android.buildFeatures.buildConfig = true
     defaultConfig {
-        applicationId = "com.pranshulgg.watchmaster"
+        // A different application id lets WatchMaster ES coexist with the
+        // original app, so installing this fork never replaces its local data.
+        applicationId = "com.franciscoredondokuik.watchmaster"
         minSdk = 24
         targetSdk = 36
-        versionCode = 15
-        versionName = "1.8.0"
+        versionCode = 1
+        versionName = "1.0.0-es"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
     }
 
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

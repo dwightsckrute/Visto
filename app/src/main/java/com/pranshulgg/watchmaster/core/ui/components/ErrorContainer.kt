@@ -26,7 +26,7 @@ import com.pranshulgg.watchmaster.core.ui.components.tiles.M3eButton
 fun ErrorContainer(
     onRetry: () -> Unit,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
-    errorDescription: String = "Something went wrong",
+    errorDescription: String = "Algo ha salido mal",
 ) {
     Column(
         modifier = Modifier
@@ -40,7 +40,7 @@ fun ErrorContainer(
         Symbol(R.drawable.info_24px, color = MaterialTheme.colorScheme.error, size = 54.dp)
         Gap(26.dp)
         Text(
-            "Error occurred",
+            "Se ha producido un error",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -57,7 +57,7 @@ fun ErrorContainer(
         Gap(34.dp)
         M3eButton(
             size = ButtonDefaults.MediumContainerHeight,
-            text = "Try again",
+            text = "Reintentar",
             onClick = { onRetry() },
             icon = R.drawable.refresh_24px
         )

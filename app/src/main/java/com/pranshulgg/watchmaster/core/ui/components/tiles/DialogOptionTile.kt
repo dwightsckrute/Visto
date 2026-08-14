@@ -188,7 +188,7 @@ fun <T> DialogOptionTile(
                             },
                             shapes = ButtonDefaults.shapes()
                         ) {
-                            Text("Cancel", style = MaterialTheme.typography.labelLarge)
+                            Text("Cancelar", style = MaterialTheme.typography.labelLarge)
                         }
                         Spacer(Modifier.width(8.dp))
                         TextButton(
@@ -198,7 +198,7 @@ fun <T> DialogOptionTile(
                             },
                             shapes = ButtonDefaults.shapes()
                         ) {
-                            Text("Save", style = MaterialTheme.typography.labelLarge)
+                            Text("Guardar", style = MaterialTheme.typography.labelLarge)
                         }
                     }
                 }

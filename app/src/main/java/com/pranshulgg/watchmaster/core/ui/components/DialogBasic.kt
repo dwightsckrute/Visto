@@ -27,8 +27,8 @@ import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 fun DialogBasic(
     show: Boolean,
     title: String,
-    confirmText: String = "Confirm",
-    dismissText: String = "Cancel",
+    confirmText: String = "Confirmar",
+    dismissText: String = "Cancelar",
     onConfirm: () -> Unit = {},
     onDismiss: () -> Unit,
     showDefaultActions: Boolean = true,

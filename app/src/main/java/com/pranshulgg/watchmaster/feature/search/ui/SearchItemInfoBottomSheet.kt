@@ -33,13 +33,13 @@ fun SearchItemInfoBottomSheet(
             onCancel = {
                 viewModel.hideSheet()
             },
-            confirmText = "Add to watchlist",
+            confirmText = "Añadir a pendientes",
             confirmBtnMaxWidth = true,
             isConfirmDisabled = disabled,
             onConfirm = {
                 scope.launch {
                     viewModel.addToWatchlist(item, tvDetailsList, watchlistViewModel)
-                    SnackbarManager.show("Added to watchlist")
+                    SnackbarManager.show("Añadido a pendientes")
                 }
             }
         ) {

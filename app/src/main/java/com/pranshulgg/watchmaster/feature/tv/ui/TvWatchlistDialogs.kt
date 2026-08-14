@@ -22,8 +22,8 @@ fun TvWatchlistConfirmationDialog(
     MediaConfirmationDialogContent(
         uiState.showConfirmationDialog,
         tvHomeViewModel::hideConfirmationDialog,
-        customHeadline = if (uiState.seriesId != null) "Delete series" else null,
-        customMessage = if (uiState.seriesId != null) "Are you sure you want to delete this series? All seasons will be removed. This action cannot be undone" else null,
+        customHeadline = if (uiState.seriesId != null) "Eliminar serie" else null,
+        customMessage = if (uiState.seriesId != null) "¿Seguro que quieres eliminar esta serie? Se borrarán todas las temporadas. Esta acción no se puede deshacer." else null,
         isTv = true,
         onConfirm = {
             if (uiState.seriesId != null) {
@@ -33,8 +33,8 @@ fun TvWatchlistConfirmationDialog(
             }
             SnackbarManager.show(
                 if (season != null) {
-                    "Season deleted ${season.name}"
-                } else "Series deleted"
+                    "Temporada eliminada: ${season.name}"
+                } else "Serie eliminada"
             )
         }
     )
@@ -57,7 +57,7 @@ fun TvWatchlistRatingDialog(
             onConfirm = { rating ->
                 watchlistViewModel.setSeasonUserRating(item.seasonId, rating)
                 watchlistViewModel.finishSeason(item.seasonId, item.seasonNumber)
-                if (uiState.isUpdateRating) SnackbarManager.show("User rating updated")
+                if (uiState.isUpdateRating) SnackbarManager.show("Valoración actualizada")
             }
         )
     }

@@ -38,12 +38,12 @@ fun ListsScreenScaffold(
     }
 
     LargeTopBarScaffold(
-        title = "Lists",
+        title = "Listas",
         navigationIcon = { NavigateUpBtn(navController) },
         fab = {
             ExtendedFloatingActionButton(
                 onClick = { navController.navigate(NavRoutes.listEntryScreen(-1L)) },
-                text = { Text("Create list", style = MaterialTheme.typography.titleMedium) },
+                text = { Text("Crear lista", style = MaterialTheme.typography.titleMedium) },
                 icon = {
                     Symbol(
                         R.drawable.add_24px,
@@ -59,8 +59,8 @@ fun ListsScreenScaffold(
         ) {
             if (customLists.isEmpty()) {
                 EmptyContainerPlaceholder(
-                    text = "No lists found",
-                    description = "Create a list to get started",
+                    text = "No se encontraron listas",
+                    description = "Crea una lista para empezar",
                     icon = R.drawable.lists_24px
                 )
             }

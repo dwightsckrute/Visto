@@ -41,7 +41,7 @@ fun SettingsScreen(navController: NavController) {
 
 
     var exportWatchlistChecked by remember { mutableStateOf(true) }
-    var exportMovieListChecked by remember { mutableStateOf(false) }
+    var exportMovieListChecked by remember { mutableStateOf(true) }
 
     val exportLauncher = exportLauncher(context, exportWatchlistChecked, exportMovieListChecked)
     val importLauncher = importLauncher(context)
@@ -52,7 +52,7 @@ fun SettingsScreen(navController: NavController) {
     var isWarningImportDialogOpen by remember { mutableStateOf(false) }
 
     LargeTopBarScaffold(
-        title = "Settings",
+        title = "Ajustes",
         navigationIcon = { NavigateUpBtn(navController) },
     ) { paddingValues ->
         Column(
@@ -64,15 +64,15 @@ fun SettingsScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             SettingSection(
-                title = "App looks",
+                title = "Apariencia",
                 tiles = listOf(
                     SettingTile.DialogOptionTile(
                         leading = { SettingsTileIcon(R.drawable.palette_24px) },
-                        title = "App theme",
+                        title = "Tema de la aplicación",
                         options = listOf(
-                            "Dark",
-                            "Light",
-                            "System",
+                            "Oscuro",
+                            "Claro",
+                            "Sistema",
                         ),
                         selectedOption = prefs.appTheme,
                         onOptionSelected = {
@@ -85,8 +85,8 @@ fun SettingsScreen(navController: NavController) {
                                 R.drawable.brush_24px
                             )
                         },
-                        title = "Use custom color",
-                        description = "Select a seed color to generate the theme",
+                        title = "Usar un color personalizado",
+                        description = "Elige un color base para generar el tema",
                         checked = prefs.isCustomTheme,
                         enabled = !prefs.useDynamicColor,
                         onCheckedChange = { checked ->
@@ -102,8 +102,8 @@ fun SettingsScreen(navController: NavController) {
                                 R.drawable.photo_24px
                             )
                         },
-                        title = "Dynamic colors",
-                        description = "Use wallpaper colors",
+                        title = "Colores dinámicos",
+                        description = "Usar los colores del fondo de pantalla",
                         checked = prefs.useDynamicColor,
                         enabled = isAndroid12Plus && !prefs.isCustomTheme,
                         onCheckedChange = { checked ->
@@ -117,11 +117,11 @@ fun SettingsScreen(navController: NavController) {
                 tiles = listOf(
                     SettingTile.DialogOptionTile(
                         leading = { SettingsTileIcon(R.drawable.home_filled_24px) },
-                        title = "Starting default screen",
+                        title = "Pantalla de inicio predeterminada",
                         options = listOf(
-                            "Home",
-                            "Movies",
-                            "TV series",
+                            "Inicio",
+                            "Películas",
+                            "Series",
                         ),
                         selectedOption = prefs.defaultTab,
                         onOptionSelected = {
@@ -131,18 +131,18 @@ fun SettingsScreen(navController: NavController) {
                 )
             )
             SettingSection(
-                title = "Data",
+                title = "Datos",
                 tiles = listOf(
                     SettingTile.ActionTile(
                         leading = { SettingsTileIcon(R.drawable.upload_24px) },
-                        title = "Export app data",
+                        title = "Exportar datos de la aplicación",
                         onClick = {
                             isExportDialogOpen = true
                         }
                     ),
                     SettingTile.ActionTile(
                         leading = { SettingsTileIcon(R.drawable.download_24px) },
-                        title = "Import app data",
+                        title = "Importar datos de la aplicación",
                         onClick = {
                             isWarningImportDialogOpen = true
                         }
@@ -162,18 +162,18 @@ fun SettingsScreen(navController: NavController) {
         onDismiss = {
             isExportDialogOpen = false
         },
-        title = "Export data",
+        title = "Exportar datos",
         confirmBtnDisabled = !exportWatchlistChecked && !exportMovieListChecked,
     ) {
         Column() {
 
             CheckboxRow(
-                label = "Include lists",
+                label = "Incluir listas",
                 checked = exportMovieListChecked
             ) { exportMovieListChecked = it }
 
             Text(
-                "Always make sure to create a data export after updating the app to a new version; there’s a high chance that older backups won’t work.",
+                "Crea siempre una copia después de actualizar la aplicación: es posible que las copias antiguas no funcionen con versiones futuras.",
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 10.dp, start = 16.dp, end = 16.dp)
@@ -186,12 +186,11 @@ fun SettingsScreen(navController: NavController) {
         onDismiss = {
             isWarningImportDialogOpen = false
         },
-        title = "Import data",
+        title = "Importar datos",
         onConfirm = {
             val intent = createOpenDocumentIntent()
             importLauncher(intent)
         },
-        message = "Importing data will replace the current data. Are you sure you want to continue?"
+        message = "La importación sustituirá los datos actuales. ¿Seguro que quieres continuar?"
     )
 }
-

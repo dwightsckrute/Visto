@@ -117,7 +117,7 @@ fun EpisodeItem(
                         .padding(12.dp),
                 ) {
                     Tooltip(
-                        "Episode options",
+                        "Opciones del episodio",
                         preferredPosition = TooltipAnchorPosition.Below,
                         spacing = 5.dp
                     ) {

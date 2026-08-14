@@ -47,7 +47,7 @@ fun ListsScreenContent(
         if (pinnedLists.isNotEmpty()) {
             item {
                 Text(
-                    text = "Pinned",
+                    text = "Fijado",
                     modifier = Modifier.padding(bottom = 5.dp, start = 3.dp),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,
@@ -66,7 +66,7 @@ fun ListsScreenContent(
         if (unPinnedLists.isNotEmpty() && pinnedLists.isNotEmpty()) {
             item {
                 Text(
-                    text = "Other",
+                    text = "Otros",
                     modifier = Modifier.padding(bottom = 5.dp, start = 3.dp, top = 20.dp),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,
@@ -150,7 +150,7 @@ private fun ListItemRow(
                 }
             } else {
                 Text(
-                    "No movies found",
+                    "No se encontraron películas",
                     fontStyle = FontStyle.Italic,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -111,7 +111,7 @@ fun ViewListScreen(navController: NavController, id: Long) {
 
 
     LargeTopBarScaffold(
-        title = customListEntity?.name ?: "List",
+        title = customListEntity?.name ?: "Lista",
         navigationIcon = { NavigateUpBtn(navController) },
         actions = {
             AvatarIcon(
@@ -132,7 +132,7 @@ fun ViewListScreen(navController: NavController, id: Long) {
                         "DELETE_ACTION" -> isConfirmationDialogOpen = true
                         "PIN_ACTION" -> {
                             viewModel.setPinned(id, isPinned)
-                            SnackbarManager.show("${if (isPinned) "Pinned" else "Unpinned"} list")
+                            SnackbarManager.show("Lista ${if (isPinned) "desfijada" else "fijada"}")
                         }
                     }
                 },
@@ -162,13 +162,12 @@ fun ViewListScreen(navController: NavController, id: Long) {
     TextAlertDialog(
         show = isConfirmationDialogOpen,
         onConfirm = {
-            SnackbarManager.show("Deleted ${customListEntity?.name ?: "list"}")
+            SnackbarManager.show("Se eliminó ${customListEntity?.name ?: "la lista"}")
             viewModel.delete(id)
             navController.popBackStack()
         },
         onDismiss = { isConfirmationDialogOpen = false },
-        title = "Delete ${customListEntity?.name ?: "list"}",
-        message = "Are you sure you want to delete this list? This can’t be undone"
+        title = "Eliminar ${customListEntity?.name ?: "lista"}",
+        message = "¿Seguro que quieres eliminar esta lista? Esta acción no se puede deshacer."
     )
 }
-

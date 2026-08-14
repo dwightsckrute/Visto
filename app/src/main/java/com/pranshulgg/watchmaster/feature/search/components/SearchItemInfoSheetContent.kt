@@ -89,7 +89,7 @@ fun SearchItemInfoSheetContent(
 
                     MediaChip(
                         if (item.releaseDate == "" || item.releaseDate == null) {
-                            "No date"
+                            "Sin fecha"
                         } else {
                             item.releaseDate.take(
                                 4
@@ -135,7 +135,7 @@ fun SearchItemInfoSheetContent(
 
         item.overview?.let {
             Text(
-                text = "Overview",
+                text = "Sinopsis",
                 modifier = Modifier.padding(bottom = 2.dp),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.primary,

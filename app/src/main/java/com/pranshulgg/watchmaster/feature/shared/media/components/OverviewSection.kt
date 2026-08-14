@@ -15,7 +15,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
 fun OverviewSection(text: String) {
     Spacer(Modifier.height(16.dp))
     MediaSectionCard(
-        title = "Overview",
+        title = "Sinopsis",
         titleIcon = R.drawable.overview_24px,
     ) {
         Text(

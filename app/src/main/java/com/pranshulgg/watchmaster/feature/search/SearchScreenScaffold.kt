@@ -64,7 +64,7 @@ fun SearchScreenScaffold(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             LargeFlexibleTopAppBar(
-                title = { Text(text = "Search") },
+                title = { Text(text = "Buscar") },
                 navigationIcon = { NavigateUpBtn(navController) },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)

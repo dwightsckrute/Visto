@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Date
 
 private data class ExportData(
     val version: Int,
@@ -93,14 +92,18 @@ private suspend fun export(
 
     val json = Gson().toJson(ExportData(4, watchlistData, tvSeasons, movieLists))
 
-    val file = context.contentResolver.openOutputStream(uri)
+    val exported = runCatching {
+        withContext(Dispatchers.IO) {
+            context.contentResolver.openOutputStream(uri)?.use { file ->
+                file.write(json.toByteArray())
+            } ?: error("Unable to open destination")
+        }
+    }.isSuccess
 
-    withContext(Dispatchers.IO) {
-        file?.write(json.toByteArray())
-        file?.close()
-    }
-
-    SnackbarManager.show("Exported successfully")
+    SnackbarManager.show(
+        if (exported) "Datos exportados correctamente"
+        else "No se pudieron exportar los datos"
+    )
 
 }
 
@@ -108,46 +111,62 @@ private suspend fun import(context: Context, uri: Uri) {
 
     val db = WatchMasterDatabase.getInstance(context)
 
-    val input = context.contentResolver.openInputStream(uri)
-    val json = input?.bufferedReader().use { it?.readText() }
-
-    val data = Gson().fromJson(json, ExportData::class.java)
+    val data = runCatching {
+        val json = context.contentResolver.openInputStream(uri)
+            ?.bufferedReader()
+            ?.use { it.readText() }
+            ?: error("Empty backup")
+        Gson().fromJson(json, ExportData::class.java)
+            ?.also { parsed ->
+                // Gson can assign null to Kotlin non-null properties when a
+                // malformed JSON omits a field, so force validation here.
+                parsed.watchlist.size
+                parsed.tvSeasons.size
+                parsed.movieLists.size
+            }
+            ?: error("Invalid backup")
+    }.getOrElse {
+        SnackbarManager.show("La copia seleccionada no es válida")
+        return
+    }
 
 
     if (data.watchlist.isEmpty() && data.movieLists.isEmpty()) {
-        SnackbarManager.show("No data to import")
+        SnackbarManager.show("No hay datos que importar")
         return
     }
 
-    val unsupportedVersions = listOf(0, 1, 2, 3)
-
-    if (unsupportedVersions.contains(data.version)) {
-        SnackbarManager.show("Unsupported version")
+    if (data.version != 4) {
+        SnackbarManager.show("Versión no compatible")
         return
     }
 
-    db.withTransaction {
-        if (data.watchlist.isNotEmpty()) {
-            db.watchlistDao().clearAll()
-            db.seasonDao().clearAll()
+    val imported = runCatching {
+        db.withTransaction {
+            if (data.watchlist.isNotEmpty()) {
+                db.watchlistDao().clearAll()
+                db.seasonDao().clearAll()
+            }
+
+            if (data.movieLists.isNotEmpty()) {
+                db.movieListsDao().clearAll()
+            }
+
+            if (data.watchlist.isNotEmpty()) {
+                db.watchlistDao().insertAll(data.watchlist)
+                db.seasonDao().insertSeasons(data.tvSeasons)
+            }
+
+            if (data.movieLists.isNotEmpty()) {
+                db.movieListsDao().insertAll(data.movieLists)
+            }
         }
+    }.isSuccess
 
-        if (data.movieLists.isNotEmpty()) {
-            db.movieListsDao().clearAll()
-        }
-
-        if (data.watchlist.isNotEmpty()) {
-            db.watchlistDao().insertAll(data.watchlist)
-            db.seasonDao().insertSeasons(data.tvSeasons)
-        }
-
-
-        if (data.movieLists.isNotEmpty()) {
-            db.movieListsDao().insertAll(data.movieLists)
-        }
-    }
-
-    SnackbarManager.show("Imported successfully")
+    SnackbarManager.show(
+        if (imported) "Datos importados correctamente"
+        else "No se pudo importar la copia; tus datos actuales no han cambiado"
+    )
 }
 
 

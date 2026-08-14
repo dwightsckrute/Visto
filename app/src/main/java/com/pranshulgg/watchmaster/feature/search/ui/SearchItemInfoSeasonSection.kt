@@ -62,7 +62,8 @@ fun SearchItemInfoSeasonSection(
 
 
     val filteredSeasons = remember(seasonData) {
-        seasonData.filter { it.name != "Specials" }
+        // Season zero contains specials in every TMDB locale.
+        seasonData.filter { it.season_number != 0 }
     }
 
 
@@ -108,7 +109,7 @@ fun SearchItemInfoSeasonSection(
             )
             Spacer(Modifier.size(ButtonDefaults.iconSpacingFor(size)))
             Text(
-                if (selectedSeason == -1) "All season saved" else filteredSeasons[selectedSeason].name,
+                if (selectedSeason == -1) "Todas las temporadas guardadas" else filteredSeasons[selectedSeason].name,
                 style = ButtonDefaults.textStyleFor(size),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -133,7 +134,7 @@ fun SearchItemInfoSeasonSection(
             LazyColumn() {
                 item {
                     SettingSection(
-                        title = "All seasons",
+                        title = "Todas las temporadas",
                         isModalOption = true,
                         tiles = filteredSeasons.mapIndexed { index, item ->
 

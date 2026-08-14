@@ -4,25 +4,27 @@ import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.R
 
 fun WatchStatus.dialogMessage(isTv: Boolean = false): String {
-
-    val finishText: String = if (isTv) "season and mark all episodes as watched" else "movie";
-    val resetText: String = if (isTv) "season, mark all episodes as unwatched," else "movie";
-
-    val seasonMovieText: String = if (isTv) "season" else "movie";
-
     return when (this) {
-
-        WatchStatus.WATCHING ->
-            "Are you sure you want to finish this $finishText?"
-
-        WatchStatus.INTERRUPTED ->
-            "Do you want to continue watching this $seasonMovieText?"
-
-        WatchStatus.FINISHED ->
-            "Reset this $resetText and add it back to your watchlist?"
-
-        else ->
-            "Are you sure you want to start watching this $seasonMovieText?"
+        WatchStatus.WATCHING -> if (isTv) {
+            "¿Quieres terminar esta temporada y marcar todos sus episodios como vistos?"
+        } else {
+            "¿Quieres marcar esta película como terminada?"
+        }
+        WatchStatus.INTERRUPTED -> if (isTv) {
+            "¿Quieres continuar viendo esta temporada?"
+        } else {
+            "¿Quieres continuar viendo esta película?"
+        }
+        WatchStatus.FINISHED -> if (isTv) {
+            "¿Quieres restablecer esta temporada, marcar sus episodios como no vistos y devolverla a pendientes?"
+        } else {
+            "¿Quieres restablecer esta película y devolverla a pendientes?"
+        }
+        else -> if (isTv) {
+            "¿Quieres empezar a ver esta temporada?"
+        } else {
+            "¿Quieres empezar a ver esta película?"
+        }
     }
 }
 
@@ -40,10 +42,10 @@ fun WatchStatus.confirmAction(
 
 val WatchStatus.actionLabel: String
     get() = when (this) {
-        WatchStatus.WATCHING -> "Mark as finished"
-        WatchStatus.INTERRUPTED -> "Continue watching"
-        WatchStatus.FINISHED -> "Reset"
-        else -> "Mark as watching"
+        WatchStatus.WATCHING -> "Marcar como terminada"
+        WatchStatus.INTERRUPTED -> "Continuar viendo"
+        WatchStatus.FINISHED -> "Restablecer"
+        else -> "Marcar como en curso"
     }
 
 val WatchStatus.buttonIcon: Int

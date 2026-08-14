@@ -57,7 +57,7 @@ fun WatchlistMediaSheetContent(
             if (status == WatchStatus.WATCHING && mediaOptions) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.pause_24px) },
-                    title = "Mark as interrupted",
+                    title = "Marcar como interrumpida",
                     onClick = {
                         if (isTv) {
                             viewModel.interruptSeason(id)
@@ -71,7 +71,7 @@ fun WatchlistMediaSheetContent(
 
             SettingTile.ActionTile(
                 leading = { SettingsTileIcon(R.drawable.delete_24px) },
-                title = if ((isTv && !mediaOptions)) "Delete series" else "Delete",
+                title = if ((isTv && !mediaOptions)) "Eliminar serie" else "Eliminar",
                 onClick = {
                     if ((isTv && !mediaOptions)) {
                         onDeleteSeries(id)
@@ -85,7 +85,7 @@ fun WatchlistMediaSheetContent(
             if (!isTv || !mediaOptions) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.keep_24px) },
-                    title = if (isPinned) "Unpin" else "Pin",
+                    title = if (isPinned) "Desfijar" else "Fijar",
                     onClick = {
                         viewModel.setPinned(id, !isPinned)
                         onDismiss()
@@ -96,7 +96,7 @@ fun WatchlistMediaSheetContent(
             if (status == WatchStatus.FINISHED && mediaOptions) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.star_24px) },
-                    title = "Update Rating",
+                    title = "Actualizar valoración",
                     onClick = {
                         onUpdateRating()
                         onDismiss()
@@ -107,7 +107,7 @@ fun WatchlistMediaSheetContent(
             if (status == WatchStatus.FINISHED) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.date_range_24px) },
-                    title = "Change finish date",
+                    title = "Cambiar fecha de finalización",
                     onClick = {
                         onChangeFinishData()
                         onDismiss()

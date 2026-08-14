@@ -62,7 +62,7 @@ fun TvItems(
         if (pinnedItems.isNotEmpty()) {
             item {
                 Text(
-                    text = "Pinned",
+                    text = "Fijado",
                     modifier = Modifier.padding(bottom = 5.dp, start = 3.dp),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,
@@ -89,7 +89,7 @@ fun TvItems(
             if (normalItems.isNotEmpty()) {
                 item {
                     Text(
-                        text = "Other",
+                        text = "Otros",
                         modifier = Modifier.padding(bottom = 5.dp, start = 3.dp, top = 20.dp),
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.primary,

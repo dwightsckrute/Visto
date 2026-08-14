@@ -61,16 +61,16 @@ fun MovieDetailsContent(
             isRefreshing = true
 
             if (refreshUnlocked) {
-                SnackbarManager.show("Fetching...")
+                SnackbarManager.show("Obteniendo datos…")
                 viewModel.load(
                     movieItem.id,
                     forceFetch = true,
                     onError = {
-                        SnackbarManager.show("Failed to fetch movie data")
+                        SnackbarManager.show("No se pudieron obtener los datos de la película")
                     })
                 isRefreshing = false
             } else {
-                SnackbarManager.show("Data is already up to date")
+                SnackbarManager.show("Los datos ya están actualizados")
                 isRefreshing = false
             }
         },
@@ -102,12 +102,12 @@ fun MovieDetailsContent(
                         watchlistItem.userRating,
                         onUpdateRating = { newRating ->
                             watchlistViewModel.setUserRating(watchlistItem.id, newRating)
-                            SnackbarManager.show("User rating updated")
+                            SnackbarManager.show("Valoración actualizada")
                         }
                     )
                     MediaStatusSection(
                         status = watchlistItem.status,
-                        onClick = { viewModel.showWatchProviderSheet(movieItem.watchProviders?.results["US"]) })
+                        onClick = { viewModel.showWatchProviderSheet(movieItem.watchProviders?.results["ES"]) })
                     OverviewSection(movieItem.overview)
                     NotesSection(
                         watchlistItem.notes.isNullOrBlank(),

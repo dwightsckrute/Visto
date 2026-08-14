@@ -114,7 +114,7 @@ fun MediaDetailsScreenHeader(
 
     DialogBasic(
         show = showRatingDialog,
-        title = "Update rating",
+        title = "Actualizar valoración",
         showDefaultActions = false,
         onDismiss = { showRatingDialog = false },
         content = {

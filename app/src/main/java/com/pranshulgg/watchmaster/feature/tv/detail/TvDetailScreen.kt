@@ -42,7 +42,7 @@ fun TvDetailsScreen(id: Long, seasonNumber: Int, navController: NavController, s
         ErrorContainer(onRetry = {
             showError = false
             viewModel.load(id, onError = { showError = true })
-        }, errorDescription = "Failed to load series details. Please try again")
+        }, errorDescription = "No se pudieron cargar los detalles de la serie. Inténtalo de nuevo.")
     }
 
 

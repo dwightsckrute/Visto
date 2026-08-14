@@ -25,7 +25,7 @@ fun EpisodeInfoSheetContent(
 
         episode.overview?.let {
             Text(
-                text = "Overview",
+                text = "Sinopsis",
                 modifier = Modifier.padding(bottom = 2.dp),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.primary,

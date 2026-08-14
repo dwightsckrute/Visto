@@ -35,19 +35,19 @@ fun TvWatchProviderSheet(
             if (providers != null) {
 
                 if (providers.flatrate != null) {
-                    WatchProviderItem("Flat rate", providers.flatrate)
+                    WatchProviderItem("Suscripción", providers.flatrate)
                 }
 
                 if (providers.buy != null) {
                     Spacer(Modifier.height(12.dp))
-                    WatchProviderItem("Buy", providers.buy)
+                    WatchProviderItem("Comprar", providers.buy)
                 }
 
                 Spacer(Modifier.height(10.dp))
             } else {
                 EmptyContainerPlaceholder(
                     R.drawable.movie_info_24px,
-                    "No providers found",
+                    "No se encontraron proveedores",
                     size = 0.7f,
                     fraction = 0.3f
                 )

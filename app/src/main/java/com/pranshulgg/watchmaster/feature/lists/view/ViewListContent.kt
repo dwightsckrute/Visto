@@ -51,8 +51,8 @@ fun ViewListContent(
 
     if ((selectedTab == 0 && movies.isEmpty()) || (selectedTab == 1 && tv.isEmpty())) {
         EmptyContainerPlaceholder(
-            text = if (selectedTab == 0) "No movies found" else "No series found",
-            description = "Add ${if (selectedTab == 0) "movies" else "series"} to this list to get started",
+            text = if (selectedTab == 0) "No se encontraron películas" else "No se encontraron series",
+            description = "Añade ${if (selectedTab == 0) "películas" else "series"} a esta lista para empezar",
             icon = R.drawable.lists_24px
         )
     }
@@ -66,7 +66,7 @@ fun ViewListContent(
         item {
             if (description.isNotBlank()) {
                 MediaSectionCard(
-                    title = "Description",
+                    title = "Descripción",
                     titleIcon = R.drawable.description_24px,
                     noPadding = true
                 ) {

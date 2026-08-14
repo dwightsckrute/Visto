@@ -45,10 +45,10 @@ fun MediaStatusSection(status: WatchStatus, onClick: () -> Unit = {}) {
     }
 
     val statusLabel = when (status) {
-        WatchStatus.INTERRUPTED -> "Interrupted"
-        WatchStatus.WATCHING -> "Progress"
-        WatchStatus.FINISHED -> "Finished"
-        else -> "Pending"
+        WatchStatus.INTERRUPTED -> "Interrumpida"
+        WatchStatus.WATCHING -> "En curso"
+        WatchStatus.FINISHED -> "Finalizado"
+        else -> "Pendiente"
     }
 
     val statusIcon = when (status) {
@@ -101,7 +101,7 @@ fun MediaStatusSection(status: WatchStatus, onClick: () -> Unit = {}) {
             shapes = ButtonDefaults.shapes()
         ) {
             Text(
-                "Where to watch",
+                "Dónde ver",
                 style = MaterialTheme.typography.titleMedium
 
             )

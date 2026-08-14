@@ -28,8 +28,8 @@ fun TextAlertDialog(
     show: Boolean,
     title: String,
     message: String,
-    confirmText: String = "Confirm",
-    dismissText: String = "Cancel",
+    confirmText: String = "Confirmar",
+    dismissText: String = "Cancelar",
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {

@@ -68,7 +68,7 @@ fun EpisodesSection(
 
 
     MediaSectionCard(
-        title = "Episodes",
+        title = "Episodios",
         titleIcon = R.drawable.list_alt_24px,
         trailingContent = {
             MediaChip(
@@ -129,12 +129,12 @@ fun EpisodesSection(
                         }
 
                         if (season.status == WatchStatus.WANT_TO_WATCH || season.status == WatchStatus.FINISHED) {
-                            SnackbarManager.show("Please mark the season as 'Watching' to track episodes")
+                            SnackbarManager.show("Marca la temporada como 'Viendo' para llevar el seguimiento de episodios")
                             return@EpisodeItem
                         }
 
                         if (!isUnlocked) {
-                            SnackbarManager.show("Previous episode not watched")
+                            SnackbarManager.show("El episodio anterior no está marcado como visto")
                             return@EpisodeItem
                         }
 
@@ -170,7 +170,7 @@ fun EpisodesSection(
         onConfirm = {
             currentEp?.let {
                 if (season.status == WatchStatus.WANT_TO_WATCH || season.status == WatchStatus.FINISHED) {
-                    SnackbarManager.show("Please mark the season as 'Watching' to track episodes")
+                    SnackbarManager.show("Marca la temporada como 'Viendo' para llevar el seguimiento de episodios")
                     return@let
                 }
                 if (it.isWatched) {

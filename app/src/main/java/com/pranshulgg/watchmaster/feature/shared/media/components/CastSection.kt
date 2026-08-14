@@ -24,7 +24,7 @@ import com.pranshulgg.watchmaster.data.local.entity.TvBundle
 @Composable
 fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
     MediaSectionCard(
-        title = "Cast",
+        title = "Reparto",
         titleIcon = R.drawable.groups_2_24px,
     ) {
 
@@ -32,7 +32,7 @@ fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
         val mainCast = tvItem.credits.cast.take(10)
 
         if (mainCast.isEmpty()) {
-            Text("No cast found", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            Text("No se encontró reparto", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             return@MediaSectionCard
         }
         LazyRow {
@@ -66,7 +66,7 @@ fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
 @Composable
 fun CastMovieSection(movieItem: MovieBundle, onCastClick: (Long) -> Unit) {
     MediaSectionCard(
-        title = "Cast",
+        title = "Reparto",
         titleIcon = R.drawable.groups_2_24px,
     ) {
         val director = movieItem.credits.crew.firstOrNull { crew ->
@@ -83,7 +83,7 @@ fun CastMovieSection(movieItem: MovieBundle, onCastClick: (Long) -> Unit) {
                 }
                 item {
                     CastItem(
-                        character = "Director",
+                        character = "Dirección",
                         name = director.name,
                         profilePath = director.profile_path,
                         onCastClick = { onCastClick(director.id) }
@@ -113,5 +113,4 @@ fun CastMovieSection(movieItem: MovieBundle, onCastClick: (Long) -> Unit) {
             .windowInsetsBottomHeight(WindowInsets.navigationBars)
     )
 }
-
 

@@ -43,8 +43,8 @@ fun WatchlistTv(
     if (filteredItems.isEmpty()) {
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
-            "No series found",
-            description = "Your watchlist is empty. Add some tv series to start building it!"
+            "No se encontraron series",
+            description = "Tu lista está vacía. Añade alguna serie para empezar a crearla."
         )
         return
     }

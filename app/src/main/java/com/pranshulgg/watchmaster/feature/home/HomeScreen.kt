@@ -30,7 +30,7 @@ fun HomeScreen(
 
         Column(modifier = Modifier.padding(innerPadding)) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Nothing here yet")
+                Text("Todavía no hay nada aquí")
 
             }
 

@@ -93,8 +93,8 @@ fun ListEntryContent(
         Field(
             value = listNameText,
             onValueChange = { onNameChange(it) },
-            title = "Name",
-            supportingText = "Give your list a short, memorable name",
+            title = "Nombre",
+            supportingText = "Ponle a tu lista un nombre corto y fácil de recordar",
             hasSelectIcon = true,
             selectedListIcon = selectedListIcon,
             onSelectIcon = {
@@ -105,8 +105,8 @@ fun ListEntryContent(
         Field(
             value = listDescriptionText,
             onValueChange = { onDescriptionChange(it) },
-            title = "Description (optional)",
-            supportingText = "Add a short description to explain what this list is about"
+            title = "Descripción (opcional)",
+            supportingText = "Añade una breve descripción de la lista"
         )
 
         if (selectedMovieList.isNotEmpty()) {
@@ -150,7 +150,7 @@ private fun Field(
             ) {
 
                 Tooltip(
-                    tooltipText = "Select list icon",
+                    tooltipText = "Seleccionar icono de la lista",
                     preferredPosition = TooltipAnchorPosition.Below,
 
                     ) {
@@ -204,7 +204,7 @@ private fun AddedMovieChips(selectedItems: List<WatchlistItemEntity>) {
     Gap(15.dp)
 
     MediaSectionCard(
-        title = "Selected",
+        title = "Seleccionado",
         titleIcon = R.drawable.lists_24px
     ) {
 
