@@ -93,7 +93,7 @@ fun SearchScreenContent(
     watchlistViewModel: WatchlistViewModel,
 ) {
     val scope = rememberCoroutineScope()
-    val searchMotion = motionScheme.fastSpatialSpec<androidx.compose.ui.unit.Dp>()
+    val searchMotion = motionScheme.defaultSpatialSpec<androidx.compose.ui.unit.Dp>()
     var searchActive by rememberSaveable { mutableStateOf(viewModel.query.isNotBlank()) }
     val state = when {
         viewModel.query.isBlank() -> SearchContentState.START

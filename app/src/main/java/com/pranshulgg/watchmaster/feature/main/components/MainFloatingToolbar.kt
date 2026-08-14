@@ -18,12 +18,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
-import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.Text
@@ -52,7 +50,6 @@ fun MainFloatingToolbar(
     selectedItem: Int,
     onItemSelected: (Int) -> Unit,
     navController: NavController,
-    scrollBehavior: FloatingToolbarScrollBehavior
 ) {
     val labelList = listOf(
         localized("Inicio", "Home"),
@@ -75,30 +72,28 @@ fun MainFloatingToolbar(
     val systemInsets = WindowInsets.systemBars.asPaddingValues()
 
     Box(
-        Modifier
-            .fillMaxWidth()
-
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        HorizontalFloatingToolbar(
-            expandedShadowElevation = 1.dp,
-
-            scrollBehavior = scrollBehavior,
+        Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(
                     top = ScreenOffset,
-                    bottom = systemInsets.calculateBottomPadding()
-                            + ScreenOffset
+                    bottom = systemInsets.calculateBottomPadding() + ScreenOffset,
                 )
                 .align(Alignment.BottomCenter)
                 .zIndex(1f),
-            colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
-            expanded = true,
-            content = {
-
+            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            HorizontalFloatingToolbar(
+                expandedShadowElevation = 1.dp,
+                colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+                expanded = true,
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-
                     labelList.forEachIndexed { index, label ->
                         Tooltip(
                             label,
@@ -148,30 +143,29 @@ fun MainFloatingToolbar(
                             }
                         }
                     }
-                    Tooltip(
-                        localized("Buscar películas y series", "Search movies and TV shows"),
-                        preferredPosition = TooltipAnchorPosition.Above,
-                        spacing = 10.dp
-                    ) {
-                        FilledIconButton(
-                            modifier = Modifier.size(48.dp),
-                            shapes = IconButtonDefaults.shapes(),
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                contentColor = colorScheme.primaryContainer,
-                            ),
-                            onClick = {
-                                navController.navigate(NavRoutes.search(SearchType.MULTI))
-                            },
-                        ) {
-                            Symbol(
-                                R.drawable.search_24px,
-                                color = colorScheme.primaryContainer
-                            )
-                        }
-                    }
                 }
-            },
-        )
+            }
+
+            Tooltip(
+                localized("Buscar películas y series", "Search movies and TV shows"),
+                preferredPosition = TooltipAnchorPosition.Above,
+                spacing = 10.dp,
+            ) {
+                FloatingActionButton(
+                    modifier = Modifier.size(56.dp),
+                    shape = CircleShape,
+                    containerColor = colorScheme.primaryContainer,
+                    contentColor = colorScheme.onPrimaryContainer,
+                    onClick = {
+                        navController.navigate(NavRoutes.search(SearchType.MULTI))
+                    },
+                ) {
+                    Symbol(
+                        icon = R.drawable.search_24px,
+                        color = colorScheme.onPrimaryContainer,
+                    )
+                }
+            }
+        }
     }
 }

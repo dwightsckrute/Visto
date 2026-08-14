@@ -75,8 +75,7 @@ fun MainScreen(
             MainFloatingToolbar(
                 selectedItem = selectedItem,
                 onItemSelected = { index -> viewModel.selectedItem = index },
-                navController,
-                scrollBehavior
+                navController = navController,
             )
         }
     ) { innerPadding ->
