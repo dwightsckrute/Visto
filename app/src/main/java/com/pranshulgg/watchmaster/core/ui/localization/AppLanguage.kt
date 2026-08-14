@@ -36,12 +36,16 @@ object AppLanguage {
         return context.createConfigurationContext(configuration)
     }
 
-    fun set(activity: ComponentActivity, code: String) {
-        activity.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+    fun update(context: Context, code: String) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(LANGUAGE_KEY, code)
             .apply()
         activeCode = code
+    }
+
+    fun set(activity: ComponentActivity, code: String) {
+        update(activity, code)
         activity.recreate()
     }
 

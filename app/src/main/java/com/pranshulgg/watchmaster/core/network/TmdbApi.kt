@@ -221,8 +221,8 @@ interface TmdbApi {
                 chain.proceed(request)
             }
             val client = OkHttpClient.Builder()
-                .addInterceptor(auth)
                 .addInterceptor(logging)
+                .addInterceptor(auth)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build()

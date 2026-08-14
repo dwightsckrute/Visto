@@ -36,10 +36,11 @@ fun WatchMasterTheme(
     seedColor: Color = Color.Green,
     themeVariantType: ThemeVariantType,
     dynamicColor: Boolean = false,
+    amoledBlack: Boolean = false,
     applySystemUi: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val generatedColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -53,6 +54,22 @@ fun WatchMasterTheme(
                 style = themeVariantType.paletteStyle,
             )
         }
+    }
+
+    val colorScheme = if (darkTheme && amoledBlack) {
+        generatedColorScheme.copy(
+            background = Color.Black,
+            surface = Color.Black,
+            surfaceDim = Color.Black,
+            surfaceContainerLowest = Color.Black,
+            surfaceContainerLow = Color.Black,
+            surfaceContainer = Color.Black,
+            surfaceContainerHigh = Color(0xFF080808),
+            surfaceContainerHighest = Color(0xFF101010),
+            surfaceBright = Color(0xFF151515),
+        )
+    } else {
+        generatedColorScheme
     }
 
     val view = LocalView.current

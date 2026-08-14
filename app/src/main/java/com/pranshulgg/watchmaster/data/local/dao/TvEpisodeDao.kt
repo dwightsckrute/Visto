@@ -46,4 +46,25 @@ interface TvEpisodeDao {
     @Query("DELETE FROM tv_episodes")
     suspend fun clearAll()
 
+    @Query(
+        """
+        UPDATE tv_episodes
+        SET name = :name,
+            overview = :overview,
+            air_date = :airDate,
+            still_path = COALESCE(:stillPath, still_path),
+            runtime = COALESCE(:runtime, runtime)
+        WHERE seasonId = :seasonId AND episode_number = :episodeNumber
+        """
+    )
+    suspend fun updateLocalizedMetadata(
+        seasonId: Long,
+        episodeNumber: Int,
+        name: String,
+        overview: String?,
+        airDate: String?,
+        stillPath: String?,
+        runtime: Int?,
+    )
+
 }

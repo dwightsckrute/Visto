@@ -11,6 +11,7 @@ object AppPrefs {
     private val _themeColor = mutableStateOf("#2196f3")
     private val _isCustomTheme = mutableStateOf(false)
     private val _useDynamicColor = mutableStateOf(false)
+    private val _useAmoledBlack = mutableStateOf(false)
 
     private val _defaultTab = mutableStateOf("home")
 
@@ -29,6 +30,7 @@ object AppPrefs {
         _themeColor.value = PreferencesHelper.getString("theme_color") ?: "#2196f3"
         _isCustomTheme.value = PreferencesHelper.getBool("isCustomTheme") ?: false
         _useDynamicColor.value = PreferencesHelper.getBool("useDynamicColor") ?: false
+        _useAmoledBlack.value = PreferencesHelper.getBool("useAmoledBlack") ?: false
         _themeVariant.value =
             PreferencesHelper.getString("theme_variant")
                 ?.let {
@@ -67,6 +69,12 @@ object AppPrefs {
         setDynamicColor = {
             _useDynamicColor.value = it
             PreferencesHelper.setBool("useDynamicColor", it)
+        },
+
+        useAmoledBlack = _useAmoledBlack.value,
+        setAmoledBlack = {
+            _useAmoledBlack.value = it
+            PreferencesHelper.setBool("useAmoledBlack", it)
         },
 
         themeVariant = _themeVariant.value,

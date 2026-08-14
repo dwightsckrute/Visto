@@ -10,12 +10,16 @@ Visto es una aplicación Android en español e inglés para guardar películas y
 ## Características
 
 - Búsqueda de películas, series y personas mediante TMDB.
+- Búsqueda rápida con sugerencias automáticas, estados animados y teclado optimizado.
 - Listas de pendientes, en curso y terminadas.
 - Seguimiento de temporadas y episodios.
 - Inicio personal con estadísticas, contenido en curso y actividad reciente.
 - Valoraciones, notas, fechas y listas personalizadas.
 - Interfaz Jetpack Compose con Material 3 Expressive.
 - Selector de interfaz en español o inglés; las nuevas consultas de TMDB siguen el idioma elegido.
+- Resincronización segura de títulos y sinopsis guardados al cambiar el idioma.
+- Modo OLED con fondos negros puros en el tema oscuro.
+- Icono monocromático compatible con los iconos temáticos de Pixel Launcher.
 - Proveedores de streaming disponibles en España.
 - Exportación e importación local en JSON.
 - Copias de seguridad automáticas diarias o semanales en un archivo elegido por el usuario.

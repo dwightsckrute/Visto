@@ -39,12 +39,14 @@ import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun SearchRow(
     item: SearchItem,
     index: Int,
     results: List<SearchItem>,
+    modifier: Modifier = Modifier,
     onSearchItemClick: () -> Unit,
 ) {
 
@@ -81,7 +83,7 @@ fun SearchRow(
 
     Surface(
         shape = shape,
-        modifier = Modifier
+        modifier = modifier
             .clip(shape)
             .clickable { onSearchItemClick() },
         color = MaterialTheme.colorScheme.surfaceBright
@@ -124,7 +126,8 @@ fun SearchRow(
                     }
                 )
                 Text(
-                    item.overview ?: "No se encontró ninguna sinopsis",
+                    item.overview?.takeIf { it.isNotBlank() }
+                        ?: localized("No se encontró ninguna sinopsis", "No summary was found"),
                     maxLines = overviewMaxLines.intValue,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
@@ -134,7 +137,7 @@ fun SearchRow(
                 Row {
                     StarDateChip(
                         if (item.releaseDate == "" || item.releaseDate == null) {
-                            "Sin fecha"
+                            localized("Sin fecha", "No date")
                         } else {
                             item.releaseDate.take(
                                 4
@@ -177,5 +180,4 @@ private fun StarDateChip(text: String, isDate: Boolean = false) {
         }
     }
 }
-
 

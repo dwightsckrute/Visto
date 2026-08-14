@@ -1,101 +1,310 @@
 package com.pranshulgg.watchmaster.feature.search
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingToolbarScrollBehavior
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
-import com.pranshulgg.watchmaster.core.ui.components.EmptyContainerPlaceholder
-import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
+import com.pranshulgg.watchmaster.core.ui.components.Symbol
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.feature.search.components.SearchRow
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+private enum class SearchContentState { START, LOADING, RESULTS, EMPTY, ERROR }
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun SearchScreenContent(
     paddingValues: PaddingValues,
     viewModel: SearchViewModel,
     searchType: SearchType,
-    scrollBehaviorToolbar: FloatingToolbarScrollBehavior,
-    scrollBehavior: TopAppBarScrollBehavior,
-    watchlistViewModel: WatchlistViewModel
+    watchlistViewModel: WatchlistViewModel,
 ) {
-
-    val results = viewModel.results
-    val loading = viewModel.loading
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(viewModel.showNoResultsSnack) {
-        if (viewModel.showNoResultsSnack) {
-            SnackbarManager.show("No se encontraron resultados. Prueba con otro título.")
-        }
+    val state = when {
+        viewModel.query.isBlank() -> SearchContentState.START
+        viewModel.loading -> SearchContentState.LOADING
+        viewModel.searchFailed -> SearchContentState.ERROR
+        viewModel.hasSearched && viewModel.results.isEmpty() -> SearchContentState.EMPTY
+        viewModel.results.isNotEmpty() -> SearchContentState.RESULTS
+        else -> SearchContentState.START
     }
 
-    Box(
+    Column(
         modifier = Modifier
-            .padding(top = paddingValues.calculateTopPadding())
+            .fillMaxSize()
+            .padding(paddingValues)
+            .imePadding(),
     ) {
-        when {
-            loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(fraction = 0.8f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LoadingIndicator(modifier = Modifier.size(60.dp))
-                }
-            }
+        VistoSearchField(viewModel, searchType)
 
-            results.isEmpty() -> {
-                EmptyContainerPlaceholder(
-                    R.drawable.search_24px,
-                    if (searchType == SearchType.MOVIE) "Buscar películas" else "Buscar series",
-                    description = "Busca en el catálogo"
+        AnimatedContent(
+            targetState = state,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            transitionSpec = {
+                (fadeIn() + slideInVertically { it / 12 }) togetherWith
+                    (fadeOut() + slideOutVertically { -it / 12 })
+            },
+            label = "search-content",
+        ) { contentState ->
+            when (contentState) {
+                SearchContentState.START -> SearchMessage(
+                    icon = R.drawable.search_24px,
+                    title = when (searchType) {
+                        SearchType.MOVIE -> localized("Encuentra tu próxima película", "Find your next movie")
+                        SearchType.TV -> localized("Encuentra tu próxima serie", "Find your next TV show")
+                        else -> localized("¿Qué quieres ver?", "What do you want to watch?")
+                    },
+                    description = localized(
+                        "Escribe al menos dos letras; Visto buscará automáticamente en TMDB.",
+                        "Type at least two characters; Visto will search TMDB automatically.",
+                    ),
                 )
-            }
 
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp)
-                        .nestedScroll(scrollBehaviorToolbar)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                SearchContentState.LOADING -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    itemsIndexed(results) { index, item ->
-                        SearchRow(item, index, results, onSearchItemClick = {
-                            scope.launch { viewModel.onSearchItemClick(item, watchlistViewModel) }
-                        })
-                        if (index == results.lastIndex) {
-                            Spacer(Modifier.height(32.dp))
+                    LoadingIndicator(modifier = Modifier.size(52.dp))
+                }
+
+                SearchContentState.ERROR -> SearchMessage(
+                    icon = R.drawable.refresh_24px,
+                    title = localized("No se pudo completar la búsqueda", "Search could not be completed"),
+                    description = localized(
+                        "Comprueba la conexión e inténtalo otra vez.",
+                        "Check your connection and try again.",
+                    ),
+                    action = {
+                        Button(onClick = { viewModel.search(searchType) }) {
+                            Text(localized("Reintentar", "Try again"))
                         }
+                    },
+                )
+
+                SearchContentState.EMPTY -> SearchMessage(
+                    icon = R.drawable.search_24px,
+                    title = localized("No hay resultados", "No results"),
+                    description = localized(
+                        "Prueba con otro título o revisa la ortografía.",
+                        "Try another title or check the spelling.",
+                    ),
+                )
+
+                SearchContentState.RESULTS -> LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    item {
+                        Text(
+                            text = localized(
+                                "${viewModel.results.size} resultados",
+                                "${viewModel.results.size} results",
+                            ),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
+                        )
+                    }
+                    itemsIndexed(
+                        items = viewModel.results,
+                        key = { _, item -> "${item.mediaType}-${item.id}" },
+                    ) { index, item ->
+                        SearchRow(
+                            item = item,
+                            index = index,
+                            results = viewModel.results,
+                            modifier = Modifier.animateItem(),
+                            onSearchItemClick = {
+                                scope.launch {
+                                    viewModel.onSearchItemClick(item, watchlistViewModel)
+                                }
+                            },
+                        )
                     }
                 }
             }
         }
     }
+}
 
+@Composable
+private fun VistoSearchField(
+    viewModel: SearchViewModel,
+    searchType: SearchType,
+) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    var focused by remember { mutableStateOf(false) }
+    val elevation by animateDpAsState(if (focused) 5.dp else 1.dp, label = "search-elevation")
+    val cornerRadius by animateDpAsState(if (focused) 22.dp else 30.dp, label = "search-shape")
+    val shape = RoundedCornerShape(cornerRadius)
+    val placeholder = when (searchType) {
+        SearchType.MOVIE -> localized("Título de la película…", "Movie title…")
+        SearchType.TV -> localized("Título de la serie…", "TV show title…")
+        SearchType.PERSON -> localized("Nombre de la persona…", "Person name…")
+        SearchType.MULTI -> localized("Película, serie o persona…", "Movie, TV show, or person…")
+    }
+
+    LaunchedEffect(Unit) {
+        delay(180)
+        focusRequester.requestFocus()
+        keyboard?.show()
+    }
+
+    TextField(
+        value = viewModel.query,
+        onValueChange = { viewModel.onQueryChange(it, searchType) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .height(64.dp)
+            .shadow(elevation, shape)
+            .focusRequester(focusRequester)
+            .onFocusChanged { focused = it.isFocused },
+        shape = shape,
+        placeholder = {
+            Text(placeholder, maxLines = 1)
+        },
+        leadingIcon = {
+            Symbol(
+                icon = R.drawable.search_24px,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        },
+        trailingIcon = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AnimatedVisibility(
+                    visible = viewModel.loading,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    LoadingIndicator(modifier = Modifier.size(24.dp))
+                }
+                AnimatedVisibility(
+                    visible = viewModel.query.isNotEmpty(),
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    IconButton(onClick = {
+                        viewModel.onQueryChange("", searchType)
+                        focusRequester.requestFocus()
+                        keyboard?.show()
+                    }) {
+                        Symbol(
+                            icon = R.drawable.close_24px,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = {
+            viewModel.search(searchType)
+            focusManager.clearFocus()
+            keyboard?.hide()
+        }),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+    )
+}
+
+@Composable
+private fun SearchMessage(
+    icon: Int,
+    title: String,
+    description: String,
+    action: (@Composable () -> Unit)? = null,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Symbol(
+                icon = icon,
+                size = 48.dp,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            action?.invoke()
+        }
+    }
 }

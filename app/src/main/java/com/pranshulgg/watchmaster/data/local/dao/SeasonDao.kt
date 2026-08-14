@@ -66,4 +66,23 @@ interface SeasonDao {
     @Query("UPDATE tv_seasons SET lastEpWatched = :epNumber WHERE seasonId = :seasonId")
     suspend fun updateLastEpWatched(seasonId: Long, epNumber: Int?)
 
+    @Query(
+        """
+        UPDATE tv_seasons
+        SET name = :name,
+            episodeCount = :episodeCount,
+            airDate = :airDate,
+            posterPath = COALESCE(:posterPath, posterPath)
+        WHERE showId = :showId AND seasonNumber = :seasonNumber
+        """
+    )
+    suspend fun updateLocalizedMetadata(
+        showId: Long,
+        seasonNumber: Int,
+        name: String,
+        episodeCount: Int,
+        airDate: String?,
+        posterPath: String?,
+    )
+
 }

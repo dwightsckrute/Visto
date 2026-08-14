@@ -61,6 +61,7 @@ fun WatchMasterApp() {
             darkTheme = appTheme,
             themeVariantType = prefs.themeVariant,
             dynamicColor = prefs.useDynamicColor,
+            amoledBlack = prefs.useAmoledBlack,
             seedColor = Color(prefs.themeColor.toColorInt())
         ) {
             AppNavHost(

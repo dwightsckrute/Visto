@@ -72,4 +72,22 @@ interface WatchlistDao {
     @Query("UPDATE watchlist SET finishedDate = :finished WHERE id = :id")
     suspend fun updateFinishedDate(id: Long, finished: Instant)
 
+    @Query(
+        """
+        UPDATE watchlist
+        SET title = :title,
+            overview = :overview,
+            posterPath = COALESCE(:posterPath, posterPath),
+            backdropPath = COALESCE(:backdropPath, backdropPath)
+        WHERE id = :id
+        """
+    )
+    suspend fun updateLocalizedMetadata(
+        id: Long,
+        title: String,
+        overview: String?,
+        posterPath: String?,
+        backdropPath: String?,
+    )
+
 }

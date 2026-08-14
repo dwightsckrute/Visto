@@ -35,6 +35,7 @@ import com.pranshulgg.watchmaster.core.ui.components.SettingsTileIcon
 import com.pranshulgg.watchmaster.core.ui.components.TextAlertDialog
 import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
 import com.pranshulgg.watchmaster.core.utils.PreferencesHelper
 import com.pranshulgg.watchmaster.feature.setting.components.ColorPickerBtn
 import java.time.ZoneId
@@ -169,6 +170,17 @@ fun SettingsScreen(navController: NavController) {
                             prefs.setDynamicColor(checked)
                         }
                     ),
+                    SettingTile.SwitchTile(
+                        leading = { SettingsTileIcon(R.drawable.bedtime_24px) },
+                        title = localized("Negro OLED", "OLED black"),
+                        description = localized(
+                            "Usar negro puro en los fondos del tema oscuro",
+                            "Use pure black backgrounds in the dark theme",
+                        ),
+                        checked = prefs.useAmoledBlack,
+                        enabled = prefs.appTheme != "light",
+                        onCheckedChange = prefs.setAmoledBlack,
+                    ),
                 ),
             )
             SettingSection(
@@ -184,7 +196,28 @@ fun SettingsScreen(navController: NavController) {
                         options = listOf("es", "en"),
                         selectedOption = AppLanguage.code(context),
                         optionLabel = { languageLabels[it] ?: it },
-                        onOptionSelected = { AppLanguage.set(activity, it) },
+                        onOptionSelected = {
+                            AppLanguage.update(context, it)
+                            MetadataSync.enqueue(context)
+                            activity.recreate()
+                        },
+                    ),
+                    SettingTile.ActionTile(
+                        leading = { SettingsTileIcon(R.drawable.refresh_24px) },
+                        title = localized("Actualizar textos de TMDB", "Refresh TMDB text"),
+                        description = localized(
+                            "Traduce de nuevo títulos, sinopsis, temporadas y episodios guardados",
+                            "Refresh saved titles, summaries, seasons, and episodes",
+                        ),
+                        onClick = {
+                            MetadataSync.enqueue(context)
+                            SnackbarManager.show(
+                                AppLanguage.text(
+                                    "Actualización programada; se aplicará en segundo plano",
+                                    "Refresh scheduled; it will run in the background",
+                                )
+                            )
+                        },
                     ),
                     SettingTile.DialogOptionTile(
                         leading = { SettingsTileIcon(R.drawable.home_filled_24px) },
