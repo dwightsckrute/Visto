@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
@@ -132,7 +133,11 @@ private fun StatusTabs(
                     onSelected(option.tab)
                 },
                 modifier = Modifier.semantics { role = Role.RadioButton },
-                shapes = ToggleButtonDefaults.shapes(),
+                shapes = ToggleButtonDefaults.shapes(
+                    shape = CircleShape,
+                    pressedShape = CircleShape,
+                    checkedShape = CircleShape,
+                ),
                 colors = ToggleButtonDefaults.toggleButtonColors(
                     checkedContainerColor = MaterialTheme.colorScheme.tertiary,
                     checkedContentColor = MaterialTheme.colorScheme.onTertiary,

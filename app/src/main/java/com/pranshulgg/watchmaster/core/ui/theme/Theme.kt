@@ -83,19 +83,20 @@ fun WatchMasterTheme(
         }
     }
 
-    val statusColors = if (darkTheme) {
-        MediaStatusColors(
-            success = MediaStatusColor(Color(0xFF16520E), Color(0xFFB1F49D)),
-            pending = MediaStatusColor(Color(0xFFD4D4D4), Color(0xFF000000)),
-            warning = MediaStatusColor(Color(0xFF5D4200), Color(0xFFFFDEA4)),
-        )
-    } else {
-        MediaStatusColors(
-            success = MediaStatusColor(Color(0xFFC4F18C), Color(0xFF304F00)),
-            pending = MediaStatusColor(Color(0xFF3B3B3B), Color(0xFFFFFFFF)),
-            warning = MediaStatusColor(Color(0xFFFFDEA4), Color(0xFF5D4200)),
-        )
-    }
+    val statusColors = MediaStatusColors(
+        success = MediaStatusColor(
+            bg = colorScheme.tertiaryContainer,
+            on = colorScheme.onTertiaryContainer,
+        ),
+        pending = MediaStatusColor(
+            bg = colorScheme.surfaceContainerHighest,
+            on = colorScheme.onSurface,
+        ),
+        warning = MediaStatusColor(
+            bg = colorScheme.secondaryContainer,
+            on = colorScheme.onSecondaryContainer,
+        ),
+    )
 
 
     CompositionLocalProvider(

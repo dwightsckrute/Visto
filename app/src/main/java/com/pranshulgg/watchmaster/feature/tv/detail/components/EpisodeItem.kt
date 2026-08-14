@@ -146,7 +146,8 @@ private fun LeadingIcon(
 
     Surface(
         modifier = Modifier.size(36.dp),
-        color = if (isWatched) theme.primaryContainer else Color.Gray,
+        color = if (isWatched) theme.primaryContainer else theme.secondaryContainer,
+        contentColor = if (isWatched) theme.onPrimaryContainer else theme.onSecondaryContainer,
         shape = if (isWatched) MaterialShapes.Cookie9Sided.toShape() else RoundedCornerShape(
             ShapeRadius.Full
         )
@@ -158,7 +159,7 @@ private fun LeadingIcon(
             if (isWatched) {
                 Symbol(R.drawable.check_24px, color = theme.onPrimaryContainer)
             } else {
-                Symbol(R.drawable.schedule_24px, color = Color.White)
+                Symbol(R.drawable.schedule_24px, color = theme.onSecondaryContainer)
             }
         }
     }

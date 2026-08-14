@@ -109,7 +109,11 @@ fun MainFloatingToolbar(
                                     .height(48.dp),
                                 checked = selectedItem == index,
                                 onCheckedChange = { onItemSelected(index) },
-                                shapes = ToggleButtonDefaults.shapes(),
+                                shapes = ToggleButtonDefaults.shapes(
+                                    shape = CircleShape,
+                                    pressedShape = CircleShape,
+                                    checkedShape = CircleShape,
+                                ),
                                 colors = ToggleButtonDefaults.toggleButtonColors(
                                     containerColor = Color.Transparent,
                                     checkedContainerColor = colorScheme.surfaceContainer

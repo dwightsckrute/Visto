@@ -167,7 +167,11 @@ fun SelectableThemeColors(onThemeColorChanged: (String) -> Unit) {
                         selected = variant
                     },
                     modifier = Modifier.semantics { role = Role.RadioButton },
-                    shapes = ToggleButtonDefaults.shapes(),
+                    shapes = ToggleButtonDefaults.shapes(
+                        shape = CircleShape,
+                        pressedShape = CircleShape,
+                        checkedShape = CircleShape,
+                    ),
                     colors = ToggleButtonDefaults.toggleButtonColors(
                         checkedContainerColor = MaterialTheme.colorScheme.tertiary,
                         checkedContentColor = MaterialTheme.colorScheme.onTertiary,
