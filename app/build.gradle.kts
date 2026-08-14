@@ -35,8 +35,8 @@ android {
         applicationId = "com.dwightsckrute.visto"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -104,6 +104,7 @@ dependencies {
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.animation.core)
     implementation(libs.core.splashscreen)
+    implementation(libs.androidx.work.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.room.withTransaction
 import com.google.gson.Gson
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 import com.pranshulgg.watchmaster.data.local.WatchMasterDatabase
 import com.pranshulgg.watchmaster.data.local.entity.CustomListEntity
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
@@ -30,7 +31,8 @@ private data class ExportData(
 fun exportLauncher(
     context: Context,
     exportWatchlist: Boolean = false,
-    exportMovieList: Boolean = false
+    exportMovieList: Boolean = false,
+    onExportFinished: ((Uri) -> Unit)? = null,
 ): (Intent) -> Unit {
     val scope = rememberCoroutineScope()
 
@@ -41,7 +43,9 @@ fun exportLauncher(
         val uri = result.data?.data
         uri?.let {
             scope.launch {
-                export(context, uri, exportWatchlist, exportMovieList)
+                if (export(context, uri, exportWatchlist, exportMovieList)) {
+                    onExportFinished?.invoke(it)
+                }
             }
         }
     }
@@ -77,8 +81,22 @@ private suspend fun export(
     uri: Uri,
     exportWatchlist: Boolean = false,
     exportMovieList: Boolean = false
-) {
+): Boolean {
+    val exported = exportData(context, uri, exportWatchlist, exportMovieList)
 
+    SnackbarManager.show(
+        if (exported) AppLanguage.text("Datos exportados correctamente", "Data exported successfully")
+        else AppLanguage.text("No se pudieron exportar los datos", "Data could not be exported")
+    )
+    return exported
+}
+
+suspend fun exportData(
+    context: Context,
+    uri: Uri,
+    exportWatchlist: Boolean = true,
+    exportMovieList: Boolean = true,
+): Boolean {
     val db = WatchMasterDatabase.getInstance(context)
     val watchlistData = if (exportWatchlist) {
         db.watchlistDao().getAll().first()
@@ -92,19 +110,13 @@ private suspend fun export(
 
     val json = Gson().toJson(ExportData(4, watchlistData, tvSeasons, movieLists))
 
-    val exported = runCatching {
+    return runCatching {
         withContext(Dispatchers.IO) {
             context.contentResolver.openOutputStream(uri)?.use { file ->
                 file.write(json.toByteArray())
             } ?: error("Unable to open destination")
         }
     }.isSuccess
-
-    SnackbarManager.show(
-        if (exported) "Datos exportados correctamente"
-        else "No se pudieron exportar los datos"
-    )
-
 }
 
 private suspend fun import(context: Context, uri: Uri) {
@@ -126,18 +138,18 @@ private suspend fun import(context: Context, uri: Uri) {
             }
             ?: error("Invalid backup")
     }.getOrElse {
-        SnackbarManager.show("La copia seleccionada no es válida")
+        SnackbarManager.show(AppLanguage.text("La copia seleccionada no es válida", "The selected backup is invalid"))
         return
     }
 
 
     if (data.watchlist.isEmpty() && data.movieLists.isEmpty()) {
-        SnackbarManager.show("No hay datos que importar")
+        SnackbarManager.show(AppLanguage.text("No hay datos que importar", "There is no data to import"))
         return
     }
 
     if (data.version != 4) {
-        SnackbarManager.show("Versión no compatible")
+        SnackbarManager.show(AppLanguage.text("Versión no compatible", "Unsupported backup version"))
         return
     }
 
@@ -164,8 +176,11 @@ private suspend fun import(context: Context, uri: Uri) {
     }.isSuccess
 
     SnackbarManager.show(
-        if (imported) "Datos importados correctamente"
-        else "No se pudo importar la copia; tus datos actuales no han cambiado"
+        if (imported) AppLanguage.text("Datos importados correctamente", "Data imported successfully")
+        else AppLanguage.text(
+            "No se pudo importar la copia; tus datos actuales no han cambiado",
+            "The backup could not be imported; your current data was not changed",
+        )
     )
 }
 
@@ -183,6 +198,15 @@ fun createNewDocumentIntent(): Intent {
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
     return intent
+}
+
+fun createAutomaticBackupDocumentIntent(): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+    addCategory(Intent.CATEGORY_OPENABLE)
+    type = "application/json"
+    putExtra(Intent.EXTRA_TITLE, "visto_copia_automatica-v4.json")
+    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
+        Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
+        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 }
 
 

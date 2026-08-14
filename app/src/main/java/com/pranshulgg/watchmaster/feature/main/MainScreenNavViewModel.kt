@@ -11,9 +11,9 @@ class MainScreenNavViewModel : ViewModel() {
     val defaultTab = PreferencesHelper.getString("default_tab")
 
     val selectedTab = when (defaultTab) {
-        "Inicio" -> 0
-        "Películas" -> 1
-        "Series" -> 2
+        "home", "Inicio" -> 0
+        "movies", "Películas" -> 1
+        "tv", "Series" -> 2
         else -> 0
     }
 

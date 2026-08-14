@@ -1,0 +1,67 @@
+name: Publicar Visto
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: APK firmado y GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Preparar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Restaurar configuración privada
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          test -n "$TMDB_API_KEY"
+          test -n "$SIGNING_KEYSTORE_BASE64"
+          printf 'TMDB_API_KEY=%s\n' "$TMDB_API_KEY" > local.properties
+          printf '%s' "$SIGNING_KEYSTORE_BASE64" | base64 --decode > visto-release.jks
+          {
+            printf 'storeFile=visto-release.jks\n'
+            printf 'storePassword=%s\n' "$SIGNING_STORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$SIGNING_KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$SIGNING_KEY_PASSWORD"
+          } > keystore.properties
+
+      - name: Verificar y compilar
+        run: |
+          chmod +x gradlew
+          ./gradlew test lint assembleRelease
+
+      - name: Preparar descarga
+        id: package
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          apk="Visto-${version}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$apk"
+          sha256sum "$apk" > "${apk}.sha256"
+          printf 'apk=%s\n' "$apk" >> "$GITHUB_OUTPUT"
+
+      - name: Publicar lanzamiento
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Visto ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            ${{ steps.package.outputs.apk }}
+            ${{ steps.package.outputs.apk }}.sha256

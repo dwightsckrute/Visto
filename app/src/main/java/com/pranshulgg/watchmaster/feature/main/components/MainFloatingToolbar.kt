@@ -47,6 +47,7 @@ import com.pranshulgg.watchmaster.core.ui.components.Tooltip
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.feature.search.SearchType
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +57,11 @@ fun MainFloatingToolbar(
     navController: NavController,
     scrollBehavior: FloatingToolbarScrollBehavior
 ) {
-    val labelList = listOf("Inicio", "Películas", "Series")
+    val labelList = listOf(
+        localized("Inicio", "Home"),
+        localized("Películas", "Movies"),
+        localized("Series", "TV shows"),
+    )
     val unSelectedIcons = listOf(
         R.drawable.home_24px,
         R.drawable.movie_24px,
@@ -147,7 +152,11 @@ fun MainFloatingToolbar(
                         }
                     }
                     Tooltip(
-                        if (selectedItem == 1) "Añadir película" else "Añadir serie",
+                        if (selectedItem == 1) {
+                            localized("Añadir película", "Add movie")
+                        } else {
+                            localized("Añadir serie", "Add TV show")
+                        },
                         preferredPosition = TooltipAnchorPosition.Above,
                         spacing = 10.dp
                     ) {

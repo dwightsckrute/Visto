@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.TooltipIconBtn
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.feature.home.HomeScreen
 import com.pranshulgg.watchmaster.feature.main.components.MainFloatingToolbar
 import com.pranshulgg.watchmaster.feature.movie.MovieHomeScreen
@@ -35,7 +36,11 @@ fun MainScreen(
     val viewModel: MainScreenNavViewModel = viewModel()
 
     val selectedItem = viewModel.selectedItem
-    val appBarTitles = listOf("Inicio", "Películas", "Series")
+    val appBarTitles = listOf(
+        localized("Inicio", "Home"),
+        localized("Películas", "Movies"),
+        localized("Series", "TV shows"),
+    )
 
     val scrollBehavior =
         FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = Bottom)
@@ -56,12 +61,12 @@ fun MainScreen(
                     TooltipIconBtn(
                         onClick = { navController.navigate(NavRoutes.LISTS_SCREEN) },
                         icon = R.drawable.lists_24px,
-                        tooltipText = "Listas"
+                        tooltipText = localized("Listas", "Lists")
                     )
                     TooltipIconBtn(
                         onClick = { navController.navigate(NavRoutes.SETTINGS) },
                         icon = R.drawable.settings_24px,
-                        tooltipText = "Ajustes"
+                        tooltipText = localized("Ajustes", "Settings")
                     )
                 }
             )

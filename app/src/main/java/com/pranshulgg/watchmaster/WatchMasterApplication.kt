@@ -1,7 +1,15 @@
 package com.pranshulgg.watchmaster
 
 import android.app.Application
+import com.pranshulgg.watchmaster.core.utils.PreferencesHelper
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class WatchMasterApplication : Application()
+class WatchMasterApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        PreferencesHelper.init(this)
+        AppLanguage.initialize(this)
+    }
+}

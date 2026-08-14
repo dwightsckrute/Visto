@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import com.pranshulgg.watchmaster.BuildConfig
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 import com.pranshulgg.watchmaster.data.CreditsDto
 import com.pranshulgg.watchmaster.data.ImagesDto
 import com.pranshulgg.watchmaster.data.MovieGenre
@@ -211,6 +212,10 @@ interface TmdbApi {
                 val original = chain.request()
                 val newUrl = original.url.newBuilder()
                     .addQueryParameter("api_key", BuildConfig.TMDB_API_KEY)
+                    .setQueryParameter(
+                        "language",
+                        AppLanguage.tmdbLanguage()
+                    )
                     .build()
                 val request = original.newBuilder().url(newUrl).build()
                 chain.proceed(request)

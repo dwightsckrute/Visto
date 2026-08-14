@@ -51,9 +51,9 @@ fun WatchMasterApp() {
         val prefs = LocalAppPrefs.current
 
         val appTheme = when (prefs.appTheme) {
-            "Oscuro" -> true
-            "Claro" -> false
-            "Sistema" -> isSystemInDarkTheme()
+            "dark" -> true
+            "light" -> false
+            "system" -> isSystemInDarkTheme()
             else -> isSystemInDarkTheme()
         }
 

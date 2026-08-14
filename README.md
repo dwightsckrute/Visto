@@ -2,20 +2,29 @@
   <img src="app/src/main/res/drawable/app_icon.png" width="128" alt="Icono de Visto">
   <h1>Visto</h1>
   <p>Tu biblioteca personal de películas y series.</p>
+  <p><a href="https://github.com/dwightsckrute/Visto/releases/latest">Descargar la última versión</a></p>
 </div>
 
-Visto es una aplicación Android en español para guardar películas y series, organizar listas y registrar el progreso de lo que ves. Nace como una versión personal de [WatchMaster](https://github.com/PranshulGG/WatchMaster) y mantiene el proyecto original como `upstream`.
+Visto es una aplicación Android en español e inglés para guardar películas y series, organizar listas y registrar el progreso de lo que ves. Nace como una versión personal de [WatchMaster](https://github.com/PranshulGG/WatchMaster) y mantiene el proyecto original como `upstream`.
 
 ## Características
 
 - Búsqueda de películas, series y personas mediante TMDB.
 - Listas de pendientes, en curso y terminadas.
 - Seguimiento de temporadas y episodios.
+- Inicio personal con estadísticas, contenido en curso y actividad reciente.
 - Valoraciones, notas, fechas y listas personalizadas.
 - Interfaz Jetpack Compose con Material 3 Expressive.
-- Contenido de TMDB en español de España (`es-ES`).
+- Selector de interfaz en español o inglés; las nuevas consultas de TMDB siguen el idioma elegido.
 - Proveedores de streaming disponibles en España.
 - Exportación e importación local en JSON.
+- Copias de seguridad automáticas diarias o semanales en un archivo elegido por el usuario.
+
+## Copias de seguridad automáticas
+
+En **Ajustes > Datos > Copia de seguridad automática**, selecciona frecuencia diaria o semanal y elige un archivo. Visto obtiene permiso persistente para actualizar ese mismo archivo mediante WorkManager, incluso después de reiniciar el dispositivo.
+
+El archivo utiliza el mismo formato JSON v4 que la exportación manual e incluye biblioteca, temporadas y listas. Guárdalo en una ubicación sincronizada o que copies fuera del teléfono: al desinstalar una aplicación, Android puede eliminar sus datos privados.
 
 ## Identidad independiente
 
@@ -65,6 +74,19 @@ TMDB_API_KEY=TU_CLAVE_V3_DE_TMDB
 ```
 
 El APK se genera en `app/build/outputs/apk/debug/app-debug.apk`. Esta variante utiliza la clave de depuración del equipo y no debe ser la primera instalación definitiva si quieres conservar una ruta de actualización estable.
+
+## Descargar e instalar actualizaciones
+
+Los APK firmados se publican en [GitHub Releases](https://github.com/dwightsckrute/Visto/releases). Descarga `Visto-x.y.z.apk` desde el móvil, ábrelo y confirma **Actualizar**. Android conservará la biblioteca siempre que el APK esté firmado con la misma clave.
+
+El workflow `.github/workflows/release.yml` ejecuta pruebas y lint, crea el APK release y lo publica automáticamente al subir una etiqueta `v*`:
+
+```bash
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+El repositorio necesita los secretos `TMDB_API_KEY`, `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS` y `SIGNING_KEY_PASSWORD`. No se guardan en Git ni aparecen en los logs. La clave privada de firma nunca se incluye en el APK; como sucede en cualquier cliente móvil de TMDB, la clave de API sí forma parte de la aplicación compilada y no debe considerarse un secreto irrecuperable.
 
 ## Firma permanente y APK definitivo
 
