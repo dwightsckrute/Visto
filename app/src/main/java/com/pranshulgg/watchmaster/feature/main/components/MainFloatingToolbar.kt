@@ -3,8 +3,6 @@ package com.pranshulgg.watchmaster.feature.main.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +33,6 @@ import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -152,34 +149,25 @@ fun MainFloatingToolbar(
                         }
                     }
                     Tooltip(
-                        if (selectedItem == 1) {
-                            localized("Añadir película", "Add movie")
-                        } else {
-                            localized("Añadir serie", "Add TV show")
-                        },
+                        localized("Buscar películas y series", "Search movies and TV shows"),
                         preferredPosition = TooltipAnchorPosition.Above,
                         spacing = 10.dp
                     ) {
-                        AnimatedVisibility(
-                            modifier = Modifier.clip(CircleShape),
-                            visible = selectedItem != 0,
-                            enter = fadeIn() + expandHorizontally(),
-                            exit = fadeOut() + shrinkHorizontally()
+                        FilledIconButton(
+                            modifier = Modifier.size(48.dp),
+                            shapes = IconButtonDefaults.shapes(),
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = colorScheme.primaryContainer,
+                            ),
+                            onClick = {
+                                navController.navigate(NavRoutes.search(SearchType.MULTI))
+                            },
                         ) {
-                            FilledIconButton(
-                                modifier = Modifier.size(48.dp),
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                ),
-                                onClick = {
-                                    navController.navigate(NavRoutes.search(if (selectedItem == 1) SearchType.MOVIE else SearchType.TV))
-                                },
-                            ) {
-                                Symbol(
-                                    R.drawable.add_24px,
-                                    color = colorScheme.primaryContainer
-                                )
-                            }
+                            Symbol(
+                                R.drawable.search_24px,
+                                color = colorScheme.primaryContainer
+                            )
                         }
                     }
                 }

@@ -24,7 +24,7 @@ fun SearchScreenScaffold(
         SearchType.MOVIE -> localized("Buscar películas", "Search movies")
         SearchType.TV -> localized("Buscar series", "Search TV shows")
         SearchType.PERSON -> localized("Buscar personas", "Search people")
-        SearchType.MULTI -> localized("Buscar", "Search")
+        SearchType.MULTI -> localized("Buscar en Visto", "Search Visto")
     }
 
     Scaffold(

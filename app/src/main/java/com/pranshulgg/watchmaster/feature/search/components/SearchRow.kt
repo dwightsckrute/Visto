@@ -142,7 +142,9 @@ fun SearchRow(
                             item.releaseDate.take(
                                 4
                             )
-                        }, isDate = true
+                        },
+                        isDate = true,
+                        mediaType = item.mediaType,
                     )
                     Spacer(Modifier.width(5.dp))
                     StarDateChip("%.1f".format(item.avg_rating))
@@ -153,31 +155,53 @@ fun SearchRow(
 }
 
 @Composable
-private fun StarDateChip(text: String, isDate: Boolean = false) {
+private fun StarDateChip(
+    text: String,
+    isDate: Boolean = false,
+    mediaType: String? = null,
+) {
+    val isTv = mediaType == "tv"
+    val containerColor = when {
+        !isDate -> MaterialTheme.colorScheme.surfaceContainerHigh
+        isTv -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+    val contentColor = when {
+        !isDate -> MaterialTheme.colorScheme.onSurfaceVariant
+        isTv -> MaterialTheme.colorScheme.onTertiaryContainer
+        else -> MaterialTheme.colorScheme.onPrimaryContainer
+    }
+
     Surface(
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        color = containerColor,
         shape = CircleShape
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = if (isDate) 8.dp else 5.dp, end = 8.dp)
+            modifier = Modifier.padding(start = 6.dp, end = 8.dp)
         ) {
-            if (!isDate) {
-                Symbol(
-                    R.drawable.star_24px,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    size = 16.dp,
-                )
-                Spacer(Modifier.width(3.dp))
-            }
+            Symbol(
+                icon = when {
+                    !isDate -> R.drawable.star_24px
+                    isTv -> R.drawable.tv_24px
+                    else -> R.drawable.movie_24px
+                },
+                desc = when {
+                    !isDate -> localized("Valoración", "Rating")
+                    isTv -> localized("Serie", "TV show")
+                    else -> localized("Película", "Movie")
+                },
+                color = contentColor,
+                size = 16.dp,
+            )
+            Spacer(Modifier.width(3.dp))
             Text(
                 text,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = contentColor,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
         }
     }
 }
-

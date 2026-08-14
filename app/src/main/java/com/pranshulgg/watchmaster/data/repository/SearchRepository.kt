@@ -28,6 +28,10 @@ class SearchRepository(
                     else -> "unknown"
                 }
 
+                if (type == SearchType.MULTI && mediaType !in setOf("movie", "tv")) {
+                    return@mapNotNull null
+                }
+
                 val title = r.title ?: r.name
                 ?: r.known_for?.firstOrNull()?.title
                 ?: r.known_for?.firstOrNull()?.name

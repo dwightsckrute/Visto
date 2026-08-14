@@ -89,7 +89,7 @@ fun AppNavHost(
                 arguments = listOf(
                     navArgument("searchType") {
                         type = NavType.StringType
-                        defaultValue = SearchType.MOVIE.name
+                        defaultValue = SearchType.MULTI.name
                     }
                 )
             ) { backStackEntry ->

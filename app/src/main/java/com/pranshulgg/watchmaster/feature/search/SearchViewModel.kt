@@ -69,7 +69,7 @@ class SearchViewModel @Inject constructor(
         }
 
         searchJob = viewModelScope.launch {
-            delay(450)
+            delay(300)
             performSearch(value.trim(), type)
         }
     }

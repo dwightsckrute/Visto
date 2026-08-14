@@ -11,6 +11,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,6 +27,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -35,6 +38,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,13 +52,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
@@ -220,7 +229,7 @@ fun SearchScreenContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun VistoSearchField(
     viewModel: SearchViewModel,
@@ -231,11 +240,16 @@ private fun VistoSearchField(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
+    val elevation by animateDpAsState(
+        targetValue = if (active) 4.dp else SearchBarDefaults.ShadowElevation,
+        animationSpec = motionScheme.fastEffectsSpec(),
+        label = "search-field-elevation",
+    )
     val placeholder = when (searchType) {
         SearchType.MOVIE -> localized("Título de la película…", "Movie title…")
         SearchType.TV -> localized("Título de la serie…", "TV show title…")
         SearchType.PERSON -> localized("Nombre de la persona…", "Person name…")
-        SearchType.MULTI -> localized("Película, serie o persona…", "Movie, TV show, or person…")
+        SearchType.MULTI -> localized("Película o serie…", "Movie or TV show…")
     }
 
     LaunchedEffect(active) {
@@ -246,29 +260,35 @@ private fun VistoSearchField(
         }
     }
 
-    SearchBarDefaults.InputField(
-        query = viewModel.query,
-        onQueryChange = { viewModel.onQueryChange(it, searchType) },
-        onSearch = {
-            viewModel.search(searchType)
-            focusManager.clearFocus()
-            keyboard?.hide()
-        },
-        expanded = active,
-        onExpandedChange = { expanded ->
-            if (expanded) onActivate()
-        },
+    TextField(
+        value = viewModel.query,
+        onValueChange = { viewModel.onQueryChange(it, searchType) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .height(SearchBarDefaults.InputFieldHeight)
             .shadow(
-                elevation = if (active) 3.dp else SearchBarDefaults.ShadowElevation,
+                elevation = elevation,
                 shape = SearchBarDefaults.inputFieldShape,
             )
+            .then(
+                if (active) Modifier else Modifier.pointerInput(Unit) {
+                    detectTapGestures(onTap = { onActivate() })
+                },
+            )
+            .focusProperties { canFocus = active }
             .focusRequester(focusRequester)
             .semantics { traversalIndex = -1f },
-        placeholder = { Text(placeholder, maxLines = 1) },
+        readOnly = !active,
+        singleLine = true,
+        shape = SearchBarDefaults.inputFieldShape,
+        placeholder = {
+            Text(
+                text = placeholder,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+            )
+        },
         leadingIcon = {
             Symbol(
                 icon = R.drawable.search_24px,
@@ -302,6 +322,22 @@ private fun VistoSearchField(
                 }
             }
         },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                viewModel.search(searchType)
+                focusManager.clearFocus()
+                keyboard?.hide()
+            },
+        ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+        ),
     )
 }
 
