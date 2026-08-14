@@ -10,16 +10,13 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,21 +24,17 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme.motionScheme
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,12 +48,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
@@ -72,7 +65,11 @@ import kotlinx.coroutines.launch
 
 private enum class SearchContentState { START, LOADING, RESULTS, EMPTY, ERROR }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalAnimationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalAnimationApi::class,
+)
 @Composable
 fun SearchScreenContent(
     paddingValues: PaddingValues,
@@ -81,6 +78,7 @@ fun SearchScreenContent(
     watchlistViewModel: WatchlistViewModel,
 ) {
     val scope = rememberCoroutineScope()
+    val searchMotion = motionScheme.fastSpatialSpec<androidx.compose.ui.unit.Dp>()
     var searchActive by rememberSaveable { mutableStateOf(viewModel.query.isNotBlank()) }
     val state = when {
         viewModel.query.isBlank() -> SearchContentState.START
@@ -95,23 +93,24 @@ fun SearchScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .imePadding(),
+            .imePadding()
+            .semantics { isTraversalGroup = true },
     ) {
         val searchAreaHeight = 84.dp
         val searchOffset by animateDpAsState(
             targetValue = if (searchActive) 0.dp
             else (maxHeight - searchAreaHeight).coerceAtLeast(0.dp),
-            animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+            animationSpec = searchMotion,
             label = "search-position",
         )
         val contentTopPadding by animateDpAsState(
             targetValue = if (searchActive) searchAreaHeight else 0.dp,
-            animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+            animationSpec = searchMotion,
             label = "search-content-top-padding",
         )
         val contentBottomPadding by animateDpAsState(
             targetValue = if (searchActive) 0.dp else searchAreaHeight,
-            animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+            animationSpec = searchMotion,
             label = "search-content-bottom-padding",
         )
 
@@ -221,6 +220,7 @@ fun SearchScreenContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun VistoSearchField(
     viewModel: SearchViewModel,
@@ -231,10 +231,6 @@ private fun VistoSearchField(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    var focused by remember { mutableStateOf(false) }
-    val elevation by animateDpAsState(if (focused) 5.dp else 1.dp, label = "search-elevation")
-    val cornerRadius by animateDpAsState(if (focused) 22.dp else 30.dp, label = "search-shape")
-    val shape = RoundedCornerShape(cornerRadius)
     val placeholder = when (searchType) {
         SearchType.MOVIE -> localized("Título de la película…", "Movie title…")
         SearchType.TV -> localized("Título de la serie…", "TV show title…")
@@ -244,110 +240,69 @@ private fun VistoSearchField(
 
     LaunchedEffect(active) {
         if (active) {
-            delay(320)
+            delay(90)
             focusRequester.requestFocus()
             keyboard?.show()
         }
     }
 
-    AnimatedContent(
-        targetState = active,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
-        label = "search-field-mode",
-    ) { isActive ->
-        if (isActive) {
-            TextField(
-                value = viewModel.query,
-                onValueChange = { viewModel.onQueryChange(it, searchType) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
-                    .height(64.dp)
-                    .shadow(elevation, shape)
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focused = it.isFocused },
-                shape = shape,
-                placeholder = {
-                    Text(placeholder, maxLines = 1)
-                },
-                leadingIcon = {
-                    Symbol(
-                        icon = R.drawable.search_24px,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                trailingIcon = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        AnimatedVisibility(
-                            visible = viewModel.loading,
-                            enter = fadeIn() + scaleIn(),
-                            exit = fadeOut() + scaleOut(),
-                        ) {
-                            LoadingIndicator(modifier = Modifier.size(24.dp))
-                        }
-                        AnimatedVisibility(
-                            visible = viewModel.query.isNotEmpty(),
-                            enter = fadeIn() + scaleIn(),
-                            exit = fadeOut() + scaleOut(),
-                        ) {
-                            IconButton(onClick = {
-                                viewModel.onQueryChange("", searchType)
-                                focusRequester.requestFocus()
-                                keyboard?.show()
-                            }) {
-                                Symbol(
-                                    icon = R.drawable.close_24px,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                        }
-                    }
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = {
-                    viewModel.search(searchType)
-                    focusManager.clearFocus()
-                    keyboard?.hide()
-                }),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceBright,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
+    SearchBarDefaults.InputField(
+        query = viewModel.query,
+        onQueryChange = { viewModel.onQueryChange(it, searchType) },
+        onSearch = {
+            viewModel.search(searchType)
+            focusManager.clearFocus()
+            keyboard?.hide()
+        },
+        expanded = active,
+        onExpandedChange = { expanded ->
+            if (expanded) onActivate()
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .height(SearchBarDefaults.InputFieldHeight)
+            .shadow(
+                elevation = if (active) 3.dp else SearchBarDefaults.ShadowElevation,
+                shape = SearchBarDefaults.inputFieldShape,
             )
-        } else {
-            Surface(
-                onClick = onActivate,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
-                    .height(64.dp)
-                    .shadow(2.dp, RoundedCornerShape(30.dp)),
-                shape = RoundedCornerShape(30.dp),
-                color = MaterialTheme.colorScheme.surfaceBright,
-                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+            .focusRequester(focusRequester)
+            .semantics { traversalIndex = -1f },
+        placeholder = { Text(placeholder, maxLines = 1) },
+        leadingIcon = {
+            Symbol(
+                icon = R.drawable.search_24px,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        },
+        trailingIcon = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AnimatedVisibility(
+                    visible = viewModel.loading,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
                 ) {
-                    Symbol(
-                        icon = R.drawable.search_24px,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.width(14.dp))
-                    Text(
-                        text = placeholder,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                    )
+                    LoadingIndicator(modifier = Modifier.size(24.dp))
+                }
+                AnimatedVisibility(
+                    visible = viewModel.query.isNotEmpty(),
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    IconButton(onClick = {
+                        viewModel.onQueryChange("", searchType)
+                        focusRequester.requestFocus()
+                        keyboard?.show()
+                    }) {
+                        Symbol(
+                            icon = R.drawable.close_24px,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
-        }
-    }
+        },
+    )
 }
 
 @Composable
