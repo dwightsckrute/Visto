@@ -3,7 +3,7 @@ name: Publicar Visto
 on:
   push:
     tags:
-      - "v*"
+      - "visto-*"
 
 permissions:
   contents: write
@@ -51,7 +51,7 @@ jobs:
       - name: Preparar descarga
         id: package
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${GITHUB_REF_NAME#visto-}"
           apk="Visto-${version}.apk"
           cp app/build/outputs/apk/release/app-release.apk "$apk"
           sha256sum "$apk" > "${apk}.sha256"

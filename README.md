@@ -79,11 +79,11 @@ El APK se genera en `app/build/outputs/apk/debug/app-debug.apk`. Esta variante u
 
 Los APK firmados se publican en [GitHub Releases](https://github.com/dwightsckrute/Visto/releases). Descarga `Visto-x.y.z.apk` desde el móvil, ábrelo y confirma **Actualizar**. Android conservará la biblioteca siempre que el APK esté firmado con la misma clave.
 
-El workflow `.github/workflows/release.yml` ejecuta pruebas y lint, crea el APK release y lo publica automáticamente al subir una etiqueta `v*`:
+El workflow `.github/workflows/release.yml` ejecuta pruebas y lint, crea el APK release y lo publica automáticamente al subir una etiqueta `visto-*`. Este prefijo evita colisiones con las etiquetas heredadas de WatchMaster:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag visto-1.1.0
+git push origin visto-1.1.0
 ```
 
 El repositorio necesita los secretos `TMDB_API_KEY`, `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS` y `SIGNING_KEY_PASSWORD`. No se guardan en Git ni aparecen en los logs. La clave privada de firma nunca se incluye en el APK; como sucede en cualquier cliente móvil de TMDB, la clave de API sí forma parte de la aplicación compilada y no debe considerarse un secreto irrecuperable.
