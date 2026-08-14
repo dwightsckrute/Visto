@@ -2,6 +2,7 @@ package com.pranshulgg.watchmaster.feature.main.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
@@ -101,21 +102,25 @@ fun MainFloatingToolbar(
                             spacing = 10.dp
                         ) {
                             ToggleButton(
-                                modifier = Modifier.height(48.dp),
+                                modifier = Modifier
+                                    .animateContentSize(
+                                        animationSpec = motionScheme.defaultSpatialSpec(),
+                                    )
+                                    .height(48.dp),
                                 checked = selectedItem == index,
                                 onCheckedChange = { onItemSelected(index) },
-                                shapes = ToggleButtonDefaults.shapes(
-                                    CircleShape,
-                                    CircleShape,
-                                    CircleShape
-                                ),
+                                shapes = ToggleButtonDefaults.shapes(),
                                 colors = ToggleButtonDefaults.toggleButtonColors(
                                     containerColor = Color.Transparent,
                                     checkedContainerColor = colorScheme.surfaceContainer
                                 ),
 
                                 ) {
-                                Crossfade(selectedItem == index) {
+                                Crossfade(
+                                    targetState = selectedItem == index,
+                                    animationSpec = motionScheme.fastEffectsSpec(),
+                                    label = "main-navigation-icon",
+                                ) {
                                     if (it) Symbol(
                                         selectedIcons[index],
                                         color = colorScheme.onSurface
