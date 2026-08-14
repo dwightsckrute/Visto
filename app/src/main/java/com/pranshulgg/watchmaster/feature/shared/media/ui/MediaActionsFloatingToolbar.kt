@@ -40,6 +40,7 @@ import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.TextAlertDialog
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.buttonIcon
@@ -74,25 +75,30 @@ fun MediaActionsFloatingToolbar(
     val systemInsets = WindowInsets.systemBars.asPaddingValues()
     val menuItemContentColor = MaterialTheme.colorScheme.onTertiaryContainer
     val menuItemContentTextStyle = MaterialTheme.typography.labelLarge
+    val pinConfirmation = if (!isPinned) localized("Contenido fijado", "Content pinned")
+    else localized("Contenido desfijado", "Content unpinned")
     var uiState by remember { mutableStateOf(UiState()) }
 
     val menuItemOptionList = listOf(
         MenuItemOptionList(
-            "Interrumpir",
+            localized("Interrumpir", "Pause"),
             R.drawable.pause_24px,
             { actions.interruptWatching() }, isInterruptOption = true
         ),
         MenuItemOptionList(
-            if (isPinned) "Desfijar" else "Fijar",
+            if (isPinned) localized("Desfijar", "Unpin") else localized("Fijar", "Pin"),
             R.drawable.keep_24px,
             {
                 actions.togglePin()
-                SnackbarManager.show(if (!isPinned) "Contenido fijado" else "Contenido desfijado")
+                SnackbarManager.show(pinConfirmation)
             }),
-        MenuItemOptionList("Lista", R.drawable.lists_24px, {}),
-        MenuItemOptionList("Compartir", R.drawable.share_24px, {}),
         MenuItemOptionList(
-            "Eliminar",
+            localized("Compartir", "Share"),
+            R.drawable.share_24px,
+            actions.share,
+        ),
+        MenuItemOptionList(
+            localized("Eliminar", "Delete"),
             R.drawable.delete_24px,
             { actions.delete() })
     )
@@ -183,9 +189,9 @@ fun MediaActionsFloatingToolbar(
 
     TextAlertDialog(
         show = uiState.showDialog,
-        title = "Estado de visualización",
+        title = localized("Estado de visualización", "Watch status"),
         message = itemStatus.dialogMessage(isTv = isTv),
-        confirmText = "Confirmar",
+        confirmText = localized("Confirmar", "Confirm"),
         onConfirm = {
             itemStatus.confirmAction(
                 start = { actions.startWatching() },
@@ -225,4 +231,3 @@ private fun StatusMainActionBtn(onClick: () -> Unit, itemStatus: WatchStatus) {
         )
     }
 }
-

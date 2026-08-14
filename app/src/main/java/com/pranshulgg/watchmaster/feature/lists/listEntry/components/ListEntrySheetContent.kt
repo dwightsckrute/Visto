@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
@@ -23,11 +24,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.EmptyContainerPlaceholder
 import com.pranshulgg.watchmaster.core.ui.components.Gap
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -85,7 +88,7 @@ fun ListEntrySheetContent(
             ) {
                 Button(
                     modifier = Modifier
-                        .width(100.dp)
+                        .widthIn(min = 120.dp)
                         .height(48.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                     onClick = {
@@ -93,9 +96,12 @@ fun ListEntrySheetContent(
                     },
                 ) {
                     Text(
-                        "Cancelar",
+                        localized("Cancelar", "Cancel"),
                         color = MaterialTheme.colorScheme.onErrorContainer,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
                 Button(
@@ -103,12 +109,17 @@ fun ListEntrySheetContent(
                         onConfirm()
                     },
                     modifier = Modifier
-                        .width(120.dp)
+                        .widthIn(min = 120.dp)
                         .height(48.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                 ) {
                     Text(
-                        "Guardar", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp
+                        localized("Guardar", "Save"),
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }

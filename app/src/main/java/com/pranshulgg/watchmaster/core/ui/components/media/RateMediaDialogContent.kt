@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -22,12 +23,14 @@ import androidx.compose.material3.VerticalSlider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pranshulgg.watchmaster.core.ui.theme.GoogleFlexBoldRounded
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 import kotlin.math.roundToInt
 
 
@@ -113,26 +116,40 @@ fun RateMediaDialogContent(
     ) {
         Button(
             modifier = Modifier
-                .fillMaxWidth(0.35f),
+                .weight(1f)
+                .heightIn(min = 48.dp),
             onClick = {
                 onCancel()
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
             shapes = ButtonDefaults.shapes()
         ) {
-            Text("Cancelar", color = MaterialTheme.colorScheme.onErrorContainer)
+            Text(
+                localized("Cancelar", "Cancel"),
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         Button(
             enabled = rating > 0f,
             modifier = Modifier
-                .fillMaxWidth(),
+                .weight(1.6f)
+                .heightIn(min = 48.dp),
             onClick = {
                 onCancel()
                 onConfirm(rating.toDouble())
             },
             shapes = ButtonDefaults.shapes()
         ) {
-            Text(if (updateRating) "Actualizar" else "Marcar como terminada")
+            Text(
+                if (updateRating) localized("Actualizar", "Update")
+                else localized("Marcar terminada", "Mark as finished"),
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
 
     }

@@ -15,7 +15,9 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.window.Popup
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -89,7 +91,13 @@ fun DialogSliderTile(
                     },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Guardar", style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        localized("Guardar", "Save"),
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             },
             dismissButton = {
@@ -97,7 +105,13 @@ fun DialogSliderTile(
                     onClick = { showDialog = false },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Cancelar", style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        localized("Cancelar", "Cancel"),
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
 
             }

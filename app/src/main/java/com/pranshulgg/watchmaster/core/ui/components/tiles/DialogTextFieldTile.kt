@@ -8,8 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -75,7 +77,13 @@ fun DialogTextFieldTile(
                     },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Guardar", style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        localized("Guardar", "Save"),
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             },
             dismissButton = {
@@ -83,7 +91,13 @@ fun DialogTextFieldTile(
                     onClick = { showDialog = false },
                     shapes = ButtonDefaults.shapes()
                 ) {
-                    Text("Cancelar", style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        localized("Cancelar", "Cancel"),
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
         )

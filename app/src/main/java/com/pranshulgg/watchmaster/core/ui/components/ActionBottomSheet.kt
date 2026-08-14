@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,10 +103,12 @@ fun ActionBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(end = 16.dp, start = 16.dp, bottom = 10.dp),
-                    horizontalArrangement = if (hideConfirmBtn) Arrangement.End else Arrangement.SpaceBetween
+                    horizontalArrangement = if (hideConfirmBtn) Arrangement.End
+                    else Arrangement.spacedBy(8.dp)
                 ) {
                     Button(
-                        modifier = Modifier.defaultMinSize(minWidth = 90.dp, minHeight = 45.dp),
+                        modifier = if (hideConfirmBtn) Modifier.defaultMinSize(minWidth = 112.dp, minHeight = 48.dp)
+                        else Modifier.weight(1f).heightIn(min = 48.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                         onClick = {
                             hide()
@@ -115,13 +118,13 @@ fun ActionBottomSheet(
                         Text(
                             cancelText,
                             color = MaterialTheme.colorScheme.onErrorContainer,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                     if (!hideConfirmBtn) {
-                        if (confirmBtnMaxWidth) {
-                            Spacer(Modifier.width(8.dp))
-                        }
                         Button(
                             onClick = {
                                 onConfirm()
@@ -129,13 +132,17 @@ fun ActionBottomSheet(
                             },
                             enabled = !isConfirmDisabled,
                             shapes = ButtonDefaults.shapes(),
-                            modifier = if (confirmBtnMaxWidth) Modifier
-                                .fillMaxWidth()
-                                .defaultMinSize(minHeight = 45.dp)
-                            else
-                                Modifier.defaultMinSize(minWidth = 90.dp, minHeight = 45.dp),
+                            modifier = Modifier
+                                .weight(if (confirmBtnMaxWidth) 1.6f else 1f)
+                                .heightIn(min = 48.dp),
                         ) {
-                            Text(confirmText, fontSize = 16.sp)
+                            Text(
+                                confirmText,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         }
                     }
                 }
@@ -144,4 +151,3 @@ fun ActionBottomSheet(
         }
     }
 }
-

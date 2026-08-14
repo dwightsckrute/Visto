@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,9 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -110,7 +113,8 @@ fun <T> DialogOptionTile(
 
             Surface(
                 modifier = Modifier
-                    .width(300.dp)
+                    .fillMaxWidth(0.92f)
+                    .widthIn(max = 420.dp)
                     .heightIn(max = 500.dp),
                 shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -188,7 +192,13 @@ fun <T> DialogOptionTile(
                             },
                             shapes = ButtonDefaults.shapes()
                         ) {
-                            Text("Cancelar", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                localized("Cancelar", "Cancel"),
+                                style = MaterialTheme.typography.labelLarge,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         }
                         Spacer(Modifier.width(8.dp))
                         TextButton(
@@ -198,7 +208,13 @@ fun <T> DialogOptionTile(
                             },
                             shapes = ButtonDefaults.shapes()
                         ) {
-                            Text("Guardar", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                localized("Guardar", "Save"),
+                                style = MaterialTheme.typography.labelLarge,
+                                maxLines = 1,
+                                softWrap = false,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         }
                     }
                 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
@@ -43,7 +45,8 @@ fun TextAlertDialog(
 
         Surface(
             modifier = Modifier
-                .width(300.dp)
+                .fillMaxWidth(0.92f)
+                .widthIn(max = 420.dp)
                 .heightIn(max = 500.dp),
             shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -73,7 +76,7 @@ fun TextAlertDialog(
                         },
                         shapes = ButtonDefaults.shapes()
                     ) {
-                        Text(dismissText, style = MaterialTheme.typography.labelLarge)
+                        Text(dismissText, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
                     }
                     Spacer(Modifier.width(8.dp))
                     TextButton(
@@ -83,7 +86,7 @@ fun TextAlertDialog(
                         },
                         shapes = ButtonDefaults.shapes()
                     ) {
-                        Text(confirmText, style = MaterialTheme.typography.labelLarge)
+                        Text(confirmText, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
                     }
                 }
             }

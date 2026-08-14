@@ -7,4 +7,5 @@ data class FloatingToolbarMediaActionsParams(
     val interruptWatching: () -> Unit,
     val delete: () -> Unit,
     val togglePin: () -> Unit,
+    val share: () -> Unit,
 )

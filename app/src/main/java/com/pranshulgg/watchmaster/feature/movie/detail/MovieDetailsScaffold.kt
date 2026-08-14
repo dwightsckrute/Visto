@@ -13,12 +13,14 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
+import com.pranshulgg.watchmaster.core.utils.shareMedia
 import com.pranshulgg.watchmaster.feature.movie.detail.ui.MovieDetailsConfirmationDialog
 import com.pranshulgg.watchmaster.feature.movie.detail.ui.MovieDetailsNoteDialog
 import com.pranshulgg.watchmaster.feature.movie.detail.ui.MovieDetailsRatingDialog
@@ -43,6 +45,7 @@ fun MovieDetailsScaffold(
     val watchlistItem by watchlistFlow.collectAsStateWithLifecycle()
 
     val movieItem = viewModel.state
+    val context = LocalContext.current
 
     val loading = viewModel.loading
     val isMoviePinned = watchlistItem?.isPinned == true
@@ -66,7 +69,8 @@ fun MovieDetailsScaffold(
                     finishWatching = { viewModel.showRatingDialog() },
                     interruptWatching = { watchlistViewModel.interrupt(id) },
                     delete = { viewModel.showConfirmationDialog() },
-                    togglePin = { watchlistViewModel.setPinned(id, !isMoviePinned) }
+                    togglePin = { watchlistViewModel.setPinned(id, !isMoviePinned) },
+                    share = { shareMedia(context, movieItem.title, id, isTv = false) },
                 ),
                 isMoviePinned
             )

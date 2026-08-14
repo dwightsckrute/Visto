@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
+import com.pranshulgg.watchmaster.core.utils.shareMedia
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.ui.FloatingToolbarMediaActionsParams
 import com.pranshulgg.watchmaster.feature.shared.media.ui.MediaActionsFloatingToolbar
@@ -44,11 +46,13 @@ fun TvDetailsScaffold(
     val episodesFlow = remember(seasonId) { viewModel.seasonEpisodes(seasonId) }
     val episodes by episodesFlow.collectAsStateWithLifecycle(initialValue = emptyList())
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val context = LocalContext.current
+    val tvItem = viewModel.state
 
 
     val isSeriesPinned = watchlistItem?.isPinned == true
 
-    if (loading || season == null) {
+    if (loading || season == null || tvItem == null) {
         LoadingScreenPlaceholder()
         return
     }
@@ -73,6 +77,7 @@ fun TvDetailsScaffold(
                             )
                         }
                     },
+                    share = { shareMedia(context, tvItem.name, id, isTv = true) },
                 ),
                 isPinned = isSeriesPinned,
                 isTv = true
@@ -81,17 +86,15 @@ fun TvDetailsScaffold(
 
         )
     { _ ->
-        viewModel.state?.let { tvItem ->
-            TvDetailsContent(
-                tvItem,
-                navController,
-                scrollBehavior,
-                season,
-                viewModel,
-                watchlistViewModel,
-                episodes
-            )
-        }
+        TvDetailsContent(
+            tvItem,
+            navController,
+            scrollBehavior,
+            season,
+            viewModel,
+            watchlistViewModel,
+            episodes
+        )
     }
 
     TvDetailsNoteDialog(viewModel, watchlistViewModel, season)
