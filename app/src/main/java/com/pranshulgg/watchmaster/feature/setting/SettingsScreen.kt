@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.pranshulgg.watchmaster.BuildConfig
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.prefs.LocalAppPrefs
 import com.pranshulgg.watchmaster.core.ui.components.CheckboxRow
@@ -146,6 +147,15 @@ fun SettingsScreen(navController: NavController) {
                         onClick = {
                             isWarningImportDialogOpen = true
                         }
+                    )
+                )
+            )
+            SettingSection(
+                title = "Acerca de",
+                tiles = listOf(
+                    SettingTile.TextTile(
+                        title = "Visto ${BuildConfig.VERSION_NAME}",
+                        description = "Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica."
                     )
                 )
             )
