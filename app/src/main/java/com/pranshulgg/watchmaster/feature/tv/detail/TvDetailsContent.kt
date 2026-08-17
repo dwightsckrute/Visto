@@ -150,12 +150,18 @@ fun TvDetailsContent(
                         transitionSpec = {
                             // Encadenado, no cruzado: la lista saliente se va antes de que
                             // entre la nueva, para no mezclar dos temporadas en pantalla.
-                            fadeIn(
+                            //
+                            // Sin transición de tamaño (`using null`). Con ella, AnimatedContent
+                            // mide a la altura que dejó la última animación y no vuelve a mirar:
+                            // al plegar y desplegar la sección de episodios, que no cambia de
+                            // temporada y por tanto no dispara nada, el contenedor se quedaba
+                            // con la altura antigua y los episodios se metían debajo del reparto.
+                            (fadeIn(
                                 tween(
                                     durationMillis = AppMotion.DurationMedium,
                                     delayMillis = AppMotion.DurationShort,
                                 )
-                            ) togetherWith fadeOut(tween(AppMotion.DurationShort))
+                            ) togetherWith fadeOut(tween(AppMotion.DurationShort))) using null
                         },
                         label = "season-episodes",
                     ) { (currentSeason, seasonEpisodes) ->

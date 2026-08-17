@@ -23,8 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +72,12 @@ fun SeasonSwitcher(
     val selected = ordered.firstOrNull { it.seasonId == selectedSeasonId } ?: ordered.first()
     var expanded by remember { mutableStateOf(false) }
 
+    // El menú se mide contra el botón que lo abre. Por defecto se ajusta a su texto y sale una
+    // columna estrecha en mitad de una tarjeta ancha, que es lo que lo hacía parecer pequeño;
+    // al ocupar el ancho del botón, elegir temporada pasa a ser tan grande como abrirlo.
+    val density = LocalDensity.current
+    var buttonWidth by remember { mutableStateOf(0.dp) }
+
     val chevronRotation by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
         animationSpec = motionScheme.defaultSpatialSpec(),
@@ -85,7 +94,10 @@ fun SeasonSwitcher(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = Spacing.minTouchTarget)
-                    .padding(vertical = Spacing.xs),
+                    .padding(vertical = Spacing.xs)
+                    .onGloballyPositioned {
+                        buttonWidth = with(density) { it.size.width.toDp() }
+                    },
                 shapes = ButtonDefaults.shapes(),
                 contentPadding = PaddingValues(
                     horizontal = Spacing.lg,
@@ -122,6 +134,7 @@ fun SeasonSwitcher(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
                 shape = RoundedCornerShape(ShapeRadius.Large),
+                modifier = if (buttonWidth > 0.dp) Modifier.width(buttonWidth) else Modifier,
             ) {
                 ordered.forEach { season ->
                     val isSelected = season.seasonId == selectedSeasonId
@@ -140,23 +153,27 @@ fun SeasonSwitcher(
                         // La carátula de la temporada, que es como se reconocen entre sí mucho
                         // antes que por el número. En una serie larga la lista de "Temporada N"
                         // es indistinguible; con la imagen se elige de un vistazo.
+                        contentPadding = PaddingValues(
+                            horizontal = Spacing.md,
+                            vertical = Spacing.sm,
+                        ),
                         leadingIcon = {
                             PosterBox(
                                 posterUrl = season.posterPath
                                     ?.let { "https://image.tmdb.org/t/p/w154$it" },
                                 apiPath = season.posterPath,
-                                width = 32.dp,
-                                height = 48.dp,
+                                width = 44.dp,
+                                height = 66.dp,
                                 cornerRadius = ShapeRadius.Small,
-                                progressIndicatorSize = 14.dp,
+                                progressIndicatorSize = 16.dp,
                                 placeholder = { PosterPlaceholder(size = 0.5f) },
                             )
                         },
                         text = {
-                            Column {
+                            Column(modifier = Modifier.padding(start = Spacing.xs)) {
                                 Text(
                                     text = label,
-                                    style = MaterialTheme.typography.titleSmall,
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = if (isSelected) {
                                         MaterialTheme.colorScheme.primary
                                     } else {
