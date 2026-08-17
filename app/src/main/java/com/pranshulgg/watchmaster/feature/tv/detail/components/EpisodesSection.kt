@@ -105,7 +105,22 @@ fun EpisodesSection(
         }
     ) {
 
-        if (LocalAppPrefs.current.episodeLayout == "grid") {
+        val layout = LocalAppPrefs.current.episodeLayout
+
+        if (layout == "list") {
+            EpisodesList(
+                episodes = episodes,
+                onToggle = toggleEpisode,
+                onInfo = { episode ->
+                    currentEp = episode
+                    showSheet = true
+                },
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            return@MediaSectionCard
+        }
+
+        if (layout == "grid") {
             EpisodesGrid(
                 episodes = episodes,
                 onToggle = toggleEpisode,

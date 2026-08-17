@@ -8,72 +8,54 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.ui.unit.IntOffset
 import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 
 /**
- * Transiciones entre pantallas.
+ * Transiciones entre pantallas: el eje Z de Material.
  *
- * Al abrir, las dos pantallas se cruzan por el eje horizontal recorriendo poco camino. Antes la
- * entrante venía desde el ancho completo y, peor, su deslizamiento no llevaba spec: usaba el
- * spring por defecto mientras el fundido iba con un tween de 350 ms. Dos animaciones sobre la
- * misma pieza con relojes distintos es exactamente lo que se percibe como movimiento torpe, y el
- * recorrido largo lo hacía además lento. Ahora comparten duración y curva.
+ * Abrir y volver son el mismo movimiento en sentidos opuestos. Al abrir, la pantalla saliente se
+ * aleja creciendo y la entrante llega desde algo más lejos; al volver, exactamente al revés. Es la
+ * misma forma que Android da al gesto atrás predictivo, y esa es la razón de haberla elegido:
+ * cuando el gesto y la animación coinciden, entrar y salir de una ficha se siente como un único
+ * movimiento en vez de como dos efectos distintos.
  *
- * La vuelta es más corta todavía y añade un encogido mínimo, porque con el gesto atrás predictivo
- * Navigation reproduce estas curvas siguiendo el dedo y un desplazamiento grande se siente brusco
- * cuando lo arrastras tú.
+ * Antes esto era un desplazamiento lateral. El lateral cuenta "otra pantalla al lado", que no es
+ * lo que pasa aquí: al tocar una carátula se entra *dentro* de ella. El eje Z cuenta esa jerarquía.
+ *
+ * Los fundidos no se solapan a propósito. Si las dos pantallas se atenúan a la vez se ven las dos
+ * medio transparentes durante medio segundo y el resultado es turbio; encadenados —primero se va
+ * una, luego llega la otra— el cambio se lee limpio aunque dure lo mismo.
  */
 object NavTransitions {
 
-    /** Fracción del ancho que recorre cada pantalla al abrir. Poco camino se lee como rápido. */
-    private const val OPEN_SLIDE_DIVISOR = 4
+    /** Desde dónde llega la pantalla entrante al abrir. Lejos, pero no tanto como para saltar. */
+    private const val ENTER_SCALE = 0.90f
 
-    /** Recorrido al volver: el gesto ya aporta el movimiento, la animación solo lo acompaña. */
-    private const val POP_SLIDE_DIVISOR = 6
-
-    /** Encogido apenas perceptible; más que esto parece que la pantalla se cae hacia atrás. */
-    private const val POP_SCALE = 0.94f
+    /** Hasta dónde se aleja la saliente. Solo lo justo para insinuar que queda detrás. */
+    private const val EXIT_SCALE = 1.06f
 
     /** Emphasized decelerate: arranca rápido y frena largo, la curva de Material para entradas. */
-    private val OpenEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
+    private val ScaleEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
 
-    /** Arranca suave para que soltar el gesto atrás no dé un tirón. */
-    private val PopEasing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+    /** Lo que tarda en marcharse la pantalla que se va, antes de que asome la siguiente. */
+    private const val FadeOutDuration = 90
 
-    private fun openSpec() = tween<Float>(AppMotion.DurationShort, easing = OpenEasing)
-    private fun openOffsetSpec() =
-        tween<IntOffset>(AppMotion.DurationShort, easing = OpenEasing)
+    /** Y lo que tarda en llegar la nueva, ya con la anterior fuera. */
+    private const val FadeInDuration = 220
 
-    private fun popSpec() = tween<Float>(AppMotion.DurationMedium, easing = PopEasing)
-    private fun popOffsetSpec() =
-        tween<IntOffset>(AppMotion.DurationMedium, easing = PopEasing)
+    private fun scaleSpec() = tween<Float>(AppMotion.DurationLong, easing = ScaleEasing)
+    private fun fadeOutSpec() = tween<Float>(FadeOutDuration)
+    private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeOutDuration)
 
     fun enter(): EnterTransition =
-        slideInHorizontally(
-            animationSpec = openOffsetSpec(),
-            initialOffsetX = { it / OPEN_SLIDE_DIVISOR },
-        ) + fadeIn(openSpec())
+        scaleIn(animationSpec = scaleSpec(), initialScale = ENTER_SCALE) + fadeIn(fadeInSpec())
 
     fun exit(): ExitTransition =
-        slideOutHorizontally(
-            animationSpec = openOffsetSpec(),
-            targetOffsetX = { -it / OPEN_SLIDE_DIVISOR },
-        ) + fadeOut(openSpec())
+        scaleOut(animationSpec = scaleSpec(), targetScale = EXIT_SCALE) + fadeOut(fadeOutSpec())
 
     fun popEnter(): EnterTransition =
-        slideInHorizontally(
-            animationSpec = popOffsetSpec(),
-            initialOffsetX = { -it / POP_SLIDE_DIVISOR },
-        ) + fadeIn(popSpec()) +
-            scaleIn(animationSpec = popSpec(), initialScale = POP_SCALE)
+        scaleIn(animationSpec = scaleSpec(), initialScale = EXIT_SCALE) + fadeIn(fadeInSpec())
 
     fun popExit(): ExitTransition =
-        slideOutHorizontally(
-            animationSpec = popOffsetSpec(),
-            targetOffsetX = { it / POP_SLIDE_DIVISOR },
-        ) + fadeOut(popSpec()) +
-            scaleOut(animationSpec = popSpec(), targetScale = POP_SCALE)
+        scaleOut(animationSpec = scaleSpec(), targetScale = ENTER_SCALE) + fadeOut(fadeOutSpec())
 }

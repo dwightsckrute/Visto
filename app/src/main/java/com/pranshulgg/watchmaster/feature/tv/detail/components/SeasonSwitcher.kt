@@ -36,6 +36,9 @@ import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.core.ui.theme.Spacing
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
+import androidx.compose.foundation.layout.Column
+import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
+import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 
 /**
  * Cambia de temporada sin salir de la serie.
@@ -153,6 +156,16 @@ fun SeasonSwitcher(
 @Composable
 private fun SeasonEntity.seasonLabel(): String =
     localized("Temporada $seasonNumber", "Season $seasonNumber")
+
+/** Cuántos episodios llevas de la temporada, en palabras. */
+@Composable
+private fun SeasonEntity.progressLabel(): String {
+    val watched = if (status == WatchStatus.FINISHED) episodeCount else (lastEpWatched ?: 0)
+    return localized(
+        "$watched de $episodeCount episodios",
+        "$watched of $episodeCount episodes",
+    )
+}
 
 @Composable
 private fun SeasonEntity.stateLabel(): String = when (status) {
