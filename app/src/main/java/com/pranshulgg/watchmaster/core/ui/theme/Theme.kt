@@ -104,6 +104,7 @@ fun WatchMasterTheme(
     ) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
+            shapes = AppShapes,
             typography = AppTypography,
             motionScheme = MotionScheme.expressive(),
             content = content

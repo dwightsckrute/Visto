@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
@@ -44,6 +43,8 @@ import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.feature.search.SearchType
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.theme.Elevation
+import com.pranshulgg.watchmaster.core.ui.theme.Spacing
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -84,16 +85,16 @@ fun MainFloatingToolbar(
                 )
                 .align(Alignment.BottomCenter)
                 .zIndex(1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HorizontalFloatingToolbar(
-                expandedShadowElevation = 1.dp,
+                expandedShadowElevation = Elevation.floating,
                 colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
                 expanded = true,
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                 ) {
                     labelList.forEachIndexed { index, label ->
                         Tooltip(
@@ -106,7 +107,7 @@ fun MainFloatingToolbar(
                                     .animateContentSize(
                                         animationSpec = motionScheme.defaultSpatialSpec(),
                                     )
-                                    .height(48.dp),
+                                    .height(Spacing.minTouchTarget),
                                 checked = selectedItem == index,
                                 onCheckedChange = { onItemSelected(index) },
                                 shapes = ToggleButtonDefaults.shapes(
@@ -140,8 +141,7 @@ fun MainFloatingToolbar(
                                 ) {
                                     Text(
                                         text = label,
-                                        fontSize = 16.sp,
-                                        lineHeight = 24.sp,
+                                        style = MaterialTheme.typography.titleMedium,
                                         maxLines = 1,
                                         softWrap = false,
                                         overflow = TextOverflow.Clip,

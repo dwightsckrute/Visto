@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.pranshulgg.watchmaster.core.ui.theme.Elevation
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 
@@ -118,7 +119,7 @@ fun <T> DialogOptionTile(
                     .heightIn(max = 500.dp),
                 shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
                 color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shadowElevation = 6.dp
+                shadowElevation = Elevation.modal
             ) {
                 Column() {
                     Text(

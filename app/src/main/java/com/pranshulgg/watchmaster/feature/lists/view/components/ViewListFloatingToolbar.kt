@@ -50,6 +50,7 @@ import androidx.compose.ui.zIndex
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.Tooltip
+import com.pranshulgg.watchmaster.core.ui.theme.Elevation
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -85,7 +86,7 @@ fun ViewListFloatingToolbar(
 
     ) {
         HorizontalFloatingToolbar(
-            expandedShadowElevation = 1.dp,
+            expandedShadowElevation = Elevation.floating,
 
             scrollBehavior = scrollBehavior,
             modifier = Modifier

@@ -42,6 +42,7 @@ import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.TextAlertDialog
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
+import com.pranshulgg.watchmaster.core.ui.theme.Elevation
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.buttonIcon
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.actionLabel
@@ -108,7 +109,7 @@ fun MediaActionsFloatingToolbar(
             .fillMaxWidth(),
     ) {
         HorizontalFloatingToolbar(
-            expandedShadowElevation = 1.dp,
+            expandedShadowElevation = Elevation.floating,
             scrollBehavior = scrollBehavior,
             modifier = Modifier
                 .padding(

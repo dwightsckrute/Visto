@@ -7,30 +7,23 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MotionScheme
+import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 object NavTransitions {
-
-    private const val FADE_IN = 350
-    private const val FADE_OUT = 200
 
     fun enter(): EnterTransition =
         slideInHorizontally(
             initialOffsetX = { 1 * it }
-        ) + fadeIn(tween(FADE_IN))
+        ) + fadeIn(tween(AppMotion.DurationMedium))
 
     fun exit(): ExitTransition =
         slideOutHorizontally(
             targetOffsetX = { 1 * -it / 4 }
-        ) + fadeOut(tween(FADE_OUT))
+        ) + fadeOut(tween(AppMotion.DurationShort))
 
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     fun popEnter(): EnterTransition =
-        slideInHorizontally(initialOffsetX = { 1 * -it / 4 }) + fadeIn(tween(FADE_IN))
+        slideInHorizontally(initialOffsetX = { 1 * -it / 4 }) + fadeIn(tween(AppMotion.DurationMedium))
 
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     fun popExit(): ExitTransition =
-        slideOutHorizontally(targetOffsetX = { 1 * it }) + fadeOut(tween(FADE_OUT))
+        slideOutHorizontally(targetOffsetX = { 1 * it }) + fadeOut(tween(AppMotion.DurationShort))
 }

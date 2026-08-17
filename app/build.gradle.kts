@@ -35,8 +35,8 @@ android {
         applicationId = "com.dwightsckrute.visto"
         minSdk = 24
         targetSdk = 36
-        versionCode = 12
-        versionName = "1.8.1"
+        versionCode = 13
+        versionName = "1.9.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -97,7 +97,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    // Material 3 se fija por versión (no por el BOM) porque Visto depende de las APIs
+    // Expressive, que solo existen en la línea 1.5.0-alpha.
     implementation(libs.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.materialKolor)

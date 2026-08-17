@@ -371,7 +371,11 @@ private fun automaticBackupDescription(
     if (lastBackup == null) {
         return localized("$frequencyText · pendiente de la primera copia", "$frequencyText · first backup pending")
     }
-    val locale = if (AppLanguage.code(LocalContext.current) == "en") Locale.US else Locale("es", "ES")
+    val locale = if (AppLanguage.code(LocalContext.current) == "en") {
+        Locale.US
+    } else {
+        Locale.forLanguageTag("es-ES")
+    }
     val date = lastBackup.atZone(ZoneId.systemDefault()).format(
         DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm", locale),
     )
