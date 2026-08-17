@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Capa monocroma del icono adaptativo, la que usan los iconos temáticos del launcher.
+    Capa monocroma del icono adaptativo, la que usan los estilos de icono que tiñen en vez de
+    generar.
 
     El launcher la aplana a un único color, así que el diseño no puede apoyarse en el contraste
-    entre piezas: la versión anterior dibujaba la insignia del check encima del cuerpo y, al
-    perder el color, ambas se fundían en una mancha irreconocible.
+    entre piezas: el check tiene que ser espacio negativo recortado del propio cuerpo (fillType
+    evenOdd), no una marca dibujada encima, o al perder el color ambos se funden en una mancha.
 
-    Aquí el check es espacio negativo recortado del propio cuerpo (fillType evenOdd), que es lo
-    que se sigue leyendo al tamaño real de un icono. Todo el trazo queda dentro de la zona
-    segura de 66dp para que no lo recorte ninguna máscara.
+    Misma silueta que la capa frontal, para que teñir y no teñir sean el mismo icono. Todo dentro
+    de la zona segura de 66dp.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Pestañas superiores -->
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:pathData="M40,29 L46,29 L46,39 L40,39 Z M62,29 L68,29 L68,39 L62,39 Z" />
-    <!-- Cuerpo con el check recortado -->
     <path
         android:fillColor="#FFFFFFFF"
         android:fillType="evenOdd"
-        android:pathData="M38,34 L70,34 Q77,34 77,41 L77,70 Q77,77 70,77 L38,77 Q31,77 31,70 L31,41 Q31,34 38,34 Z M45,56 L51,62 L64,49 L69,54 L51,72 L40,61 Z" />
+        android:pathData="M36,30 L72,30 Q84,30 84,42 L84,66 Q84,78 72,78 L36,78 Q24,78 24,66 L24,42 Q24,30 36,30 Z M39,55 L49,65 L69,43 L64.5,38.5 L49,54 L43.5,48.5 Z" />
 </vector>
