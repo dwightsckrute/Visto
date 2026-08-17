@@ -89,6 +89,10 @@ fun EpisodesSection(
         }
     }
 
+    val prefs = LocalAppPrefs.current
+
+    // Plegada, la sección sigue diciendo lo esencial —cuántos episodios llevas— en la chapa del
+    // encabezado, así que replegarla no cuesta información, solo espacio.
     MediaSectionCard(
         title = localized("Episodios", "Episodes"),
         titleIcon = R.drawable.list_alt_24px,
@@ -102,10 +106,12 @@ fun EpisodesSection(
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 shapeRadius = ShapeRadius.Small
             )
-        }
+        },
+        collapsed = prefs.episodesCollapsed,
+        onToggleCollapsed = { prefs.setEpisodesCollapsed(!prefs.episodesCollapsed) },
     ) {
 
-        val layout = LocalAppPrefs.current.episodeLayout
+        val layout = prefs.episodeLayout
 
         if (layout == "list") {
             EpisodesList(

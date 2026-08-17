@@ -16,6 +16,7 @@ object AppPrefs {
     private val _defaultTab = mutableStateOf("home")
     private val _groupSeasons = mutableStateOf(false)
     private val _episodeLayout = mutableStateOf("carousel")
+    private val _episodesCollapsed = mutableStateOf(false)
 
     private val _themeVariant =
         mutableStateOf(ThemeVariantType.EXPRESSIVE)
@@ -47,6 +48,7 @@ object AppPrefs {
             "list" -> "list"
             else -> "carousel"
         }
+        _episodesCollapsed.value = PreferencesHelper.getBool("episodes_collapsed") ?: false
         _defaultTab.value = when (val saved = PreferencesHelper.getString("default_tab")) {
             "Películas", "Movies", "movies" -> "movies"
             "Series", "tv" -> "tv"
@@ -109,6 +111,12 @@ object AppPrefs {
         setEpisodeLayout = {
             _episodeLayout.value = it
             PreferencesHelper.setString("episode_layout", it)
+        },
+
+        episodesCollapsed = _episodesCollapsed.value,
+        setEpisodesCollapsed = {
+            _episodesCollapsed.value = it
+            PreferencesHelper.setBool("episodes_collapsed", it)
         },
     )
 }

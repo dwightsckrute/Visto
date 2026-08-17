@@ -28,7 +28,17 @@ data class AppPrefsState(
     val groupSeasons: Boolean,
     val setGroupSeasons: (Boolean) -> Unit,
 
-    /** "carousel" (por defecto) o "grid": cómo se listan los episodios de una temporada. */
+    /** "carousel" (por defecto), "timeline" o "list": cómo se listan los episodios. */
     val episodeLayout: String,
     val setEpisodeLayout: (String) -> Unit,
+
+    /**
+     * true: la sección de episodios arranca plegada.
+     *
+     * Se guarda en vez de vivir en la pantalla porque lo que se pide de ella es que la ficha no
+     * abra ocupada por la lista. Si el plegado se olvidara al salir, habría que repetirlo en cada
+     * serie y no resolvería nada.
+     */
+    val episodesCollapsed: Boolean,
+    val setEpisodesCollapsed: (Boolean) -> Unit,
 )

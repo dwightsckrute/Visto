@@ -1,6 +1,7 @@
 package com.pranshulgg.watchmaster.feature.tv.detail.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -150,55 +151,66 @@ private fun TimelineEntry(
                 },
             contentAlignment = Alignment.Center,
         ) {
-            Surface(
-                shape = CircleShape,
-                color = ringColor,
-                modifier = Modifier.size(NodeSize),
-            ) {
-                Box(
-                    modifier = Modifier.padding(NodeRing),
-                    contentAlignment = Alignment.Center,
+            // El hito y su chapa van en una caja del tamaño del hito. Si la chapa se alineara
+            // dentro del carril se iría a la esquina de la celda, que es tan alta como el texto
+            // de al lado, y acabaría suelta bajo el círculo en vez de pegada a él.
+            Box(modifier = Modifier.size(NodeSize)) {
+                Surface(
+                    shape = CircleShape,
+                    color = ringColor,
+                    modifier = Modifier.size(NodeSize),
                 ) {
-                    Box(modifier = Modifier.clip(CircleShape)) {
-                        PosterBox(
-                            posterUrl = episode.still_path
-                                ?.let { "https://image.tmdb.org/t/p/w500$it" },
-                            apiPath = episode.still_path,
-                            width = NodeInner,
-                            height = NodeInner,
-                            cornerRadius = ShapeRadius.None,
-                            progressIndicatorSize = 16.dp,
-                            placeholder = { PosterPlaceholder(size = 0.5f) },
-                        )
+                    Box(
+                        modifier = Modifier.padding(NodeRing),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(modifier = Modifier.clip(CircleShape)) {
+                            PosterBox(
+                                posterUrl = episode.still_path
+                                    ?.let { "https://image.tmdb.org/t/p/w500$it" },
+                                apiPath = episode.still_path,
+                                width = NodeInner,
+                                height = NodeInner,
+                                cornerRadius = ShapeRadius.None,
+                                progressIndicatorSize = 16.dp,
+                                placeholder = { PosterPlaceholder(size = 0.5f) },
+                            )
+                        }
                     }
                 }
-            }
 
-            // La chapa dice el número, y el número deja paso a la marca al verlo. Va encima del
-            // hito y no al lado para que el carril siga leyéndose como una sola columna.
-            Surface(
-                shape = CircleShape,
-                color = if (episode.isWatched) colorScheme.primary else colorScheme.surfaceContainerHighest,
-                contentColor = if (episode.isWatched) {
-                    colorScheme.onPrimary
-                } else {
-                    colorScheme.onSurface
-                },
-                modifier = Modifier.align(Alignment.BottomEnd),
-            ) {
-                Box(modifier = Modifier.size(20.dp), contentAlignment = Alignment.Center) {
-                    if (episode.isWatched) {
-                        Symbol(
-                            icon = R.drawable.check_24px,
-                            desc = null,
-                            color = colorScheme.onPrimary,
-                            size = 13.dp,
-                        )
+                // La chapa dice el número, y el número deja paso a la marca al verlo. El color
+                // sólido no es decoración: encima del hilo y del fotograma, un tono de superficie
+                // se perdía y el número quedaba flotando sobre la imagen.
+                Surface(
+                    shape = CircleShape,
+                    color = if (episode.isWatched) {
+                        colorScheme.primary
                     } else {
-                        Text(
-                            text = episode.episode_number.toString(),
-                            style = MaterialTheme.typography.labelSmall,
-                        )
+                        colorScheme.secondaryContainer
+                    },
+                    contentColor = if (episode.isWatched) {
+                        colorScheme.onPrimary
+                    } else {
+                        colorScheme.onSecondaryContainer
+                    },
+                    border = BorderStroke(1.5.dp, colorScheme.surfaceBright),
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                ) {
+                    Box(modifier = Modifier.size(21.dp), contentAlignment = Alignment.Center) {
+                        if (episode.isWatched) {
+                            Symbol(
+                                icon = R.drawable.check_24px,
+                                desc = null,
+                                color = colorScheme.onPrimary,
+                                size = 13.dp,
+                            )
+                        } else {
+                            Text(
+                                text = episode.episode_number.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        }
                     }
                 }
             }
