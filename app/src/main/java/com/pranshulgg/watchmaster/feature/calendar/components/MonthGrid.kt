@@ -116,7 +116,7 @@ fun MonthGrid(
 }
 
 /** Lo justo para que el número aguante sobre cualquier carátula, sin apagarla. */
-private const val PosterScrim = 0.5f
+private const val PosterScrim = 0.42f
 
 /**
  * Un día.

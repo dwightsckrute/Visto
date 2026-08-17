@@ -20,16 +20,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.motionScheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +40,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.IntSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +60,7 @@ import com.pranshulgg.watchmaster.feature.calendar.components.MonthGrid
 import com.pranshulgg.watchmaster.feature.calendar.components.MonthPicker
 import com.pranshulgg.watchmaster.feature.calendar.components.WatchedEntryRow
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -124,7 +129,9 @@ private fun CalendarContent(
     onEntryClick: (WatchedEntry) -> Unit,
 ) {
     // transitionSpec no es ámbito @Composable: las specs se resuelven fuera.
-    val slideSpec = motionScheme.defaultSpatialSpec<IntOffset>()
+    // Rápidas y no las de por defecto: cambiar de mes es hojear, y hojear no admite espera. Con
+    // la spec normal el mes tardaba en asentarse y el gesto entero se sentía pesado.
+    val slideSpec = motionScheme.fastSpatialSpec<IntOffset>()
     val fadeSpec = motionScheme.fastEffectsSpec<Float>()
     // El alto y el alpha del selector comparten reloj, para que no quede un hueco vacío mientras
     // se cierra.
@@ -177,7 +184,6 @@ private fun CalendarContent(
                 MonthPicker(
                     visibleMonth = uiState.visibleMonth,
                     monthsWithEntries = uiState.monthsWithEntries,
-                    selectableYears = uiState.selectableYears,
                     locale = locale,
                     onSelectMonth = onSelectMonth,
                     modifier = Modifier.padding(bottom = Spacing.sm),
@@ -220,25 +226,47 @@ private fun CalendarContent(
         }
 
         val entries = uiState.entriesForSelectedDate
-        if (uiState.selectedDate != null) {
+        val selected = uiState.selectedDate
+        if (selected != null) {
             item(key = "day-title") {
-                Text(
-                    text = if (entries.isEmpty()) {
-                        localized("Nada visto ese día", "Nothing watched that day")
-                    } else {
-                        localized(
-                            "${entries.size} ese día",
-                            "${entries.size} that day",
-                        )
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Column(
                     modifier = Modifier.padding(
-                        top = Spacing.md,
-                        bottom = Spacing.xs,
+                        top = Spacing.lg,
+                        bottom = Spacing.sm,
                         start = Spacing.xs,
                     ),
-                )
+                ) {
+                    // El día, escrito. "1 ese día" obligaba a mirar arriba para saber cuál era
+                    // "ese"; puesto aquí, esta parte se sostiene sola y se lee como un diario.
+                    Text(
+                        text = selected
+                            .format(
+                                DateTimeFormatter.ofPattern(
+                                    localized("EEEE, d 'de' MMMM", "EEEE, d MMMM"),
+                                    locale,
+                                )
+                            )
+                            .replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+                            },
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = if (entries.isEmpty()) {
+                            localized("Nada visto ese día", "Nothing watched that day")
+                        } else if (entries.size == 1) {
+                            localized("1 cosa vista", "1 thing watched")
+                        } else {
+                            localized(
+                                "${entries.size} cosas vistas",
+                                "${entries.size} things watched",
+                            )
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             items(entries, key = { "${it.mediaType}-${it.id}" }) { entry ->
                 WatchedEntryRow(entry = entry, onClick = { onEntryClick(entry) })
@@ -276,13 +304,13 @@ private fun MonthHeader(
         // calendario, y aquí no hacía nada.
         Row(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxWidth()
                 .clip(RoundedCornerShape(ShapeRadius.Large))
                 .clickable(onClick = onTogglePicker)
                 .padding(vertical = Spacing.xs, horizontal = Spacing.xs),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(modifier = Modifier.weight(1f, fill = false)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "$name ${month.year}",
                     style = MaterialTheme.typography.headlineSmall,
@@ -294,16 +322,30 @@ private fun MonthHeader(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Symbol(
-                icon = R.drawable.keyboard_arrow_down_24px,
-                desc = if (isPickingMonth) {
-                    localized("Cerrar el selector de mes", "Close the month picker")
-                } else {
-                    localized("Elegir mes y año", "Pick month and year")
-                },
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.rotate(pickerChevron),
-            )
+            // La flecha, en su sitio y con cuerpo. Pegada al final del texto quedaba flotando a
+            // media frase y no parecía nada; al borde y dentro de un círculo tonal se lee como
+            // el botón que es, y además cae donde la mano ya está.
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ) {
+                Box(
+                    modifier = Modifier.size(40.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Symbol(
+                        icon = R.drawable.keyboard_arrow_down_24px,
+                        desc = if (isPickingMonth) {
+                            localized("Cerrar el selector de mes", "Close the month picker")
+                        } else {
+                            localized("Elegir mes y año", "Pick month and year")
+                        },
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.rotate(pickerChevron),
+                    )
+                }
+            }
         }
     }
 }
@@ -327,28 +369,32 @@ private fun monthSummary(movies: Int, shows: Int): String {
 }
 
 /** Cuánto hay que arrastrar para que cuente como cambio de mes. */
-private const val SwipeThresholdPx = 90f
+private const val SwipeThresholdPx = 60f
 
 /**
  * Arrastrar de lado para cambiar de mes.
  *
- * Se decide al soltar y no mientras se arrastra: disparando por umbral en pleno gesto, un arrastre
- * largo saltaba varios meses de golpe y no había forma de arrepentirse a mitad.
+ * El mes cambia en cuanto el dedo pasa del umbral, no al levantarlo. Esperando a soltar, el gesto
+ * se sentía lento aunque la animación fuera la misma: se había hecho el movimiento y no pasaba
+ * nada hasta terminar. Un cierre por gesto evita lo que motivaba aquella espera, que un arrastre
+ * largo se comiera tres meses seguidos.
  */
 private fun Modifier.monthSwipe(onPrevious: () -> Unit, onNext: () -> Unit): Modifier =
     this.pointerInput(onPrevious, onNext) {
         var dragged = 0f
+        var fired = false
         detectHorizontalDragGestures(
-            onDragStart = { dragged = 0f },
-            onDragEnd = {
-                when {
-                    dragged > SwipeThresholdPx -> onPrevious()
-                    dragged < -SwipeThresholdPx -> onNext()
-                }
+            onDragStart = {
+                dragged = 0f
+                fired = false
             },
-            onDragCancel = { dragged = 0f },
+            onDragCancel = { fired = true },
         ) { change, amount ->
             dragged += amount
+            if (!fired && kotlin.math.abs(dragged) > SwipeThresholdPx) {
+                fired = true
+                if (dragged > 0) onPrevious() else onNext()
+            }
             change.consume()
         }
     }

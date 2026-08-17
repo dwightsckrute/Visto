@@ -55,18 +55,6 @@ data class CalendarUiState(
     val monthsWithEntries: Set<YearMonth>
         get() = entriesByDate.keys.mapTo(mutableSetOf()) { YearMonth.from(it) }
 
-    /**
-     * Los años a los que se puede ir, del más reciente al más antiguo.
-     *
-     * Solo los que tienen algo, más el que se está mirando. Un par de flechas dejaría recorrer
-     * también 1998, donde no hay nada que ver; una lista de los años que existen de verdad ocupa
-     * menos, se toca de una vez y no promete lo que no hay.
-     */
-    val selectableYears: List<Int>
-        get() = (monthsWithEntries.map { it.year } + visibleMonth.year)
-            .distinct()
-            .sortedDescending()
-
     val hasAnyEntry: Boolean
         get() = entriesByDate.isNotEmpty()
 }
