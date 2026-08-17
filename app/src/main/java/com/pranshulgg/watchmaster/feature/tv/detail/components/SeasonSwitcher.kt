@@ -2,6 +2,7 @@ package com.pranshulgg.watchmaster.feature.tv.detail.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -83,16 +84,32 @@ fun SeasonSwitcher(
             FilledTonalButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = Spacing.minTouchTarget),
+                    .heightIn(min = Spacing.minTouchTarget)
+                    .padding(vertical = Spacing.xs),
                 shapes = ButtonDefaults.shapes(),
+                contentPadding = PaddingValues(
+                    horizontal = Spacing.lg,
+                    vertical = Spacing.sm,
+                ),
                 onClick = { expanded = true },
             ) {
-                Text(
-                    text = selected.seasonLabel(),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
+                // Dos líneas y no una: el botón es lo único que dice en qué temporada estás, así
+                // que decir además cuánto llevas de ella ahorra abrir el desplegable para mirarlo.
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = selected.seasonLabel(),
+                        style = MaterialTheme.typography.titleSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Text(
+                        text = selected.progressLabel(),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Symbol(
                     icon = R.drawable.keyboard_arrow_down_24px,
                     desc = null,
@@ -110,14 +127,50 @@ fun SeasonSwitcher(
                     val isSelected = season.seasonId == selectedSeasonId
                     val label = season.seasonLabel()
                     val state = season.stateLabel()
+                    val progress = season.progressLabel()
 
                     DropdownMenuItem(
-                        modifier = Modifier.semantics { contentDescription = "$label, $state" },
+                        modifier = Modifier.semantics {
+                            contentDescription = "$label, $state, $progress"
+                        },
                         onClick = {
                             expanded = false
                             if (!isSelected) onSelectSeason(season)
                         },
+                        // La carátula de la temporada, que es como se reconocen entre sí mucho
+                        // antes que por el número. En una serie larga la lista de "Temporada N"
+                        // es indistinguible; con la imagen se elige de un vistazo.
                         leadingIcon = {
+                            PosterBox(
+                                posterUrl = season.posterPath
+                                    ?.let { "https://image.tmdb.org/t/p/w154$it" },
+                                apiPath = season.posterPath,
+                                width = 32.dp,
+                                height = 48.dp,
+                                cornerRadius = ShapeRadius.Small,
+                                progressIndicatorSize = 14.dp,
+                                placeholder = { PosterPlaceholder(size = 0.5f) },
+                            )
+                        },
+                        text = {
+                            Column {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = if (isSelected) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    },
+                                )
+                                Text(
+                                    text = "$state · $progress",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        },
+                        trailingIcon = {
                             if (isSelected) {
                                 Symbol(
                                     icon = R.drawable.check_24px,
@@ -127,23 +180,6 @@ fun SeasonSwitcher(
                             } else {
                                 Spacer(Modifier.size(24.dp))
                             }
-                        },
-                        text = {
-                            Text(
-                                text = label,
-                                color = if (isSelected) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurface
-                                },
-                            )
-                        },
-                        trailingIcon = {
-                            Text(
-                                text = state,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
                         },
                     )
                 }

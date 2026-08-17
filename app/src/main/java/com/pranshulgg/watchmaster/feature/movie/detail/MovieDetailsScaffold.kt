@@ -20,6 +20,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
+import com.pranshulgg.watchmaster.core.ui.components.entranceSettle
+import com.pranshulgg.watchmaster.core.ui.components.rememberEntranceSettle
 import com.pranshulgg.watchmaster.core.utils.shareMedia
 import com.pranshulgg.watchmaster.feature.movie.detail.ui.MovieDetailsConfirmationDialog
 import com.pranshulgg.watchmaster.feature.movie.detail.ui.MovieDetailsNoteDialog
@@ -61,21 +63,28 @@ fun MovieDetailsScaffold(
     // la ficha para luego quitarla es justo lo que se percibía como un tirón: un destello vale
     // menos que nada. Durante ese margen no se dibuja nada y la transición de salida de la
     // pantalla anterior cubre el hueco.
+    val ready = !loading && movieItem != null
+
     var showPlaceholder by remember { mutableStateOf(false) }
-    LaunchedEffect(loading || movieItem == null) {
+    LaunchedEffect(ready) {
         showPlaceholder = false
-        if (loading || movieItem == null) {
+        if (!ready) {
             delay(PLACEHOLDER_DELAY_MS)
             showPlaceholder = true
         }
     }
 
-    if (loading || movieItem == null) {
+    // Si la ficha no estaba en caché, la transición de navegación se agota sobre una pantalla
+    // vacía y el contenido aparecería de golpe al llegar. Esto lo hace entrar en movimiento.
+    val settle = rememberEntranceSettle(ready)
+
+    if (!ready || movieItem == null) {
         if (showPlaceholder) LoadingScreenPlaceholder()
         return
     }
 
     Scaffold(
+        modifier = Modifier.entranceSettle(settle),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         bottomBar = {
             MediaActionsFloatingToolbar(

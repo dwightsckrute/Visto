@@ -2,7 +2,6 @@ package com.pranshulgg.watchmaster.core.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,6 +24,10 @@ import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
  * Los fundidos no se solapan a propósito. Si las dos pantallas se atenúan a la vez se ven las dos
  * medio transparentes durante medio segundo y el resultado es turbio; encadenados —primero se va
  * una, luego llega la otra— el cambio se lee limpio aunque dure lo mismo.
+ *
+ * Ese encadenado tiene además un efecto práctico. Grabando la pantalla se veía que entre que la
+ * lista desaparecía y la ficha tenía datos que dibujar quedaba un hueco en negro de unos cinco
+ * frames. La pantalla que se va tarda ahora lo suficiente en irse como para tapar ese hueco.
  */
 object NavTransitions {
 
@@ -34,16 +37,14 @@ object NavTransitions {
     /** Hasta dónde se aleja la saliente. Solo lo justo para insinuar que queda detrás. */
     private const val EXIT_SCALE = 1.06f
 
-    /** Emphasized decelerate: arranca rápido y frena largo, la curva de Material para entradas. */
-    private val ScaleEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
-
     /** Lo que tarda en marcharse la pantalla que se va, antes de que asome la siguiente. */
-    private const val FadeOutDuration = 90
+    private const val FadeOutDuration = 200
 
     /** Y lo que tarda en llegar la nueva, ya con la anterior fuera. */
-    private const val FadeInDuration = 220
+    private const val FadeInDuration = 250
 
-    private fun scaleSpec() = tween<Float>(AppMotion.DurationLong, easing = ScaleEasing)
+    private fun scaleSpec() =
+        tween<Float>(AppMotion.DurationLong, easing = AppMotion.EmphasizedDecelerate)
     private fun fadeOutSpec() = tween<Float>(FadeOutDuration)
     private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeOutDuration)
 

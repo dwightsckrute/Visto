@@ -12,10 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
+import com.pranshulgg.watchmaster.core.ui.components.entranceSettle
+import com.pranshulgg.watchmaster.core.ui.components.rememberEntranceSettle
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.core.utils.shareMedia
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
@@ -63,21 +66,28 @@ fun TvDetailsScaffold(
     // la ficha para luego quitarla es justo lo que se percibía como un tirón: un destello vale
     // menos que nada. Durante ese margen no se dibuja nada y la transición de salida de la
     // pantalla anterior cubre el hueco.
+    val ready = !loading && season != null && tvItem != null
+
     var showPlaceholder by remember { mutableStateOf(false) }
-    LaunchedEffect(loading || season == null || tvItem == null) {
+    LaunchedEffect(ready) {
         showPlaceholder = false
-        if (loading || season == null || tvItem == null) {
+        if (!ready) {
             delay(PLACEHOLDER_DELAY_MS)
             showPlaceholder = true
         }
     }
 
-    if (loading || season == null || tvItem == null) {
+    // Si la temporada no estaba en caché, la transición de navegación se agota sobre una pantalla
+    // vacía y el contenido aparecería de golpe al llegar. Esto lo hace entrar en movimiento.
+    val settle = rememberEntranceSettle(ready)
+
+    if (!ready || season == null || tvItem == null) {
         if (showPlaceholder) LoadingScreenPlaceholder()
         return
     }
 
     Scaffold(
+        modifier = Modifier.entranceSettle(settle),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         bottomBar = {
             MediaActionsFloatingToolbar(
