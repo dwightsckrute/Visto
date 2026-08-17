@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Sin capa <monochrome> a propósito.
-
-    Esa capa es lo que un launcher usa para el icono temático cuando el desarrollador la
-    proporciona, y tiene prioridad sobre cualquier otra cosa. El Pixel Launcher solo genera él
-    la versión temática de los iconos que no la traen, así que declararla era justo lo que
-    impedía que la generase.
-
-    El precio: donde no exista ese generador —launchers de terceros, versiones anteriores— el
-    icono se queda a todo color con los iconos temáticos activados, en vez de teñirse.
--->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_main_background"/>
     <foreground android:drawable="@drawable/ic_launcher_visto_foreground"/>
+    <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>
 </adaptive-icon>
