@@ -55,6 +55,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Un id distinto permite instalar una build de pruebas junto a la Visto real,
+            // con su propio sandbox, sin arriesgar los datos ni la firma de la instalación.
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = false

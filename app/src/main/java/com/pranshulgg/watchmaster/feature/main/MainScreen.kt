@@ -20,8 +20,9 @@ import com.pranshulgg.watchmaster.core.ui.components.TooltipIconBtn
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.feature.home.HomeScreen
-import com.pranshulgg.watchmaster.feature.main.components.MainFloatingToolbar
+import com.pranshulgg.watchmaster.feature.main.components.MainBottomBar
 import com.pranshulgg.watchmaster.feature.movie.MovieHomeScreen
+import com.pranshulgg.watchmaster.feature.search.SearchType
 import com.pranshulgg.watchmaster.feature.tv.TvHomeScreen
 
 @OptIn(
@@ -35,12 +36,7 @@ fun MainScreen(
 
     val viewModel: MainScreenNavViewModel = viewModel()
 
-    val selectedItem = viewModel.selectedItem
-    val appBarTitles = listOf(
-        localized("Inicio", "Home"),
-        localized("Películas", "Movies"),
-        localized("Series", "TV shows"),
-    )
+    val selectedDestination = viewModel.selectedDestination
 
     val scrollBehavior =
         FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = Bottom)
@@ -55,7 +51,7 @@ fun MainScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 title = {
-                    Text(appBarTitles[selectedItem])
+                    Text(selectedDestination.label)
                 },
                 actions = {
                     TooltipIconBtn(
@@ -72,10 +68,12 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            MainFloatingToolbar(
-                selectedItem = selectedItem,
-                onItemSelected = { index -> viewModel.selectedItem = index },
-                navController = navController,
+            MainBottomBar(
+                selected = selectedDestination,
+                onSelect = viewModel::selectDestination,
+                onSearchClick = {
+                    navController.navigate(NavRoutes.search(SearchType.MULTI))
+                },
             )
         }
     ) { innerPadding ->
@@ -83,24 +81,22 @@ fun MainScreen(
             modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
         ) {
 
-            when (selectedItem) {
-                0 -> HomeScreen(
+            when (selectedDestination) {
+                MainDestination.Home -> HomeScreen(
                     navController
                 )
 
-                1 -> MovieHomeScreen(
+                MainDestination.Movies -> MovieHomeScreen(
                     navController,
                     scrollBehavior,
                     scrollBehaviorTopBar,
                 )
 
-                2 -> {
-                    TvHomeScreen(
-                        navController,
-                        scrollBehavior,
-                        scrollBehaviorTopBar,
-                    )
-                }
+                MainDestination.Series -> TvHomeScreen(
+                    navController,
+                    scrollBehavior,
+                    scrollBehaviorTopBar,
+                )
             }
         }
     }
