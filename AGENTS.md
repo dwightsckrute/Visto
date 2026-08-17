@@ -38,7 +38,8 @@ Material 3 is pinned to an explicit `1.5.0-alpha` version in `gradle/libs.versio
 ## Product invariants
 
 - Never change the Android `applicationId` from `com.dwightsckrute.visto`. A different ID creates a separate application and makes the existing private data unavailable.
-- Do not rename the legacy Kotlin namespace/package `com.dwightsckrute.visto` as incidental cleanup. Treat that as a dedicated migration.
+- The Kotlin package and the `applicationId` are both `com.dwightsckrute.visto`. The move off the upstream author's `com.pranshulgg.watchmaster` is done; do not rename either again as incidental cleanup.
+- The Room file is `visto.db`. `VistoDatabase` renames a `watchmaster.db` left by older installs before opening it. Keep that step: opening Room under a name whose file does not exist creates an empty database and orphans the real one.
 - Preserve the permanent release signing identity. Never regenerate, replace, print, or commit signing material.
 - Never use destructive Room migration fallbacks. Any schema change must increment the database version, add an explicit migration in `VistoDatabase.kt`, and preserve existing user data.
 - Preserve the export/import and automatic-backup formats unless a compatible versioned migration is provided.
