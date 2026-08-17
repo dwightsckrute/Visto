@@ -38,8 +38,6 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.pranshulgg.watchmaster.core.ui.components.listItemShape
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
-import com.pranshulgg.watchmaster.core.ui.navigation.posterSharedKey
-import com.pranshulgg.watchmaster.core.ui.navigation.sharedPoster
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
@@ -47,10 +45,6 @@ import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.asStatusDates
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.toWatchListItemStatusUiPill
 import com.pranshulgg.watchmaster.core.ui.localization.localized
-import androidx.compose.animation.core.animateDpAsState
-import com.pranshulgg.watchmaster.core.ui.navigation.LocalSharedTransitionScope
-import com.pranshulgg.watchmaster.core.ui.navigation.posterImageUrl
-import com.pranshulgg.watchmaster.core.ui.navigation.sharedPosterCorner
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -73,20 +67,12 @@ fun MovieWatchlistRow(
 
 
     val poster = item.posterPath?.let {
-        posterImageUrl(item.posterPath)
+        "https://image.tmdb.org/t/p/w154$it"
     }
 
     val status = item.status.toWatchListItemStatusUiPill(item.asStatusDates())
 
     val shape = listItemShape(isOnly, isFirst, isLast)
-
-    // El radio sale de la propia transición de navegación, no de un spring aparte, para que la
-    // forma y los límites se muevan al mismo compás.
-    val posterCorner = sharedPosterCorner(
-        resting = ShapeRadius.None,
-        inFlight = ShapeRadius.Large,
-    )
-
 
     Surface(
         shape = shape,
@@ -121,19 +107,12 @@ fun MovieWatchlistRow(
                 contentAlignment = Alignment.Center
             ) {
                 PosterBox(
-                    // Origen de la continuidad hacia la ficha. Durante el vuelo adopta el radio
-                    // de la ficha para que los dos extremos coincidan; al aterrizar vuelve a su
-                    // esquina recta, animado, en lugar de cambiar de golpe.
-                    modifier = Modifier.sharedPoster(
-                        key = posterSharedKey("movie", item.id),
-                        cornerRadiusInFlight = posterCorner,
-                    ),
                     posterUrl = poster,
                     apiPath = item.posterPath,
                     width = 80.dp,
                     height = 120.dp,
                     progressIndicatorSize = 40.dp,
-                    cornerRadius = posterCorner
+                    cornerRadius = ShapeRadius.None
                 )
             }
             Column(

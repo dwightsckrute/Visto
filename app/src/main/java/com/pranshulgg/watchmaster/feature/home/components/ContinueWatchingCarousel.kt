@@ -55,8 +55,8 @@ fun ContinueWatchingCarousel(
         state = carouselState,
         modifier = modifier
             .fillMaxWidth()
-            .height(240.dp),
-        preferredItemWidth = 220.dp,
+            .height(200.dp),
+        preferredItemWidth = 176.dp,
         itemSpacing = Spacing.sm,
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Spacing.lg),
     ) { index ->
@@ -72,7 +72,7 @@ fun ContinueWatchingCarousel(
                 posterUrl = item.posterPath?.let { "https://image.tmdb.org/t/p/w500$it" },
                 apiPath = item.posterPath,
                 fillMaxWidth = true,
-                height = 240.dp,
+                height = 200.dp,
                 cornerRadius = ShapeRadius.None,
                 placeholder = { PosterPlaceholder(size = 0.5f) },
             )
