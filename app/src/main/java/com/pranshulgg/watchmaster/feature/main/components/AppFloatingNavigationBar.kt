@@ -1,33 +1,37 @@
 package com.pranshulgg.watchmaster.feature.main.components
 
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationItemIconPosition
-import androidx.compose.material3.ShortNavigationBar
-import androidx.compose.material3.ShortNavigationBarArrangement
 import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.ShortNavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.theme.Elevation
+import com.pranshulgg.watchmaster.core.ui.theme.Spacing
 import com.pranshulgg.watchmaster.feature.main.MainDestination
 
 /**
- * Navegación principal flotante de Visto.
+ * Navegación principal flotante de Visto: una píldora compacta que se ajusta a su contenido y
+ * deja respirar el fondo a los lados, en lugar de ocupar todo el ancho.
  *
- * Es una composición fina, no un componente reinventado: la semántica de navegación, el
- * indicador de selección y su animación los aporta el `ShortNavigationBar` oficial de
- * Material 3 Expressive. Lo único propio es el contenedor exterior en píldora, porque
- * `ShortNavigationBar` no expone `shape`.
+ * Usa los `ShortNavigationBarItem` oficiales de Material 3 Expressive, que aportan la semántica
+ * de selección y la animación del indicador, pero **no** el contenedor `ShortNavigationBar`:
+ * ese contenedor siempre se dimensiona a `constraints.maxWidth` y no soporta medición
+ * intrínseca, así que con él la píldora no puede ajustarse al contenido. Los items, en cambio,
+ * usan `defaultMinSize` y se miden por su contenido dentro de un `Row` normal.
  *
- * No es una API de Material; el nombre es interno del proyecto. Ver `docs/DESIGN_SYSTEM.md`.
+ * El nombre es interno del proyecto, no una API de Material. Ver `docs/DESIGN_SYSTEM.md`.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -46,13 +50,14 @@ fun AppFloatingNavigationBar(
         contentColor = colorScheme.onPrimaryContainer,
         shadowElevation = Elevation.floating,
     ) {
-        ShortNavigationBar(
-            // El tono y la sombra los pone la píldora exterior; la barra solo aporta
-            // semántica y disposición. Sin insets propios: los resuelve quien la coloca.
-            containerColor = Color.Transparent,
-            contentColor = colorScheme.onPrimaryContainer,
-            windowInsets = WindowInsets(0, 0, 0, 0),
-            arrangement = ShortNavigationBarArrangement.Centered,
+        Row(
+            // selectableGroup lo aportaba ShortNavigationBar; al no usarlo, la semántica de
+            // grupo de selección única para accesibilidad hay que declararla aquí.
+            modifier = Modifier
+                .selectableGroup()
+                .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             destinations.forEach { destination ->
                 val isSelected = destination == selected

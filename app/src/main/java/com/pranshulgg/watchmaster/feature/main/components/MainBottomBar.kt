@@ -54,17 +54,6 @@ fun MainBottomBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppFloatingNavigationBar(
-            // `fill = false` es obligatorio, no un detalle de estilo. ShortNavigationBar mide
-            // cada destino con `constraints.constrain(Constraints.fixed(anchoDelItem))`: si
-            // recibe constraints de ancho fijo, ese constrain eleva cada item al ancho completo
-            // de la barra y todos menos el primero se colocan fuera de pantalla. Con
-            // `fill = false` el mínimo es 0 y la medida de cada item se respeta.
-            // Tampoco sirve `width(IntrinsicSize.Min)` para que la píldora se ajuste al
-            // contenido: CenteredContentMeasurePolicy hace `layout(constraints.maxWidth)` y en
-            // la pasada de intrínsecos ese maxWidth es infinito, lo que revienta con
-            // "Size(2147483647 x 0) is out of range". Ambos casos verificados en dispositivo
-            // con M3 1.5.0-alpha17.
-            modifier = Modifier.weight(1f, fill = false),
             selected = selected,
             onSelect = onSelect,
         )

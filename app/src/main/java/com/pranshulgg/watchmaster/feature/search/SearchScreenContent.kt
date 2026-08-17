@@ -10,8 +10,8 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,7 +53,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -249,15 +248,38 @@ private fun VistoSearchField(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    val elevation by animateDpAsState(
-        targetValue = if (active) 4.dp else SearchBarDefaults.ShadowElevation,
-        animationSpec = motionScheme.fastEffectsSpec(),
-        label = "search-field-elevation",
+    // La profundidad se expresa por tono, no con borde ni sombra: es lo que hace Material 3
+    // Expressive con los search bars y lo que pide docs/DESIGN_SYSTEM.md. Al activarse, el
+    // campo sube un escalón de superficie en lugar de dibujar un aro de color.
+    val containerColor by animateColorAsState(
+        targetValue = if (active) {
+            MaterialTheme.colorScheme.surfaceContainerHighest
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        },
+        animationSpec = motionScheme.defaultEffectsSpec(),
+        label = "search-field-container",
     )
-    val borderWidth by animateDpAsState(
-        targetValue = if (active) 1.dp else 2.dp,
-        animationSpec = motionScheme.fastEffectsSpec(),
-        label = "search-field-border-width",
+    val leadingIconColor by animateColorAsState(
+        targetValue = if (active) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.primaryContainer
+        },
+        animationSpec = motionScheme.defaultEffectsSpec(),
+        label = "search-field-leading-icon",
+    )
+    // El color de contenido se anima en paralelo al del contenedor. No se deriva con
+    // contentColorFor porque los valores intermedios de la animación no coinciden con ningún
+    // rol del esquema y devolvería Unspecified.
+    val leadingIconContentColor by animateColorAsState(
+        targetValue = if (active) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        },
+        animationSpec = motionScheme.defaultEffectsSpec(),
+        label = "search-field-leading-icon-content",
     )
     val placeholder = when (searchType) {
         SearchType.MOVIE -> localized("Título de la película…", "Movie title…")
@@ -285,15 +307,6 @@ private fun VistoSearchField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(SearchBarDefaults.InputFieldHeight)
-                .shadow(
-                    elevation = elevation,
-                    shape = SearchBarDefaults.inputFieldShape,
-                )
-                .border(
-                    width = borderWidth,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = SearchBarDefaults.inputFieldShape,
-                )
                 .focusProperties { canFocus = active }
                 .focusRequester(focusRequester)
                 .semantics { traversalIndex = -1f },
@@ -309,7 +322,7 @@ private fun VistoSearchField(
             },
             leadingIcon = {
                 Surface(
-                    color = MaterialTheme.colorScheme.primaryContainer,
+                    color = leadingIconColor,
                     shape = CircleShape,
                 ) {
                     Box(
@@ -318,7 +331,7 @@ private fun VistoSearchField(
                     ) {
                         Symbol(
                             icon = R.drawable.search_24px,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = leadingIconContentColor,
                             size = 20.dp,
                         )
                     }
@@ -328,15 +341,19 @@ private fun VistoSearchField(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     AnimatedVisibility(
                         visible = viewModel.loading,
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut() + scaleOut(),
+                        enter = fadeIn(motionScheme.fastEffectsSpec()) +
+                            scaleIn(motionScheme.fastSpatialSpec()),
+                        exit = fadeOut(motionScheme.fastEffectsSpec()) +
+                            scaleOut(motionScheme.fastSpatialSpec()),
                     ) {
                         LoadingIndicator(modifier = Modifier.size(24.dp))
                     }
                     AnimatedVisibility(
                         visible = viewModel.query.isNotEmpty(),
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut() + scaleOut(),
+                        enter = fadeIn(motionScheme.fastEffectsSpec()) +
+                            scaleIn(motionScheme.fastSpatialSpec()),
+                        exit = fadeOut(motionScheme.fastEffectsSpec()) +
+                            scaleOut(motionScheme.fastSpatialSpec()),
                     ) {
                         IconButton(onClick = {
                             viewModel.onQueryChange("", searchType)
@@ -360,9 +377,9 @@ private fun VistoSearchField(
                 },
             ),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                focusedContainerColor = containerColor,
+                unfocusedContainerColor = containerColor,
+                disabledContainerColor = containerColor,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,

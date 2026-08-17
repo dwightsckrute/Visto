@@ -1,5 +1,11 @@
 package com.pranshulgg.watchmaster.feature.main
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -7,12 +13,14 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection.Companion.Bottom
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
@@ -42,6 +50,11 @@ fun MainScreen(
         FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = Bottom)
 
     val scrollBehaviorTopBar = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // transitionSpec no es un ámbito @Composable, así que las specs se resuelven aquí.
+    val destinationSlideSpec = motionScheme.defaultSpatialSpec<IntOffset>()
+    val destinationFadeSpec = motionScheme.fastEffectsSpec<Float>()
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
@@ -80,23 +93,46 @@ fun MainScreen(
         Box(
             modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
         ) {
+            AnimatedContent(
+                targetState = selectedDestination,
+                // El contenido acompaña a la dirección del salto en la barra: moverse hacia un
+                // destino de la derecha entra desde la derecha. Da continuidad espacial entre
+                // el indicador y la pantalla, en vez de un cambio seco.
+                transitionSpec = {
+                    val forward = targetState.ordinal > initialState.ordinal
+                    val offset = { width: Int -> if (forward) width / 6 else -width / 6 }
 
-            when (selectedDestination) {
-                MainDestination.Home -> HomeScreen(
-                    navController
-                )
+                    (
+                        slideInHorizontally(
+                            animationSpec = destinationSlideSpec,
+                            initialOffsetX = offset,
+                        ) + fadeIn(destinationFadeSpec)
+                        ) togetherWith (
+                        slideOutHorizontally(
+                            animationSpec = destinationSlideSpec,
+                            targetOffsetX = { width -> -offset(width) },
+                        ) + fadeOut(destinationFadeSpec)
+                        )
+                },
+                label = "main-destination",
+            ) { destination ->
+                when (destination) {
+                    MainDestination.Home -> HomeScreen(
+                        navController
+                    )
 
-                MainDestination.Movies -> MovieHomeScreen(
-                    navController,
-                    scrollBehavior,
-                    scrollBehaviorTopBar,
-                )
+                    MainDestination.Movies -> MovieHomeScreen(
+                        navController,
+                        scrollBehavior,
+                        scrollBehaviorTopBar,
+                    )
 
-                MainDestination.Series -> TvHomeScreen(
-                    navController,
-                    scrollBehavior,
-                    scrollBehaviorTopBar,
-                )
+                    MainDestination.Series -> TvHomeScreen(
+                        navController,
+                        scrollBehavior,
+                        scrollBehaviorTopBar,
+                    )
+                }
             }
         }
     }
