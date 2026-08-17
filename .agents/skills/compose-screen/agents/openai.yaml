@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose Screen"
+  short_description: "Crea pantallas Compose coherentes y verificadas"
+  default_prompt: "Usa $compose-screen para crear o modificar esta pantalla Compose siguiendo la arquitectura y el sistema visual de Visto."

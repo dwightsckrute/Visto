@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Quality Review"
+  short_description: "Audita calidad Android antes de entregar"
+  default_prompt: "Usa $android-quality-review para revisar este cambio Android y ejecutar las comprobaciones reales de Visto antes de entregarlo."

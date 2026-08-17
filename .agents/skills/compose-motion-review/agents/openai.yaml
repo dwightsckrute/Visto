@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose Motion Review"
+  short_description: "Revisa movimiento Compose seguro y coordinado"
+  default_prompt: "Usa $compose-motion-review para crear o revisar esta animación Compose con movimiento seguro, accesible y coordinado."
