@@ -2,6 +2,7 @@ package com.pranshulgg.watchmaster.feature.tv.detail
 
 import java.util.concurrent.TimeUnit
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -31,6 +32,7 @@ import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.components.media.MediaStatusSection
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
+import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.data.local.entity.TvBundle
 import com.pranshulgg.watchmaster.data.local.entity.TvEpisodeEntity
@@ -136,14 +138,25 @@ fun TvDetailsContent(
                         selectedSeasonId = season.seasonId,
                         onSelectSeason = onSelectSeason,
                     )
-                    // Los episodios se cruzan con un fundido en lugar de desaparecer y volver.
-                    // Quitar el bloque mientras carga la temporada nueva hacía saltar el layout
-                    // y daba la sensación de estar entrando en otra pantalla.
+                    // El fundido es solo para el cambio de temporada. contentKey lo ata al
+                    // seasonId: sin él, la animación se disparaba con cualquier cambio de la
+                    // lista, así que marcar un episodio hacía desaparecer y volver toda la
+                    // sección. El contenido sigue leyendo los episodios más recientes.
                     AnimatedContent(
-                        targetState = episodes,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        targetState = season to episodes,
+                        contentKey = { (currentSeason, _) -> currentSeason.seasonId },
+                        transitionSpec = {
+                            // Encadenado, no cruzado: la lista saliente se va antes de que
+                            // entre la nueva, para no mezclar dos temporadas en pantalla.
+                            fadeIn(
+                                tween(
+                                    durationMillis = AppMotion.DurationMedium,
+                                    delayMillis = AppMotion.DurationShort,
+                                )
+                            ) togetherWith fadeOut(tween(AppMotion.DurationShort))
+                        },
                         label = "season-episodes",
-                    ) { seasonEpisodes ->
+                    ) { (currentSeason, seasonEpisodes) ->
                         if (seasonEpisodes.isEmpty()) {
                             // Hueco del mismo alto mientras llegan: sin spinner, porque los
                             // episodios salen de Room y aparecen enseguida.
@@ -152,7 +165,7 @@ fun TvDetailsContent(
                             EpisodesSection(
                                 seasonEpisodes,
                                 viewModel,
-                                season
+                                currentSeason
                             )
                         }
                     }
