@@ -78,6 +78,12 @@ fun TvDetailsScaffold(
                         }
                     },
                     share = { shareMedia(context, tvItem.name, id, isTv = true) },
+                    // Aquí la unidad es la temporada, no la serie: se marcan sus episodios
+                    // como vistos y se fecha la temporada, igual que hace "terminar".
+                    markWatchedOn = { watchedAt ->
+                        watchlistViewModel.finishSeason(season.seasonId, season.episodeCount)
+                        watchlistViewModel.updateSeasonFinishedDate(season.seasonId, watchedAt)
+                    },
                 ),
                 isPinned = isSeriesPinned,
                 isTv = true

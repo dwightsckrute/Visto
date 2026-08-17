@@ -71,6 +71,10 @@ fun MovieDetailsScaffold(
                     delete = { viewModel.showConfirmationDialog() },
                     togglePin = { watchlistViewModel.setPinned(id, !isMoviePinned) },
                     share = { shareMedia(context, movieItem.title, id, isTv = false) },
+                    markWatchedOn = { watchedAt ->
+                        watchlistViewModel.finish(id)
+                        watchlistViewModel.updateFinishedDate(id, watchedAt)
+                    },
                 ),
                 isMoviePinned
             )

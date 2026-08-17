@@ -1,5 +1,7 @@
 package com.pranshulgg.watchmaster.feature.shared.media.ui
 
+import java.time.Instant
+
 data class FloatingToolbarMediaActionsParams(
     val startWatching: () -> Unit,
     val resetWatching: () -> Unit,
@@ -8,4 +10,11 @@ data class FloatingToolbarMediaActionsParams(
     val delete: () -> Unit,
     val togglePin: () -> Unit,
     val share: () -> Unit,
+    /**
+     * Marca como vista saltándose "en curso", registrando el día indicado.
+     *
+     * Existe aparte de [finishWatching] porque esa acción pasa por el diálogo de puntuación y
+     * asume que ya la estabas viendo; esto es para lo que ya habías visto antes de anotarlo.
+     */
+    val markWatchedOn: (Instant) -> Unit,
 )

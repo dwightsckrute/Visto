@@ -18,6 +18,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -134,6 +135,30 @@ class SearchViewModel @Inject constructor(
                     AppLanguage.text("No se encontró ninguna temporada", "No seasons were found")
                 )
             }
+        }
+    }
+
+    /**
+     * Añade el título y lo deja marcado como visto el día indicado, en un solo gesto.
+     *
+     * Va en secuencia y no reutiliza [addToWatchlist] porque aquel lanza su propia corrutina:
+     * marcar como visto antes de que termine el alta dejaría el estado a medias.
+     */
+    fun addAndMarkWatched(
+        item: SearchItem,
+        tvDetails: List<TvSeasonDto>? = null,
+        watchlistViewModel: WatchlistViewModel,
+        watchedAt: Instant,
+    ) {
+        viewModelScope.launch {
+            if (!watchlistViewModel.exists(item.id)) {
+                watchlistRepository.addFromSearch(item, tvDetails)
+            }
+            if (item.mediaType == "tv" && tvDetails != null) {
+                watchlistRepository.insertSeason(item.id, tvDetails)
+            }
+            watchlistViewModel.finish(item.id)
+            watchlistViewModel.updateFinishedDate(item.id, watchedAt)
         }
     }
 

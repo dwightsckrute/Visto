@@ -41,6 +41,7 @@ import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.TextAlertDialog
 import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.components.media.DatePickerSheet
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
 import com.pranshulgg.watchmaster.core.ui.theme.Elevation
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
@@ -48,18 +49,21 @@ import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.buttonIcon
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.actionLabel
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.confirmAction
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.dialogMessage
+import java.time.Instant
 
 
 private data class MenuItemOptionList(
     val title: String,
     val leading: Int,
     val action: () -> Unit,
-    val isInterruptOption: Boolean = false
+    val isInterruptOption: Boolean = false,
+    val isMarkWatchedOption: Boolean = false,
 )
 
 private data class UiState(
     val showDialog: Boolean = false,
-    val expanded: Boolean = false
+    val expanded: Boolean = false,
+    val showWatchedDatePicker: Boolean = false,
 )
 
 
@@ -81,6 +85,12 @@ fun MediaActionsFloatingToolbar(
     var uiState by remember { mutableStateOf(UiState()) }
 
     val menuItemOptionList = listOf(
+        MenuItemOptionList(
+            localized("Marcar como vista…", "Mark as watched…"),
+            R.drawable.check_24px,
+            { uiState = uiState.copy(showWatchedDatePicker = true) },
+            isMarkWatchedOption = true,
+        ),
         MenuItemOptionList(
             localized("Interrumpir", "Pause"),
             R.drawable.pause_24px,
@@ -161,6 +171,12 @@ fun MediaActionsFloatingToolbar(
                                     return@forEach
                                 }
 
+                                // Ya está vista: volver a marcarla no aporta nada, y la fecha
+                                // se corrige desde el propio listado o el Diario.
+                                if (option.isMarkWatchedOption && itemStatus == WatchStatus.FINISHED) {
+                                    return@forEach
+                                }
+
                                 DropdownMenuItem(
                                     modifier = Modifier.widthIn(min = if (option.isInterruptOption) 130.dp else 112.dp),
                                     leadingIcon = {
@@ -204,7 +220,24 @@ fun MediaActionsFloatingToolbar(
             uiState = uiState.copy(showDialog = false)
         }
     )
+
+    // Se fija al abrir para que recomponer no reinicie el día elegido.
+    val todayMillis = remember { System.currentTimeMillis() }
+    DatePickerSheet(
+        show = uiState.showWatchedDatePicker,
+        initialDate = todayMillis,
+        // DatePickerSheet exige un id para poder reutilizarse desde los listados; aquí solo
+        // interesa la fecha devuelta, así que se ignora.
+        id = MARK_WATCHED_SHEET_ID,
+        onDateSelected = { _, millis ->
+            millis?.let { actions.markWatchedOn(Instant.ofEpochMilli(it)) }
+            uiState = uiState.copy(showWatchedDatePicker = false, expanded = false)
+        },
+        onDismiss = { uiState = uiState.copy(showWatchedDatePicker = false) },
+    )
 }
+
+private const val MARK_WATCHED_SHEET_ID = 0L
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

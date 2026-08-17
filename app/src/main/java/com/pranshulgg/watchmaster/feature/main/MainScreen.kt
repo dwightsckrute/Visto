@@ -3,8 +3,7 @@ package com.pranshulgg.watchmaster.feature.main
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -13,19 +12,19 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection.Companion.Bottom
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.TooltipIconBtn
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
+import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.feature.home.HomeScreen
 import com.pranshulgg.watchmaster.feature.main.components.MainBottomBar
@@ -51,9 +50,7 @@ fun MainScreen(
 
     val scrollBehaviorTopBar = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    // transitionSpec no es un ámbito @Composable, así que las specs se resuelven aquí.
-    val destinationSlideSpec = motionScheme.defaultSpatialSpec<IntOffset>()
-    val destinationFadeSpec = motionScheme.fastEffectsSpec<Float>()
+    val stateHolder = rememberSaveableStateHolder()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -100,43 +97,46 @@ fun MainScreen(
         ) {
             AnimatedContent(
                 targetState = selectedDestination,
-                // El contenido acompaña a la dirección del salto en la barra: moverse hacia un
-                // destino de la derecha entra desde la derecha. Da continuidad espacial entre
-                // el indicador y la pantalla, en vez de un cambio seco.
+                // Fade through, no deslizamiento. Los tres destinos son hermanos, no hay
+                // jerarquía espacial entre ellos, y sobre todo: deslizar obliga a dibujar dos
+                // pantallas completas a la vez mientras la entrante hace su primera
+                // composición. Medido en dispositivo, ese solape disparaba el percentil 99 de
+                // tiempo de frame. Con la salida y la entrada encadenadas, la pantalla nueva
+                // se compone mientras aún está invisible.
                 transitionSpec = {
-                    val forward = targetState.ordinal > initialState.ordinal
-                    val offset = { width: Int -> if (forward) width / 6 else -width / 6 }
-
-                    (
-                        slideInHorizontally(
-                            animationSpec = destinationSlideSpec,
-                            initialOffsetX = offset,
-                        ) + fadeIn(destinationFadeSpec)
-                        ) togetherWith (
-                        slideOutHorizontally(
-                            animationSpec = destinationSlideSpec,
-                            targetOffsetX = { width -> -offset(width) },
-                        ) + fadeOut(destinationFadeSpec)
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = AppMotion.DurationMedium,
+                            delayMillis = AppMotion.DurationShort,
                         )
+                    ) togetherWith fadeOut(
+                        animationSpec = tween(durationMillis = AppMotion.DurationShort)
+                    // sizeTransform a null: los destinos ocupan el mismo hueco, así que animar
+                    // el tamaño solo añade una medida de layout por frame sin aportar nada.
+                    ) using null
                 },
                 label = "main-destination",
             ) { destination ->
-                when (destination) {
-                    MainDestination.Home -> HomeScreen(
-                        navController
-                    )
+                // Conserva el estado propio de cada destino (posición de scroll, pestaña
+                // interna) al ir y volver, en vez de reconstruirlo desde cero cada vez.
+                stateHolder.SaveableStateProvider(destination.name) {
+                    when (destination) {
+                        MainDestination.Home -> HomeScreen(
+                            navController
+                        )
 
-                    MainDestination.Movies -> MovieHomeScreen(
-                        navController,
-                        scrollBehavior,
-                        scrollBehaviorTopBar,
-                    )
+                        MainDestination.Movies -> MovieHomeScreen(
+                            navController,
+                            scrollBehavior,
+                            scrollBehaviorTopBar,
+                        )
 
-                    MainDestination.Series -> TvHomeScreen(
-                        navController,
-                        scrollBehavior,
-                        scrollBehaviorTopBar,
-                    )
+                        MainDestination.Series -> TvHomeScreen(
+                            navController,
+                            scrollBehavior,
+                            scrollBehaviorTopBar,
+                        )
+                    }
                 }
             }
         }
