@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.prefs.LocalAppPrefs
+import com.pranshulgg.watchmaster.core.model.WatchStatus
+import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.listItemShape
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
@@ -62,7 +65,16 @@ fun TvWatchlistRow(
     var expanded by rememberSaveable(item.id) { mutableStateOf(false) }
 
     val motionScheme = MaterialTheme.motionScheme
+
+    // Agrupadas: la fila no se despliega y al tocarla se entra en la serie, donde el selector
+    // de temporadas permite moverse entre ellas. Separadas (por defecto): la fila se despliega
+    // y cada temporada es una entrada propia que lleva directa a sus episodios.
     val groupSeasons = LocalAppPrefs.current.groupSeasons
+    // Al entrar en la serie se abre por donde tenga sentido continuar: la primera temporada sin
+    // terminar, o la primera si ya están todas vistas.
+    val entrySeason = remember(seasons) {
+        seasons.firstOrNull { it.status != WatchStatus.FINISHED } ?: seasons.firstOrNull()
+    }
 
     Surface(
         shape = shape,
@@ -71,7 +83,19 @@ fun TvWatchlistRow(
             .clip(shape)
             .combinedClickable(
                 onClick = {
-                    expanded = !expanded
+                    if (groupSeasons) {
+                        entrySeason?.let { target ->
+                            navController.navigate(
+                                NavRoutes.tvDetail(
+                                    item.id,
+                                    target.seasonNumber,
+                                    target.seasonId,
+                                )
+                            )
+                        }
+                    } else {
+                        expanded = !expanded
+                    }
                 },
                 onLongClick = {
                     onLongActionTvSeasonRequest(null, item)
@@ -128,15 +152,17 @@ fun TvWatchlistRow(
                     animationSpec = motionScheme.slowEffectsSpec(),
                 )
 
-                Symbol(
-                    R.drawable.keyboard_arrow_down_24px,
-                    size = 32.dp,
-                    modifier = Modifier.rotate(rotationAngle)
-                )
+                if (!groupSeasons) {
+                    Symbol(
+                        R.drawable.keyboard_arrow_down_24px,
+                        size = 32.dp,
+                        modifier = Modifier.rotate(rotationAngle)
+                    )
+                }
 
             }
             AnimatedVisibility(
-                visible = expanded,
+                visible = expanded && !groupSeasons,
                 enter = expandVertically(animationSpec = motionScheme.slowSpatialSpec()),
                 exit = shrinkVertically(animationSpec = motionScheme.slowSpatialSpec()),
             ) {
@@ -146,28 +172,24 @@ fun TvWatchlistRow(
                 ) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainer)
                     Spacer(Modifier.height(8.dp))
-                    if (groupSeasons) {
-                        TvSeasonsSummary(seasons)
-                    } else {
-                        seasons.forEachIndexed { i, season ->
-                            val isOnlySeason = seasons.singleOrNull() == season
-                            val isFirstSeason = i == 0
-                            val isLastSeason = i == seasons.lastIndex
+                    seasons.forEachIndexed { i, season ->
+                        val isOnlySeason = seasons.singleOrNull() == season
+                        val isFirstSeason = i == 0
+                        val isLastSeason = i == seasons.lastIndex
 
-                            val shapeSeasonRow =
-                                listItemShape(isOnlySeason, isFirstSeason, isLastSeason)
+                        val shapeSeasonRow =
+                            listItemShape(isOnlySeason, isFirstSeason, isLastSeason)
 
-                            TvWatchlistSeasonRow(
-                                season,
-                                shapeSeasonRow,
-                                navController,
-                                onLongActionTvSeasonRequest = {
-                                    onLongActionTvSeasonRequest(
-                                        season,
-                                        item
-                                    )
-                                })
-                        }
+                        TvWatchlistSeasonRow(
+                            season,
+                            shapeSeasonRow,
+                            navController,
+                            onLongActionTvSeasonRequest = {
+                                onLongActionTvSeasonRequest(
+                                    season,
+                                    item
+                                )
+                            })
                     }
                 }
 

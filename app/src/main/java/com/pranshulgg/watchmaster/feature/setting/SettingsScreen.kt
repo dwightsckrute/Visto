@@ -242,8 +242,8 @@ fun SettingsScreen(navController: NavController) {
                         leading = { SettingsTileIcon(R.drawable.view_apps_24px) },
                         title = localized("Agrupar temporadas", "Group seasons"),
                         description = localized(
-                            "Al desplegar una serie, mostrar su progreso combinado en vez de cada temporada",
-                            "When expanding a show, show its combined progress instead of each season",
+                            "Tocar una serie entra directamente en ella y las temporadas se eligen dentro, en vez de desplegarse en la lista",
+                            "Tapping a show opens it directly and seasons are picked inside, instead of expanding in the list",
                         ),
                         checked = prefs.groupSeasons,
                         onCheckedChange = prefs.setGroupSeasons,

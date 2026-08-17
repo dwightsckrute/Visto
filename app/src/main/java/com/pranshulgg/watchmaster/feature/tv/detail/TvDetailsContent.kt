@@ -35,6 +35,7 @@ import com.pranshulgg.watchmaster.feature.shared.media.components.CastTvSection
 import com.pranshulgg.watchmaster.feature.shared.media.components.NotesSection
 import com.pranshulgg.watchmaster.feature.shared.media.components.OverviewSection
 import com.pranshulgg.watchmaster.feature.tv.detail.components.EpisodesSection
+import com.pranshulgg.watchmaster.feature.tv.detail.components.SeasonSwitcher
 import com.pranshulgg.watchmaster.feature.tv.detail.components.TvHeroHeader
 import kotlinx.coroutines.launch
 import kotlin.text.get
@@ -48,7 +49,9 @@ fun TvDetailsContent(
     season: SeasonEntity?,
     viewModel: TvDetailsViewModel,
     watchlistViewModel: WatchlistViewModel,
-    episodes: List<TvEpisodeEntity>
+    episodes: List<TvEpisodeEntity>,
+    allSeasons: List<SeasonEntity>,
+    onSelectSeason: (SeasonEntity) -> Unit,
 ) {
 
 
@@ -123,6 +126,11 @@ fun TvDetailsContent(
                         season.seasonNotes.isNullOrBlank(),
                         { viewModel.showNoteDialog(season.seasonNotes ?: "") },
                         season.seasonNotes ?: ""
+                    )
+                    SeasonSwitcher(
+                        seasons = allSeasons,
+                        selectedSeasonId = season.seasonId,
+                        onSelectSeason = onSelectSeason,
                     )
                     if (episodes.isNotEmpty()) {
                         EpisodesSection(

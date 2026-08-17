@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
 import com.pranshulgg.watchmaster.core.utils.shareMedia
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
@@ -99,7 +100,19 @@ fun TvDetailsScaffold(
             season,
             viewModel,
             watchlistViewModel,
-            episodes
+            episodes,
+            allSeasons = seasons,
+            onSelectSeason = { target ->
+                // Reemplaza la temporada actual en vez de apilarla: si no, volver atrás
+                // recorrería una a una todas las que hayas mirado.
+                navController.navigate(
+                    NavRoutes.tvDetail(id, target.seasonNumber, target.seasonId)
+                ) {
+                    popUpTo(NavRoutes.tvDetail(id, seasonNumber, seasonId)) {
+                        inclusive = true
+                    }
+                }
+            },
         )
     }
 
