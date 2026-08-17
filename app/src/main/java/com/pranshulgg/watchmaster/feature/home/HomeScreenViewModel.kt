@@ -36,6 +36,8 @@ data class HomeUiState(
     val continueWatching: List<HomeMediaItem> = emptyList(),
     val recentlyWatched: List<HomeMediaItem> = emptyList(),
     val recentlyAdded: List<HomeMediaItem> = emptyList(),
+    /** Cosas terminadas dentro del mes natural en curso. */
+    val watchedThisMonth: Int = 0,
 ) {
     val isEmpty: Boolean get() = libraryCount == 0
 }
@@ -156,6 +158,13 @@ private fun buildHomeState(
             )
         }
 
+    // Mes natural, no últimos 30 días: es lo que se corresponde con lo que enseña el Diario.
+    val startOfMonth = java.time.YearMonth.now(java.time.ZoneId.systemDefault())
+        .atDay(1)
+        .atStartOfDay(java.time.ZoneId.systemDefault())
+        .toInstant()
+    val watchedThisMonth = recentlyWatched.count { !it.activityDate.isBefore(startOfMonth) }
+
     return HomeUiState(
         libraryCount = watchlist.size,
         inProgressCount = movieActivity.count { it.status == WatchStatus.WATCHING } +
@@ -166,5 +175,6 @@ private fun buildHomeState(
         continueWatching = continueWatching,
         recentlyWatched = recentlyWatched,
         recentlyAdded = recentlyAdded,
+        watchedThisMonth = watchedThisMonth,
     )
 }

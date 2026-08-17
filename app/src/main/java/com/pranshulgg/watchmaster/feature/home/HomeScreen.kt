@@ -58,6 +58,10 @@ import com.pranshulgg.watchmaster.feature.search.SearchType
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import com.pranshulgg.watchmaster.feature.home.components.HomeGreeting
+import com.pranshulgg.watchmaster.feature.home.components.HomeStat
+import com.pranshulgg.watchmaster.feature.home.components.HomeStatsRow
+import com.pranshulgg.watchmaster.feature.home.components.ContinueWatchingCarousel
 
 @Composable
 fun HomeScreen(
@@ -77,20 +81,80 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         item {
-            SummaryCard(
-                state = state,
+            HomeGreeting(
+                inProgress = state.inProgressCount,
+                watchedThisMonth = state.watchedThisMonth,
+                modifier = Modifier.animateItem(),
+            )
+        }
+
+        item {
+            HomeStatsRow(
+                stats = listOf(
+                    HomeStat(
+                        label = localized("Guardado", "Saved"),
+                        value = state.libraryCount,
+                        icon = R.drawable.bookmark_24px,
+                        container = MaterialTheme.colorScheme.primaryContainer,
+                        onContainer = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    HomeStat(
+                        label = localized("En curso", "Watching"),
+                        value = state.inProgressCount,
+                        icon = R.drawable.play_arrow_24px,
+                        container = MaterialTheme.colorScheme.tertiaryContainer,
+                        onContainer = MaterialTheme.colorScheme.onTertiaryContainer,
+                    ),
+                    HomeStat(
+                        label = localized("Visto", "Watched"),
+                        value = state.finishedCount,
+                        icon = R.drawable.check_24px,
+                        container = MaterialTheme.colorScheme.secondaryContainer,
+                        onContainer = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ),
+                    HomeStat(
+                        label = localized("Favoritos", "Favourites"),
+                        value = state.favoriteCount,
+                        icon = R.drawable.favorite_24px,
+                        container = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        onContainer = MaterialTheme.colorScheme.onSurface,
+                    ),
+                ),
                 modifier = Modifier.animateItem(),
             )
         }
 
         if (state.continueWatching.isNotEmpty()) {
             item {
-                HomeSection(
-                    title = localized("Continuar viendo", "Continue watching"),
-                    subtitle = localized("Retoma justo donde lo dejaste", "Pick up where you left off"),
-                    items = state.continueWatching,
-                    navController = navController,
-                )
+                Column(
+                    modifier = Modifier.animateItem(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = localized("Continuar viendo", "Continue watching"),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = localized("Retoma justo donde lo dejaste", "Pick up where you left off"),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    ContinueWatchingCarousel(
+                        items = state.continueWatching,
+                        onItemClick = { item ->
+                            if (item.mediaType == "movie") {
+                                navController.navigate(NavRoutes.movieDetail(item.id))
+                            } else if (item.seasonNumber != null && item.seasonId != null) {
+                                navController.navigate(
+                                    NavRoutes.tvDetail(item.id, item.seasonNumber, item.seasonId)
+                                )
+                            }
+                        },
+                    )
+                }
             }
         }
 
@@ -115,119 +179,6 @@ fun HomeScreen(
                     navController = navController,
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun SummaryCard(
-    state: HomeUiState,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ) {
-                    Symbol(
-                        icon = R.drawable.movie_24px,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(12.dp),
-                    )
-                }
-                Spacer(Modifier.width(14.dp))
-                Column {
-                    Text(
-                        text = localized("Tu biblioteca", "Your library"),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = localized("Todo lo que estás disfrutando, de un vistazo", "Everything you are enjoying, at a glance"),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    SummaryMetric(localized("Guardado", "Saved"), state.libraryCount, Modifier.weight(1f))
-                    SummaryMetric(localized("En curso", "In progress"), state.inProgressCount, Modifier.weight(1f))
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    SummaryMetric(localized("Visto", "Watched"), state.finishedCount, Modifier.weight(1f))
-                    SummaryMetric(localized("Favoritos", "Favorites"), state.favoriteCount, Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SummaryMetric(label: String, value: Int, modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        shape = RoundedCornerShape(50),
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .7f),
-        ),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 11.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AnimatedContent(
-                targetState = value,
-                transitionSpec = {
-                    (fadeIn(tween(220)) + slideInVertically(tween(260)) { it / 2 }) togetherWith
-                        (fadeOut(tween(160)) + slideOutVertically(tween(220)) { -it / 2 })
-                },
-                label = "summary-metric-value",
-            ) { animatedValue ->
-                Text(
-                    text = animatedValue.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
         }
     }
 }
