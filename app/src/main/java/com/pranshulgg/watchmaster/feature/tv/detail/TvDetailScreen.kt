@@ -6,6 +6,9 @@ import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection.Companion.Bottom
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,8 +36,19 @@ fun TvDetailsScreen(id: Long, seasonNumber: Int, navController: NavController, s
     val watchlistViewModel: WatchlistViewModel = hiltViewModel()
     var showError by remember { mutableStateOf(false) }
 
+    // La temporada visible es estado de esta pantalla, no un destino de navegación. Cambiarla
+    // navegando hacía que la serie entera saliera y volviera a entrar con su transición y su
+    // pantalla de carga, cuando lo único que cambia es qué episodios se listan.
+    var selectedSeasonNumber by rememberSaveable(id) { mutableIntStateOf(seasonNumber) }
+    var selectedSeasonId by rememberSaveable(id) { mutableLongStateOf(seasonId) }
 
-    TvDetailEffects(id, seasonNumber, viewModel, seasonId, onError = { showError = true })
+    TvDetailEffects(
+        id,
+        selectedSeasonNumber,
+        viewModel,
+        selectedSeasonId,
+        onError = { showError = true },
+    )
 
     val scrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = Bottom)
 
@@ -48,13 +62,16 @@ fun TvDetailsScreen(id: Long, seasonNumber: Int, navController: NavController, s
 
     TvDetailsScaffold(
         id = id,
-        seasonNumber = seasonNumber,
+        seasonNumber = selectedSeasonNumber,
         scrollBehavior = scrollBehavior,
         viewModel = viewModel,
         watchlistViewModel = watchlistViewModel,
         navController = navController,
-        seasonId = seasonId
+        seasonId = selectedSeasonId,
+        onSelectSeason = { target ->
+            selectedSeasonNumber = target.seasonNumber
+            selectedSeasonId = target.seasonId
+        },
     )
 
 }
-

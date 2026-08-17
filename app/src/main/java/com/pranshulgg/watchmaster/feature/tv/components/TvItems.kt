@@ -39,10 +39,15 @@ fun TvItems(
     pinnedItems: List<WatchlistItemEntity>,
     normalItems: List<WatchlistItemEntity>,
     seasons: List<SeasonEntity>,
+    allSeasons: List<SeasonEntity>,
 ) {
 
     val seasonsByShow = remember(seasons) {
         seasons.groupBy { it.showId }
+    }
+    // Sin filtrar por pestaña: al agrupar, la serie enseña todas sus temporadas.
+    val allSeasonsByShow = remember(allSeasons) {
+        allSeasons.groupBy { it.showId }
     }
 
 
@@ -83,6 +88,7 @@ fun TvItems(
                     navController,
                     onLongActionTvSeasonRequest,
                     filteredSeasons,
+                    allSeasonsByShow[item.id].orEmpty(),
                 )
             }
 
@@ -111,6 +117,7 @@ fun TvItems(
                 navController,
                 onLongActionTvSeasonRequest,
                 filteredSeasons,
+                allSeasonsByShow[item.id].orEmpty(),
             )
         }
 

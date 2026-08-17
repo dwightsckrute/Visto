@@ -30,6 +30,7 @@ fun WatchingTv(
     navController: NavController,
     onLongActionTvSeasonRequest: (SeasonEntity?, WatchlistItemEntity) -> Unit,
     seasons: List<SeasonEntity>,
+    allSeasons: List<SeasonEntity>,
 
     ) {
 
@@ -70,6 +71,7 @@ fun WatchingTv(
         pinnedItems,
         normalItems,
         seasons,
+        allSeasons,
     )
 
 }

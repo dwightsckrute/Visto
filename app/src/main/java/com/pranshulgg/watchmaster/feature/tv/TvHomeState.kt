@@ -10,6 +10,8 @@ data class TvHomeState(
     val seasonWatching: List<SeasonEntity> = emptyList(),
     val seasonFinished: List<SeasonEntity> = emptyList(),
     val seasonWatchlist: List<SeasonEntity> = emptyList(),
+    /** Todas las temporadas guardadas, sin filtrar por pestaña. */
+    val allSeasons: List<SeasonEntity> = emptyList(),
 )
 
 fun filterTvItems(
@@ -22,6 +24,7 @@ fun filterTvItems(
         seasonWatchlist = seasonItems.filter { it.status == WatchStatus.WANT_TO_WATCH },
         seasonWatching = seasonItems.filter { (it.status == WatchStatus.WATCHING || it.status == WatchStatus.INTERRUPTED) },
         seasonFinished = seasonItems.filter { it.status == WatchStatus.FINISHED },
+        allSeasons = seasonItems,
         isLoading = isLoading
     )
 }

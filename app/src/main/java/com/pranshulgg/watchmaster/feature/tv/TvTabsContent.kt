@@ -93,7 +93,8 @@ fun TvTabsContent(
                         onLongActionTvSeasonRequest = { item, watchlistItem ->
                             onLongActionTvSeasonRequest(item, watchlistItem)
                         },
-                        state.seasonWatchlist
+                        state.seasonWatchlist,
+                        state.allSeasons
                     )
                 }
 
@@ -106,7 +107,8 @@ fun TvTabsContent(
                         onLongActionTvSeasonRequest = { item, watchlistItem ->
                             onLongActionTvSeasonRequest(item, watchlistItem)
                         },
-                        state.seasonWatching
+                        state.seasonWatching,
+                        state.allSeasons
                     )
                 }
 
@@ -119,7 +121,8 @@ fun TvTabsContent(
                         onLongActionTvSeasonRequest = { item, watchlistItem ->
                             onLongActionTvSeasonRequest(item, watchlistItem)
                         },
-                        state.seasonFinished
+                        state.seasonFinished,
+                        state.allSeasons
                     )
                 }
             }

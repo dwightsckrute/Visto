@@ -107,7 +107,9 @@ fun ViewListContent(
                     tv,
                     navController,
                     onLongActionTvSeasonRequest = { _, _ -> },
-                    seasons = filteredSeasons
+                    seasons = filteredSeasons,
+                    // Una lista personalizada no separa por estado, así que aquí ya son todas.
+                    allSeasons = filteredSeasons,
                 )
                 Gap(2.dp)
             }
