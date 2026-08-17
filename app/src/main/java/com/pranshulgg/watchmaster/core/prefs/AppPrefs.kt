@@ -40,7 +40,13 @@ object AppPrefs {
                 }
                 ?: ThemeVariantType.EXPRESSIVE
         _groupSeasons.value = PreferencesHelper.getBool("group_seasons") ?: false
-        _episodeLayout.value = PreferencesHelper.getString("episode_layout") ?: "carousel"
+        _episodeLayout.value = when (PreferencesHelper.getString("episode_layout")) {
+            // El mosaico se retiró y la línea de tiempo ocupa su sitio: quien lo tuviera elegido
+            // hereda el reemplazo en vez de volver al carrusel sin haber tocado nada.
+            "grid", "timeline" -> "timeline"
+            "list" -> "list"
+            else -> "carousel"
+        }
         _defaultTab.value = when (val saved = PreferencesHelper.getString("default_tab")) {
             "Películas", "Movies", "movies" -> "movies"
             "Series", "tv" -> "tv"

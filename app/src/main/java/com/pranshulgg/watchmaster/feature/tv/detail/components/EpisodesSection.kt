@@ -70,8 +70,8 @@ fun EpisodesSection(
     }
 
 
-    // Una sola regla de marcado para las dos vistas: si divergieran, la cuadrícula y el carrusel
-    // se comportarían distinto ante el mismo toque.
+    // Una sola regla de marcado para todas las vistas: si divergieran, cada una se comportaría
+    // distinto ante el mismo toque.
     val toggleEpisode: (TvEpisodeEntity) -> Unit = { item ->
         when {
             season.status == WatchStatus.WANT_TO_WATCH || season.status == WatchStatus.FINISHED ->
@@ -120,8 +120,8 @@ fun EpisodesSection(
             return@MediaSectionCard
         }
 
-        if (layout == "grid") {
-            EpisodesGrid(
+        if (layout == "timeline") {
+            EpisodesTimeline(
                 episodes = episodes,
                 onToggle = toggleEpisode,
                 onInfo = { episode ->

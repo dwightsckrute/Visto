@@ -99,7 +99,7 @@ fun SettingsScreen(navController: NavController) {
     )
     val episodeLayoutLabels = mapOf(
         "carousel" to localized("Carrusel", "Carousel"),
-        "grid" to localized("Mosaico", "Grid"),
+        "timeline" to localized("Línea de tiempo", "Timeline"),
         "list" to localized("Lista", "List"),
     )
     val tabLabels = mapOf(
@@ -236,10 +236,10 @@ fun SettingsScreen(navController: NavController) {
                         leading = { SettingsTileIcon(R.drawable.list_alt_24px) },
                         title = localized("Vista de los episodios", "Episode layout"),
                         description = localized(
-                            "Carrusel para ir al día, mosaico para ver la temporada entera, lista para leer títulos y sinopsis",
-                            "Carousel to keep up week to week, grid to see the season at once, list to read titles and summaries",
+                            "Carrusel para ir al día, línea de tiempo para ver por dónde vas, lista para leer títulos y sinopsis",
+                            "Carousel to keep up week to week, timeline to see how far you are, list to read titles and summaries",
                         ),
-                        options = listOf("carousel", "grid", "list"),
+                        options = listOf("carousel", "timeline", "list"),
                         selectedOption = prefs.episodeLayout,
                         optionLabel = { episodeLayoutLabels[it] ?: it },
                         onOptionSelected = { prefs.setEpisodeLayout(it) },
