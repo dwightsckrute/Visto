@@ -23,15 +23,37 @@ data class CalendarUiState(
     val selectedDate: LocalDate?,
     /** Solo los días con algo visto; los días vacíos no ocupan memoria. */
     val entriesByDate: Map<LocalDate, List<WatchedEntry>> = emptyMap(),
+    /** El selector de mes y año, desplegado bajo la cabecera. */
+    val isPickingMonth: Boolean = false,
 ) {
     val entriesForSelectedDate: List<WatchedEntry>
         get() = selectedDate?.let { entriesByDate[it] }.orEmpty()
 
-    /** Total del mes visible, para el encabezado. */
-    val visibleMonthCount: Int
+    private val visibleMonthEntries: List<WatchedEntry>
         get() = entriesByDate.entries
             .filter { YearMonth.from(it.key) == visibleMonth }
-            .sumOf { it.value.size }
+            .flatMap { it.value }
+
+    /** Total del mes visible, para el encabezado. */
+    val visibleMonthCount: Int
+        get() = visibleMonthEntries.size
+
+    /**
+     * El desglose del mes, separado por tipo.
+     *
+     * Un total suelto dice cuánto, pero no qué. Cinco películas y cinco temporadas son el mismo
+     * número y no se parecen en nada, y distinguirlo no cuesta nada porque el tipo ya viene en
+     * cada entrada.
+     */
+    val visibleMonthMovies: Int
+        get() = visibleMonthEntries.count { it.mediaType != "tv" }
+
+    val visibleMonthShows: Int
+        get() = visibleMonthEntries.count { it.mediaType == "tv" }
+
+    /** Los meses con algo visto, para marcarlos en el selector y no navegar a ciegas. */
+    val monthsWithEntries: Set<YearMonth>
+        get() = entriesByDate.keys.mapTo(mutableSetOf()) { YearMonth.from(it) }
 
     val hasAnyEntry: Boolean
         get() = entriesByDate.isNotEmpty()

@@ -1,11 +1,17 @@
 package com.pranshulgg.watchmaster.feature.calendar
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +29,15 @@ import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -40,8 +50,10 @@ import com.pranshulgg.watchmaster.core.ui.components.Tooltip
 import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
+import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.core.ui.theme.Spacing
 import com.pranshulgg.watchmaster.feature.calendar.components.MonthGrid
+import com.pranshulgg.watchmaster.feature.calendar.components.MonthPicker
 import com.pranshulgg.watchmaster.feature.calendar.components.WatchedEntryRow
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -84,6 +96,8 @@ fun CalendarScreen(navController: NavController) {
             padding = padding,
             onPreviousMonth = viewModel::showPreviousMonth,
             onNextMonth = viewModel::showNextMonth,
+            onSelectMonth = viewModel::showMonth,
+            onToggleMonthPicker = viewModel::toggleMonthPicker,
             onSelectDate = viewModel::selectDate,
             onEntryClick = { entry ->
                 if (entry.mediaType == "tv") {
@@ -104,12 +118,18 @@ private fun CalendarContent(
     padding: PaddingValues,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
+    onSelectMonth: (YearMonth) -> Unit,
+    onToggleMonthPicker: () -> Unit,
     onSelectDate: (java.time.LocalDate) -> Unit,
     onEntryClick: (WatchedEntry) -> Unit,
 ) {
     // transitionSpec no es ámbito @Composable: las specs se resuelven fuera.
     val slideSpec = motionScheme.defaultSpatialSpec<IntOffset>()
     val fadeSpec = motionScheme.fastEffectsSpec<Float>()
+    // El alto y el alpha del selector comparten reloj, para que no quede un hueco vacío mientras
+    // se cierra.
+    val pickerSizeSpec = motionScheme.defaultSpatialSpec<IntSize>()
+    val pickerFadeSpec = motionScheme.defaultSpatialSpec<Float>()
 
     if (!uiState.isLoading && !uiState.hasAnyEntry) {
         Box(
@@ -140,11 +160,30 @@ private fun CalendarContent(
         item(key = "month-header") {
             MonthHeader(
                 month = uiState.visibleMonth,
-                count = uiState.visibleMonthCount,
+                movies = uiState.visibleMonthMovies,
+                shows = uiState.visibleMonthShows,
                 locale = locale,
+                isPickingMonth = uiState.isPickingMonth,
+                onTogglePicker = onToggleMonthPicker,
                 onPrevious = onPreviousMonth,
                 onNext = onNextMonth,
             )
+        }
+
+        item(key = "month-picker") {
+            AnimatedVisibility(
+                visible = uiState.isPickingMonth,
+                enter = expandVertically(pickerSizeSpec) + fadeIn(pickerFadeSpec),
+                exit = shrinkVertically(pickerSizeSpec) + fadeOut(pickerFadeSpec),
+            ) {
+                MonthPicker(
+                    visibleMonth = uiState.visibleMonth,
+                    monthsWithEntries = uiState.monthsWithEntries,
+                    locale = locale,
+                    onSelectMonth = onSelectMonth,
+                    modifier = Modifier.padding(bottom = Spacing.sm),
+                )
+            }
         }
 
         item(key = "month-grid") {
@@ -153,13 +192,23 @@ private fun CalendarContent(
                 transitionSpec = {
                     val forward = targetState > initialState
                     val offset = { width: Int -> if (forward) width / 5 else -width / 5 }
+                    // Sin animación de tamaño: no todos los meses ocupan las mismas semanas, y
+                    // el contenedor animando entre cinco y seis filas recorta la última.
                     (
-                        slideInHorizontally(slideSpec, offset) + fadeIn(fadeSpec)
-                        ) togetherWith (
-                        slideOutHorizontally(slideSpec) { -offset(it) } + fadeOut(fadeSpec)
-                        )
+                        (
+                            slideInHorizontally(slideSpec, offset) + fadeIn(fadeSpec)
+                            ) togetherWith (
+                            slideOutHorizontally(slideSpec) { -offset(it) } + fadeOut(fadeSpec)
+                            )
+                        ) using null
                 },
                 label = "calendar-month",
+                // Arrastrar de lado cambia de mes. Es el gesto que cualquiera prueba primero en
+                // un calendario, y hasta ahora no hacía nada.
+                modifier = Modifier.monthSwipe(
+                    onPrevious = onPreviousMonth,
+                    onNext = onNextMonth,
+                ),
             ) { month ->
                 MonthGrid(
                     month = month,
@@ -202,8 +251,11 @@ private fun CalendarContent(
 @Composable
 private fun MonthHeader(
     month: YearMonth,
-    count: Int,
+    movies: Int,
+    shows: Int,
     locale: Locale,
+    isPickingMonth: Boolean,
+    onTogglePicker: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
 ) {
@@ -211,26 +263,49 @@ private fun MonthHeader(
         .getDisplayName(TextStyle.FULL_STANDALONE, locale)
         .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
 
+    val pickerChevron by animateFloatAsState(
+        targetValue = if (isPickingMonth) 180f else 0f,
+        animationSpec = motionScheme.defaultSpatialSpec(),
+        label = "calendar-picker-chevron",
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "$name ${month.year}",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = if (count == 0) {
-                    localized("Sin actividad", "No activity")
+        // El título abre el selector. Es donde se toca para cambiar de mes en cualquier
+        // calendario, y aquí no hacía nada.
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(ShapeRadius.Large))
+                .clickable(onClick = onTogglePicker)
+                .padding(vertical = Spacing.xs, horizontal = Spacing.xs),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
+                Text(
+                    text = "$name ${month.year}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = monthSummary(movies, shows),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Symbol(
+                icon = R.drawable.keyboard_arrow_down_24px,
+                desc = if (isPickingMonth) {
+                    localized("Cerrar el selector de mes", "Close the month picker")
                 } else {
-                    localized("$count este mes", "$count this month")
+                    localized("Elegir mes y año", "Pick month and year")
                 },
-                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.rotate(pickerChevron),
             )
         }
         IconButton(onClick = onPrevious) {
@@ -251,3 +326,48 @@ private fun MonthHeader(
         }
     }
 }
+
+/** "2 películas · 3 series", y solo la mitad que tenga algo. */
+@Composable
+private fun monthSummary(movies: Int, shows: Int): String {
+    if (movies == 0 && shows == 0) return localized("Sin actividad", "No activity")
+
+    val moviePart = when (movies) {
+        0 -> null
+        1 -> localized("1 película", "1 movie")
+        else -> localized("$movies películas", "$movies movies")
+    }
+    val showPart = when (shows) {
+        0 -> null
+        1 -> localized("1 serie", "1 show")
+        else -> localized("$shows series", "$shows shows")
+    }
+    return listOfNotNull(moviePart, showPart).joinToString(" · ")
+}
+
+/** Cuánto hay que arrastrar para que cuente como cambio de mes. */
+private const val SwipeThresholdPx = 90f
+
+/**
+ * Arrastrar de lado para cambiar de mes.
+ *
+ * Se decide al soltar y no mientras se arrastra: disparando por umbral en pleno gesto, un arrastre
+ * largo saltaba varios meses de golpe y no había forma de arrepentirse a mitad.
+ */
+private fun Modifier.monthSwipe(onPrevious: () -> Unit, onNext: () -> Unit): Modifier =
+    this.pointerInput(onPrevious, onNext) {
+        var dragged = 0f
+        detectHorizontalDragGestures(
+            onDragStart = { dragged = 0f },
+            onDragEnd = {
+                when {
+                    dragged > SwipeThresholdPx -> onPrevious()
+                    dragged < -SwipeThresholdPx -> onNext()
+                }
+            },
+            onDragCancel = { dragged = 0f },
+        ) { change, amount ->
+            dragged += amount
+            change.consume()
+        }
+    }

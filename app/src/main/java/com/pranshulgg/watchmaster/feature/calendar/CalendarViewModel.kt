@@ -56,11 +56,15 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun showMonth(month: YearMonth) = _uiState.update { it.copy(visibleMonth = month) }
+    /** Elegir mes cierra el selector: quien ya ha elegido no necesita seguir viéndolo. */
+    fun showMonth(month: YearMonth) =
+        _uiState.update { it.copy(visibleMonth = month, isPickingMonth = false) }
 
     fun showPreviousMonth() = showMonth(_uiState.value.visibleMonth.minusMonths(1))
 
     fun showNextMonth() = showMonth(_uiState.value.visibleMonth.plusMonths(1))
+
+    fun toggleMonthPicker() = _uiState.update { it.copy(isPickingMonth = !it.isPickingMonth) }
 
     /** Volver a pulsar el día seleccionado lo deselecciona, para poder ver el mes entero. */
     fun selectDate(date: LocalDate) = _uiState.update { state ->
@@ -69,6 +73,12 @@ class CalendarViewModel @Inject constructor(
 
     fun goToToday() {
         val today = LocalDate.now(zone)
-        _uiState.update { it.copy(visibleMonth = YearMonth.from(today), selectedDate = today) }
+        _uiState.update {
+            it.copy(
+                visibleMonth = YearMonth.from(today),
+                selectedDate = today,
+                isPickingMonth = false,
+            )
+        }
     }
 }
