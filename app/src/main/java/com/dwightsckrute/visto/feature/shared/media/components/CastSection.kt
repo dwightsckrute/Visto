@@ -1,0 +1,117 @@
+package com.dwightsckrute.visto.feature.shared.media.components
+
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.dwightsckrute.visto.R
+import com.dwightsckrute.visto.core.ui.components.media.CastItem
+import com.dwightsckrute.visto.core.ui.components.media.MediaSectionCard
+import com.dwightsckrute.visto.data.local.entity.MovieBundle
+import com.dwightsckrute.visto.data.local.entity.TvBundle
+import com.dwightsckrute.visto.core.ui.localization.localized
+
+
+@Composable
+fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
+    MediaSectionCard(
+        title = localized("Reparto", "Cast"),
+        titleIcon = R.drawable.groups_2_24px,
+    ) {
+
+
+        val mainCast = tvItem.credits.cast.take(10)
+
+        if (mainCast.isEmpty()) {
+            Text(localized("No se encontró reparto", "No cast found"), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            return@MediaSectionCard
+        }
+        LazyRow {
+            item {
+                Spacer(Modifier.width(8.dp))
+            }
+            items(mainCast) { castMember ->
+                CastItem(
+                    character = castMember.character ?: "",
+                    name = castMember.name,
+                    profilePath = castMember.profile_path,
+                    onCastClick = { onCastClick(castMember.id) }
+                )
+            }
+            item {
+                Spacer(Modifier.width(8.dp))
+            }
+
+        }
+    }
+    Spacer(
+        modifier = Modifier.height(12.dp)
+    )
+    Spacer(
+        modifier = Modifier
+            .windowInsetsBottomHeight(WindowInsets.navigationBars)
+    )
+}
+
+
+@Composable
+fun CastMovieSection(movieItem: MovieBundle, onCastClick: (Long) -> Unit) {
+    MediaSectionCard(
+        title = localized("Reparto", "Cast"),
+        titleIcon = R.drawable.groups_2_24px,
+    ) {
+        val director = movieItem.credits.crew.firstOrNull { crew ->
+            crew.job == "Director"
+        }
+
+        val mainCast = movieItem.credits.cast.take(10)
+
+
+        LazyRow {
+            director?.let { director ->
+                item {
+                    Spacer(Modifier.width(8.dp))
+                }
+                item {
+                    CastItem(
+                        character = localized("Dirección", "Director"),
+                        name = director.name,
+                        profilePath = director.profile_path,
+                        onCastClick = { onCastClick(director.id) }
+                    )
+
+                }
+            }
+            items(mainCast) { castMember ->
+                CastItem(
+                    character = castMember.character ?: "",
+                    name = castMember.name,
+                    profilePath = castMember.profile_path,
+                    onCastClick = { onCastClick(castMember.id) }
+                )
+            }
+            item {
+                Spacer(Modifier.width(8.dp))
+            }
+
+        }
+    }
+    Spacer(
+        modifier = Modifier.height(12.dp)
+    )
+    Spacer(
+        modifier = Modifier
+            .windowInsetsBottomHeight(WindowInsets.navigationBars)
+    )
+}
+

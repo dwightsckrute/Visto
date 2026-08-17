@@ -5,9 +5,9 @@
 Visto es una aplicación Android de un único módulo (`:app`) para registrar películas, series, temporadas, episodios, puntuaciones, notas y listas. La evolución debe preservar:
 
 - `applicationId = "com.dwightsckrute.visto"`, para mantener acceso a los datos privados de la instalación actual.
-- El namespace Kotlin histórico `com.pranshulgg.watchmaster`, hasta que exista una migración dedicada.
+- El namespace Kotlin histórico `com.dwightsckrute.visto`, hasta que exista una migración dedicada.
 - La identidad de firma de las versiones publicadas.
-- La base Room `watchmaster.db`, sus migraciones explícitas y los formatos de copia de seguridad.
+- La base Room `visto.db`, sus migraciones explícitas y los formatos de copia de seguridad.
 - Español e inglés, incluido el idioma enviado a TMDB mediante `AppLanguage.tmdbLanguage()`.
 
 Este documento describe el estado auditado el 17 de agosto de 2026. Antes de un cambio estructural, leer también `AGENTS.md`.
@@ -34,7 +34,7 @@ Este documento describe el estado auditado el 17 de agosto de 2026. Antes de un 
 ## Estructura actual
 
 ```text
-app/src/main/java/com/pranshulgg/watchmaster/
+app/src/main/java/com/dwightsckrute/visto/
 ├── core/
 │   ├── di/              # proveedores Hilt
 │   ├── model/           # modelos compartidos

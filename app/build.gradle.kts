@@ -26,7 +26,7 @@ val tmdbApiKey: String = localProps.getProperty("TMDB_API_KEY")
 
 
 android {
-    namespace = "com.pranshulgg.watchmaster"
+    namespace = "com.dwightsckrute.visto"
     compileSdk = 36
     android.buildFeatures.buildConfig = true
     defaultConfig {

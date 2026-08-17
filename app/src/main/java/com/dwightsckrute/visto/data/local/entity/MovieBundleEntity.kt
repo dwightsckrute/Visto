@@ -1,0 +1,22 @@
+package com.dwightsckrute.visto.data.local.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "movie_bundle")
+data class MovieBundleEntity(
+    @PrimaryKey val id: Long,
+    val title: String,
+    val overview: String,
+    val runtime: Int?,
+    val poster_path: String?,
+    val backdrop_path: String?,
+    val genresJson: String,
+    val creditsJson: String,
+    val imagesJson: String,
+    val watchProvidersJson: String?,
+    val similarJson: String,
+    val recommendationsJson: String,
+    val reviewsJson: String,
+    val cachedAt: Long
+)

@@ -4,7 +4,7 @@
 
 Visto is a single-module Android application written in Kotlin and Jetpack Compose. It is a personal fork of WatchMaster for tracking movies, TV shows, seasons, episodes, ratings, notes, and custom lists. The UI supports Spanish and English.
 
-The main source tree is `app/src/main/java/com/pranshulgg/watchmaster`:
+The main source tree is `app/src/main/java/com/dwightsckrute/visto`:
 
 - `core/`: dependency injection, preferences, networking, navigation, shared UI, localization, and theme.
 - `data/`: Room database, entities, DAOs, mappers, and repositories.
@@ -38,9 +38,9 @@ Material 3 is pinned to an explicit `1.5.0-alpha` version in `gradle/libs.versio
 ## Product invariants
 
 - Never change the Android `applicationId` from `com.dwightsckrute.visto`. A different ID creates a separate application and makes the existing private data unavailable.
-- Do not rename the legacy Kotlin namespace/package `com.pranshulgg.watchmaster` as incidental cleanup. Treat that as a dedicated migration.
+- Do not rename the legacy Kotlin namespace/package `com.dwightsckrute.visto` as incidental cleanup. Treat that as a dedicated migration.
 - Preserve the permanent release signing identity. Never regenerate, replace, print, or commit signing material.
-- Never use destructive Room migration fallbacks. Any schema change must increment the database version, add an explicit migration in `WatchMasterDatabase.kt`, and preserve existing user data.
+- Never use destructive Room migration fallbacks. Any schema change must increment the database version, add an explicit migration in `VistoDatabase.kt`, and preserve existing user data.
 - Preserve the export/import and automatic-backup formats unless a compatible versioned migration is provided.
 - Keep the application usable in both Spanish and English. New user-facing text must provide both variants through `localized(es, en)` or the existing localization mechanism.
 - TMDB requests and stored metadata refreshes must use `AppLanguage.tmdbLanguage()` where language is relevant.
