@@ -9,6 +9,10 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.animateDp
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 
 /**
  * Continuidad de la carátula entre la lista y la ficha.
@@ -31,6 +35,36 @@ val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope
  * que la transición no sepa cuál emparejar.
  */
 fun posterSharedKey(mediaType: String, id: Long): String = "poster-$mediaType-$id"
+
+/**
+ * Tamaño de imagen común a los dos extremos de la transición.
+ *
+ * La lista pedía `w154` y la ficha `w500`. Son dos peticiones distintas, así que al volar la
+ * pieza cambiaba de mapa de bits a medio camino —o esperaba a que el grande cargara—, y eso se
+ * ve como un salto por muy bien que se animen los límites. Con la misma URL hay una sola entrada
+ * en caché y la imagen es literalmente la misma a un lado y al otro.
+ */
+fun posterImageUrl(path: String?): String? =
+    path?.takeIf { it.isNotBlank() }?.let { "https://image.tmdb.org/t/p/w500$it" }
+
+/**
+ * Radio de esquina de una carátula compartida, atado a la transición de navegación.
+ *
+ * Los extremos tienen forma distinta y hay que interpolar entre ellas, pero animar por separado
+ * con su propio spring no funciona: son dos relojes independientes, la forma y los límites no
+ * coinciden y el resultado se nota descoordinado. Aquí el valor sale de la misma transición que
+ * mueve el elemento, así que van sincronizados por construcción.
+ */
+@Composable
+fun sharedPosterCorner(resting: Dp, inFlight: Dp): Dp {
+    val visibilityScope = LocalNavAnimatedVisibilityScope.current ?: return resting
+    val corner by visibilityScope.transition.animateDp(label = "shared-poster-corner") { state ->
+        if (state == EnterExitState.Visible) resting else inFlight
+    }
+    // El clamp es obligatorio aunque la interpolación sea lineal: RoundedCornerShape lanza
+    // excepción con un radio negativo y ya nos costó un crash una vez.
+    return corner.coerceAtLeast(0.dp)
+}
 
 /**
  * Marca este composable como la carátula compartida [key]. Sin ámbitos disponibles se devuelve

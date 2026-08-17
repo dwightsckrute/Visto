@@ -49,6 +49,8 @@ import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.toWatchLis
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import androidx.compose.animation.core.animateDpAsState
 import com.pranshulgg.watchmaster.core.ui.navigation.LocalSharedTransitionScope
+import com.pranshulgg.watchmaster.core.ui.navigation.posterImageUrl
+import com.pranshulgg.watchmaster.core.ui.navigation.sharedPosterCorner
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -71,27 +73,19 @@ fun MovieWatchlistRow(
 
 
     val poster = item.posterPath?.let {
-        "https://image.tmdb.org/t/p/w154$it"
+        posterImageUrl(item.posterPath)
     }
 
     val status = item.status.toWatchListItemStatusUiPill(item.asStatusDates())
 
     val shape = listItemShape(isOnly, isFirst, isLast)
 
-    // Los dos extremos del elemento compartido tienen forma distinta a propósito: en la lista la
-    // carátula va a ras del borde de la fila y en la ficha es redondeada. Fijar una forma solo
-    // para el vuelo dejaba un salto al empezar y otro al acabar, porque 16 dp en una carátula de
-    // 80 dp se nota mucho. Así el radio se interpola y no hay ningún corte.
-    val sharedTransitionActive = LocalSharedTransitionScope.current?.isTransitionActive == true
-    val animatedCorner by animateDpAsState(
-        targetValue = if (sharedTransitionActive) ShapeRadius.Large else ShapeRadius.None,
-        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-        label = "poster-corner",
+    // El radio sale de la propia transición de navegación, no de un spring aparte, para que la
+    // forma y los límites se muevan al mismo compás.
+    val posterCorner = sharedPosterCorner(
+        resting = ShapeRadius.None,
+        inFlight = ShapeRadius.Large,
     )
-    // Obligatorio: el spring rebasa por debajo del objetivo al volver a 0 y RoundedCornerShape
-    // revienta con un radio negativo. Es la regla de AGENTS.md sobre no mandar el overshoot de
-    // un spring a una API que no lo admite.
-    val posterCorner = animatedCorner.coerceAtLeast(ShapeRadius.None)
 
 
     Surface(

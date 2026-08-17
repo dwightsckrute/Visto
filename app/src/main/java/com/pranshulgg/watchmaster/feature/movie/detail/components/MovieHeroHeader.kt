@@ -39,6 +39,7 @@ import com.pranshulgg.watchmaster.core.ui.navigation.sharedPoster
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.data.local.entity.MovieBundle
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
+import com.pranshulgg.watchmaster.core.ui.navigation.posterImageUrl
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -94,7 +95,7 @@ fun MovieHeroHeader(
             PosterBox(
                 // Destino de la continuidad desde la lista: misma clave, otro tamaño.
                 modifier = Modifier.sharedPoster(posterSharedKey("movie", movie.id)),
-                posterUrl = "https://image.tmdb.org/t/p/w500${movie.poster_path}",
+                posterUrl = posterImageUrl(movie.poster_path),
                 apiPath = movie.poster_path,
                 width = 120.dp,
                 height = 180.dp,

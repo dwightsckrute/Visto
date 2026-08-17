@@ -316,22 +316,31 @@ private fun HomeMediaCard(
                 cornerRadius = 0.dp,
                 progressIndicatorSize = 32.dp,
             )
-            item.progress?.let { progress ->
+            // El hueco de la barra se reserva siempre. Mostrarla solo cuando hay progreso hacía
+            // que unas tarjetas midieran 4 dp más que otras en la misma fila.
+            if (item.progress != null) {
                 LinearProgressIndicator(
-                    progress = { progress },
+                    progress = { item.progress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp),
                 )
+            } else {
+                Spacer(Modifier.height(4.dp))
             }
             Column(
                 modifier = Modifier.padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(3.dp),
             ) {
+                // minLines además de maxLines: sin reservar las líneas, un título de una línea
+                // dejaba la tarjeta más baja que la de al lado y la fila quedaba dentada.
+                // Reservar por líneas y no con una altura en dp mantiene el ajuste cuando el
+                // sistema usa un tamaño de letra mayor.
                 Text(
                     item.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
+                    minLines = 2,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -339,6 +348,7 @@ private fun HomeMediaCard(
                     if (showDate) formatActivityDate(item) else localized(item.subtitleEs, item.subtitleEn),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    minLines = 2,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
