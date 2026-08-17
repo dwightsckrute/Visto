@@ -33,6 +33,7 @@ import com.pranshulgg.watchmaster.core.ui.components.SettingSection
 import com.pranshulgg.watchmaster.core.ui.components.SettingTile
 import com.pranshulgg.watchmaster.core.ui.components.SettingsTileIcon
 import com.pranshulgg.watchmaster.core.ui.components.TextAlertDialog
+import com.pranshulgg.watchmaster.core.network.TmdbApiKey
 import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
@@ -77,6 +78,10 @@ fun SettingsScreen(navController: NavController) {
         },
     )
 
+    var tmdbKeyField by remember { mutableStateOf(TmdbApiKey.userKey().orEmpty()) }
+    var tmdbKeyIsUserProvided by remember { mutableStateOf(TmdbApiKey.isUserProvided()) }
+    val tmdbKeySavedMessage = localized("Clave guardada", "Key saved")
+    val tmdbKeyClearedMessage = localized("Se usará la clave incluida", "Using the bundled key")
     var isExportDialogOpen by remember { mutableStateOf(false) }
 
 
@@ -286,6 +291,38 @@ fun SettingsScreen(navController: NavController) {
                             isWarningImportDialogOpen = true
                         }
                     )
+                )
+            )
+            SettingSection(
+                title = localized("API de TMDB", "TMDB API"),
+                tiles = listOf(
+                    SettingTile.DialogTextFieldTile(
+                        leading = { SettingsTileIcon(R.drawable.experiment_24px) },
+                        title = localized("Clave de API propia", "Your own API key"),
+                        description = if (tmdbKeyIsUserProvided) {
+                            localized(
+                                "Se está usando tu clave. Vacíala para volver a la incluida.",
+                                "Using your key. Clear it to go back to the bundled one.",
+                            )
+                        } else {
+                            localized(
+                                "Opcional. Sin ella se usa la clave incluida en la aplicación.",
+                                "Optional. Without one the bundled key is used.",
+                            )
+                        },
+                        initialText = tmdbKeyField,
+                        placeholder = localized("Clave de API v3", "v3 API key"),
+                        placeholderTextField = localized("Pega aquí tu clave", "Paste your key here"),
+                        onTextSubmitted = { value ->
+                            val trimmed = value.trim()
+                            if (trimmed.isEmpty()) TmdbApiKey.clear() else TmdbApiKey.set(trimmed)
+                            tmdbKeyField = trimmed
+                            tmdbKeyIsUserProvided = TmdbApiKey.isUserProvided()
+                            SnackbarManager.show(
+                                if (trimmed.isEmpty()) tmdbKeyClearedMessage else tmdbKeySavedMessage
+                            )
+                        },
+                    ),
                 )
             )
             SettingSection(

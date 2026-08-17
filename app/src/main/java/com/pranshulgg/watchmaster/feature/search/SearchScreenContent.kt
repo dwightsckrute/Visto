@@ -12,6 +12,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -248,9 +249,11 @@ private fun VistoSearchField(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
-    // La profundidad se expresa por tono, no con borde ni sombra: es lo que hace Material 3
-    // Expressive con los search bars y lo que pide docs/DESIGN_SYSTEM.md. Al activarse, el
-    // campo sube un escalón de superficie en lugar de dibujar un aro de color.
+    // La profundidad se expresa por tono, no con sombra. Pero el tono solo no basta: en el tema
+    // oscuro, y sobre todo en OLED, el fondo es negro y surfaceContainerHigh es #080808, así que
+    // el campo prácticamente desaparecía. Por eso lleva un borde sutil `outlineVariant`, que es
+    // justo el caso que docs/DESIGN_SYSTEM.md contempla para paletas que no separan superficies
+    // adyacentes. Al enfocar sube un escalón de superficie y el borde pasa a `primary`.
     val containerColor by animateColorAsState(
         targetValue = if (active) {
             MaterialTheme.colorScheme.surfaceContainerHighest
@@ -259,6 +262,15 @@ private fun VistoSearchField(
         },
         animationSpec = motionScheme.defaultEffectsSpec(),
         label = "search-field-container",
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (active) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.outlineVariant
+        },
+        animationSpec = motionScheme.defaultEffectsSpec(),
+        label = "search-field-border",
     )
     val leadingIconColor by animateColorAsState(
         targetValue = if (active) {
@@ -307,6 +319,11 @@ private fun VistoSearchField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(SearchBarDefaults.InputFieldHeight)
+                .border(
+                    width = 1.dp,
+                    color = borderColor,
+                    shape = SearchBarDefaults.inputFieldShape,
+                )
                 .focusProperties { canFocus = active }
                 .focusRequester(focusRequester)
                 .semantics { traversalIndex = -1f },

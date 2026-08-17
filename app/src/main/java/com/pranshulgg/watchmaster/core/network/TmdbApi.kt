@@ -211,7 +211,7 @@ interface TmdbApi {
             val auth = Interceptor { chain ->
                 val original = chain.request()
                 val newUrl = original.url.newBuilder()
-                    .addQueryParameter("api_key", BuildConfig.TMDB_API_KEY)
+                    .addQueryParameter("api_key", TmdbApiKey.current())
                     .setQueryParameter(
                         "language",
                         AppLanguage.tmdbLanguage()
