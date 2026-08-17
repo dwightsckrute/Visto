@@ -21,7 +21,7 @@ import com.pranshulgg.watchmaster.core.ui.localization.localized
 @Composable
 fun NotesSection(isSeasonNoteNull: Boolean = true, action: () -> Unit, noteText: String) {
     MediaSectionCard(
-        title = "Notas",
+        title = localized("Notas", "Notes"),
         titleIcon = R.drawable.sticky_note_2_24px,
         showAction = true,
         actionOnClick = {

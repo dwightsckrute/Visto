@@ -35,7 +35,7 @@ fun TvWatchlistConfirmationDialog(
             }
             SnackbarManager.show(
                 if (season != null) {
-                    "Temporada eliminada: ${season.name}"
+                    AppLanguage.text("Temporada eliminada: ${season.name}", "Season deleted: ${season.name}")
                 } else AppLanguage.text("Serie eliminada", "Show deleted")
             )
         }

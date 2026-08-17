@@ -46,10 +46,10 @@ fun MediaStatusSection(status: WatchStatus, onClick: () -> Unit = {}) {
     }
 
     val statusLabel = when (status) {
-        WatchStatus.INTERRUPTED -> "Interrumpida"
-        WatchStatus.WATCHING -> "En curso"
-        WatchStatus.FINISHED -> "Finalizado"
-        else -> "Pendiente"
+        WatchStatus.INTERRUPTED -> localized("Interrumpida", "Paused")
+        WatchStatus.WATCHING -> localized("En curso", "Watching")
+        WatchStatus.FINISHED -> localized("Finalizado", "Finished")
+        else -> localized("Pendiente", "Not started")
     }
 
     val statusIcon = when (status) {

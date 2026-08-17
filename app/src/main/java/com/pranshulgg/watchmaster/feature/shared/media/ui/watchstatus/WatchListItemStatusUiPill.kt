@@ -50,7 +50,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
     return when (this) {
         WatchStatus.WATCHING -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Empezada • ${item.startedDate?.formatDate()}",
+                statusLabel = AppLanguage.text("Empezada • ${item.startedDate?.formatDate()}", "Started • ${item.startedDate?.formatDate()}"),
                 containerColor = statusColor.warning.bg,
                 contentColor = statusColor.warning.on
             )
@@ -58,7 +58,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         WatchStatus.FINISHED -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Terminada • ${item.finishedDate?.formatDate()}",
+                statusLabel = AppLanguage.text("Terminada • ${item.finishedDate?.formatDate()}", "Finished • ${item.finishedDate?.formatDate()}"),
                 containerColor = statusColor.success.bg,
                 contentColor = statusColor.success.on
             )
@@ -66,7 +66,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         WatchStatus.INTERRUPTED -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Interrumpida • ${item.interruptedDate?.formatDate()}",
+                statusLabel = AppLanguage.text("Interrumpida • ${item.interruptedDate?.formatDate()}", "Paused • ${item.interruptedDate?.formatDate()}"),
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )

@@ -136,7 +136,7 @@ fun SearchItemInfoSheetContent(
 
         item.overview?.let {
             Text(
-                text = "Sinopsis",
+                text = localized("Sinopsis", "Synopsis"),
                 modifier = Modifier.padding(bottom = 2.dp),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.primary,

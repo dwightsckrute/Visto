@@ -39,7 +39,7 @@ fun ListsScreenScaffold(
     }
 
     LargeTopBarScaffold(
-        title = "Listas",
+        title = localized("Listas", "Lists"),
         navigationIcon = { NavigateUpBtn(navController) },
         fab = {
             ExtendedFloatingActionButton(

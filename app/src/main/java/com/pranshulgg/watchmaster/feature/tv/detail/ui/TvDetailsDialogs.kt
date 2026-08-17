@@ -9,6 +9,7 @@ import com.pranshulgg.watchmaster.feature.shared.media.components.MediaConfirmat
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaNoteDialogContent
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaRatingDialogContent
 import com.pranshulgg.watchmaster.feature.tv.detail.TvDetailsViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @Composable
 fun TvDetailsNoteDialog(
@@ -73,7 +74,7 @@ fun TvDetailsConfirmationDialog(
                 } else {
                     watchlistViewModel.deleteSeason(seasonIt.seasonId)
                 }
-                SnackbarManager.show("Temporada eliminada: ${seasonIt.name}")
+                SnackbarManager.show(AppLanguage.text("Temporada eliminada: ${seasonIt.name}", "Season deleted: ${seasonIt.name}"))
                 navController.popBackStack()
             },
             isTv = true

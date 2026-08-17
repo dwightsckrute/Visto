@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -44,8 +45,8 @@ fun ActionBottomSheet(
     sheetState: SheetState,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
-    confirmText: String = "Guardar",
-    cancelText: String = "Cancelar",
+    confirmText: String = localized("Guardar", "Save"),
+    cancelText: String = localized("Cancelar", "Cancel"),
     showActions: Boolean = true,
     confirmBtnMaxWidth: Boolean = false,
     isConfirmDisabled: Boolean = false,

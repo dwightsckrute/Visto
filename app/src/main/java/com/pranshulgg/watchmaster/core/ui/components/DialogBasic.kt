@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.pranshulgg.watchmaster.core.ui.theme.Elevation
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -31,7 +32,7 @@ fun DialogBasic(
     show: Boolean,
     title: String,
     confirmText: String = "Confirmar",
-    dismissText: String = "Cancelar",
+    dismissText: String = localized("Cancelar", "Cancel"),
     onConfirm: () -> Unit = {},
     onDismiss: () -> Unit,
     showDefaultActions: Boolean = true,

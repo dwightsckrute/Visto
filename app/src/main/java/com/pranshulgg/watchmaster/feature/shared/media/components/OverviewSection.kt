@@ -10,12 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun OverviewSection(text: String) {
     Spacer(Modifier.height(16.dp))
     MediaSectionCard(
-        title = "Sinopsis",
+        title = localized("Sinopsis", "Synopsis"),
         titleIcon = R.drawable.overview_24px,
     ) {
         Text(

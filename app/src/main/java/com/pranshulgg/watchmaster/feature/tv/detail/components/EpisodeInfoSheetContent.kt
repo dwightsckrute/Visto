@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pranshulgg.watchmaster.data.local.entity.TvEpisodeEntity
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun EpisodeInfoSheetContent(
@@ -25,7 +26,7 @@ fun EpisodeInfoSheetContent(
 
         episode.overview?.let {
             Text(
-                text = "Sinopsis",
+                text = localized("Sinopsis", "Synopsis"),
                 modifier = Modifier.padding(bottom = 2.dp),
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.primary,

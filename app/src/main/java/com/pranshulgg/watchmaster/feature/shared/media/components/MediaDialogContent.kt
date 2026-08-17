@@ -37,7 +37,7 @@ fun MediaNoteDialogContent(
         onConfirm = {
             onConfirm(note)
         },
-        confirmText = "Guardar",
+        confirmText = localized("Guardar", "Save"),
         content = {
             OutlinedTextField(
                 modifier = Modifier

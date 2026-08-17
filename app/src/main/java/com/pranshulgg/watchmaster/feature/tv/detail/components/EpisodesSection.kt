@@ -70,7 +70,7 @@ fun EpisodesSection(
 
 
     MediaSectionCard(
-        title = "Episodios",
+        title = localized("Episodios", "Episodes"),
         titleIcon = R.drawable.list_alt_24px,
         trailingContent = {
             MediaChip(

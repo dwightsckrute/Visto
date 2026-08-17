@@ -47,6 +47,8 @@ import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.asStatusDates
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.toWatchListItemStatusUiPill
 import com.pranshulgg.watchmaster.core.ui.localization.localized
+import androidx.compose.animation.core.animateDpAsState
+import com.pranshulgg.watchmaster.core.ui.navigation.LocalSharedTransitionScope
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -75,6 +77,17 @@ fun MovieWatchlistRow(
     val status = item.status.toWatchListItemStatusUiPill(item.asStatusDates())
 
     val shape = listItemShape(isOnly, isFirst, isLast)
+
+    // Los dos extremos del elemento compartido tienen forma distinta a propósito: en la lista la
+    // carátula va a ras del borde de la fila y en la ficha es redondeada. Fijar una forma solo
+    // para el vuelo dejaba un salto al empezar y otro al acabar, porque 16 dp en una carátula de
+    // 80 dp se nota mucho. Así el radio se interpola y no hay ningún corte.
+    val sharedTransitionActive = LocalSharedTransitionScope.current?.isTransitionActive == true
+    val posterCorner by animateDpAsState(
+        targetValue = if (sharedTransitionActive) ShapeRadius.Large else ShapeRadius.None,
+        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+        label = "poster-corner",
+    )
 
 
     Surface(
@@ -110,14 +123,19 @@ fun MovieWatchlistRow(
                 contentAlignment = Alignment.Center
             ) {
                 PosterBox(
-                    // Origen de la continuidad hacia la ficha.
-                    modifier = Modifier.sharedPoster(posterSharedKey("movie", item.id)),
+                    // Origen de la continuidad hacia la ficha. Durante el vuelo adopta el radio
+                    // de la ficha para que los dos extremos coincidan; al aterrizar vuelve a su
+                    // esquina recta, animado, en lugar de cambiar de golpe.
+                    modifier = Modifier.sharedPoster(
+                        key = posterSharedKey("movie", item.id),
+                        cornerRadiusInFlight = posterCorner,
+                    ),
                     posterUrl = poster,
                     apiPath = item.posterPath,
                     width = 80.dp,
                     height = 120.dp,
                     progressIndicatorSize = 40.dp,
-                    cornerRadius = ShapeRadius.None
+                    cornerRadius = posterCorner
                 )
             }
             Column(

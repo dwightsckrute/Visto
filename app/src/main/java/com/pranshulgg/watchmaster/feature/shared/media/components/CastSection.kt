@@ -25,7 +25,7 @@ import com.pranshulgg.watchmaster.core.ui.localization.localized
 @Composable
 fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
     MediaSectionCard(
-        title = "Reparto",
+        title = localized("Reparto", "Cast"),
         titleIcon = R.drawable.groups_2_24px,
     ) {
 
@@ -67,7 +67,7 @@ fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
 @Composable
 fun CastMovieSection(movieItem: MovieBundle, onCastClick: (Long) -> Unit) {
     MediaSectionCard(
-        title = "Reparto",
+        title = localized("Reparto", "Cast"),
         titleIcon = R.drawable.groups_2_24px,
     ) {
         val director = movieItem.credits.crew.firstOrNull { crew ->
