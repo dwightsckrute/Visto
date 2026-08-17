@@ -35,8 +35,8 @@ android {
         applicationId = "com.dwightsckrute.visto"
         minSdk = 24
         targetSdk = 36
-        versionCode = 13
-        versionName = "1.9.0"
+        versionCode = 14
+        versionName = "1.9.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -121,7 +121,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp.logging)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.room.compiler)
     implementation(libs.hilt.android)
