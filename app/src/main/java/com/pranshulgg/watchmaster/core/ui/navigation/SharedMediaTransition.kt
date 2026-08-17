@@ -4,8 +4,11 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 
 /**
  * Continuidad de la carátula entre la lista y la ficha.
@@ -32,10 +35,19 @@ fun posterSharedKey(mediaType: String, id: Long): String = "poster-$mediaType-$i
 /**
  * Marca este composable como la carátula compartida [key]. Sin ámbitos disponibles se devuelve
  * el modifier intacto.
+ *
+ * El recorte en el overlay no es un adorno. Los dos extremos tienen forma distinta —en la lista
+ * la carátula va a ras del borde de la fila y por eso es cuadrada, en la ficha es redondeada— y
+ * durante el vuelo el elemento adopta la forma del destino. Al volver con el gesto atrás eso se
+ * veía como carátulas cuadradas a tamaño de ficha. Fijando aquí la forma, la pieza mantiene sus
+ * esquinas redondeadas todo el trayecto y solo recupera la del destino al aterrizar en su sitio.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun Modifier.sharedPoster(key: String): Modifier {
+fun Modifier.sharedPoster(
+    key: String,
+    cornerRadiusInFlight: Dp = ShapeRadius.Large,
+): Modifier {
     val sharedScope = LocalSharedTransitionScope.current ?: return this
     val visibilityScope = LocalNavAnimatedVisibilityScope.current ?: return this
 
@@ -43,6 +55,9 @@ fun Modifier.sharedPoster(key: String): Modifier {
         this@sharedPoster.sharedElement(
             sharedContentState = rememberSharedContentState(key),
             animatedVisibilityScope = visibilityScope,
+            clipInOverlayDuringTransition = OverlayClip(
+                RoundedCornerShape(cornerRadiusInFlight)
+            ),
         )
     }
 }
