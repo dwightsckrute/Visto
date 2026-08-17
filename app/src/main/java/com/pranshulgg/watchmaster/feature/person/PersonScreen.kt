@@ -92,7 +92,7 @@ fun PersonScreen(id: Long, navController: NavController) {
             ) {
                 item {
                     PosterBox(
-                        posterUrl = "https://image.tmdb.org/t/p/original${data.profilePath}",
+                        posterUrl = "https://image.tmdb.org/t/p/w500${data.profilePath}",
                         apiPath = data.profilePath,
                         width = 200.dp,
                         height = 200.dp,

@@ -24,7 +24,7 @@ fun EpisodeInfoHeader(episode: TvEpisodeEntity) {
     ) {
 
         PosterBox(
-            posterUrl = "https://image.tmdb.org/t/p/original${episode.still_path}",
+            posterUrl = "https://image.tmdb.org/t/p/w500${episode.still_path}",
             apiPath = episode.still_path,
             width = 135.dp,
             height = 90.dp

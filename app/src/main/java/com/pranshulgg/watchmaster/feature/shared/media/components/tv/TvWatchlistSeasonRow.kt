@@ -33,6 +33,7 @@ import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.feature.shared.media.components.WatchListStatusPill
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.asStatusDates
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.toWatchListItemStatusUiPill
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun TvWatchlistSeasonRow(
@@ -104,7 +105,10 @@ fun TvWatchlistSeasonRow(
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        "${season.episodeCount} episodes",
+                        localized(
+                            "${season.episodeCount} episodios",
+                            "${season.episodeCount} episodes",
+                        ),
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -63,7 +63,7 @@ fun EpisodeItem(
     ) {
 
         PosterBox(
-            posterUrl = "https://image.tmdb.org/t/p/original${item.still_path}",
+            posterUrl = "https://image.tmdb.org/t/p/w500${item.still_path}",
             apiPath = item.still_path,
             width = carouselItemWidth,
             height = 130.dp,

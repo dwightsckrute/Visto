@@ -161,10 +161,10 @@ private fun formatRuntime(minutes: Int?): String {
 private fun backdropUrl(movie: MovieBundle): String? =
     when {
         movie.backdrop_path != null ->
-            "https://image.tmdb.org/t/p/original${movie.backdrop_path}"
+            "https://image.tmdb.org/t/p/w1280${movie.backdrop_path}"
 
         movie.images.backdrops.isNotEmpty() ->
-            "https://image.tmdb.org/t/p/original${movie.images.backdrops.first().file_path}"
+            "https://image.tmdb.org/t/p/w1280${movie.images.backdrops.first().file_path}"
 
         else -> null
     }

@@ -29,14 +29,10 @@ import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.ui.FloatingToolbarMediaActionsParams
 import com.pranshulgg.watchmaster.feature.shared.media.ui.MediaActionsFloatingToolbar
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvWatchProviderSheet
-import androidx.compose.animation.core.tween
-import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.scaleIn
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -60,8 +56,22 @@ fun MovieDetailsScaffold(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    // El marcador de carga solo aparece si la espera se nota de verdad. Con los datos en caché
+    // llegan en un par de frames, y meter una pantalla en blanco con un cargador entre la lista y
+    // la ficha para luego quitarla es justo lo que se percibía como un tirón: un destello vale
+    // menos que nada. Durante ese margen no se dibuja nada y la transición de salida de la
+    // pantalla anterior cubre el hueco.
+    var showPlaceholder by remember { mutableStateOf(false) }
+    LaunchedEffect(loading || movieItem == null) {
+        showPlaceholder = false
+        if (loading || movieItem == null) {
+            delay(PLACEHOLDER_DELAY_MS)
+            showPlaceholder = true
+        }
+    }
+
     if (loading || movieItem == null) {
-        LoadingScreenPlaceholder()
+        if (showPlaceholder) LoadingScreenPlaceholder()
         return
     }
 
@@ -92,18 +102,6 @@ fun MovieDetailsScaffold(
         // Con la ficha en caché el contenido ya está listo en el primer frame y entraba de
         // golpe; sin caché aparecía tras el marcador, igual de seco. Este asentamiento corto lo
         // iguala. El disparador es un estado aparte porque animateFloatAsState arranca ya en su
-        // objetivo, así que sin él no habría animación justo en el caso cacheado.
-        var contentAppeared by remember { mutableStateOf(false) }
-        LaunchedEffect(Unit) { contentAppeared = true }
-
-        AnimatedVisibility(
-            visible = contentAppeared,
-            // Espejo del gesto atrás: al volver la pantalla se encoge a 0,94, así que al
-            // entrar crece desde ahí. Nada de subir desde abajo, que introducía un eje que no
-            // usa ninguna otra transición de la aplicación.
-            enter = fadeIn(tween(AppMotion.DurationShort)) +
-                scaleIn(tween(AppMotion.DurationShort), initialScale = 0.94f),
-        ) {
         MovieDetailsContent(
             movieItem,
             watchlistItem,
@@ -112,7 +110,6 @@ fun MovieDetailsScaffold(
             viewModel,
             watchlistViewModel,
         )
-        }
     }
 
 
@@ -125,3 +122,6 @@ fun MovieDetailsScaffold(
         viewModel
     )
 }
+
+/** Margen antes de admitir que hay espera. Por debajo, el cargador molesta más que ayuda. */
+private const val PLACEHOLDER_DELAY_MS = 180L

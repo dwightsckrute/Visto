@@ -178,7 +178,10 @@ fun SearchItemInfoSeasonSection(
                                         shape = RoundedCornerShape(if (index == selectedSeason) ShapeRadius.Small else ShapeRadius.Full)
                                     ) {
                                         Text(
-                                            item.episode_count.toString() + " episodes ${if (seasonExists) "• Saved" else ""}",
+                                            localized(
+                                                "${item.episode_count} episodios ${if (seasonExists) "• Guardada" else ""}",
+                                                "${item.episode_count} episodes ${if (seasonExists) "• Saved" else ""}",
+                                            ),
                                             modifier = Modifier.padding(
                                                 horizontal = 10.dp,
                                                 vertical = 5.dp

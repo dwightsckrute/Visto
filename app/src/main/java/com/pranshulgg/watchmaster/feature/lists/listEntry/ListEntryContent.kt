@@ -233,7 +233,7 @@ private fun AddedMovieChips(selectedItems: List<WatchlistItemEntity>) {
                             .fillMaxWidth(fraction = 0.462f)
                     ) {
                         PosterBox(
-                            posterUrl = "https://image.tmdb.org/t/p/original${item.posterPath}",
+                            posterUrl = "https://image.tmdb.org/t/p/w342${item.posterPath}",
                             apiPath = item.posterPath,
                             cornerRadius = ShapeRadius.Full,
                             width = 30.dp,

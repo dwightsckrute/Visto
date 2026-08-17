@@ -59,7 +59,7 @@ fun WatchProviderItem(title: String, providers: List<Provider>) {
                         )
                     ) {
                         PosterBox(
-                            posterUrl = "https://image.tmdb.org/t/p/original${it.logo_path}",
+                            posterUrl = "https://image.tmdb.org/t/p/w154${it.logo_path}",
                             apiPath = it.logo_path,
                             cornerRadius = ShapeRadius.Small,
                             width = 30.dp,

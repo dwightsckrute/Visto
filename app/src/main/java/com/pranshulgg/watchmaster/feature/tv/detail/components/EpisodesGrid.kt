@@ -2,6 +2,7 @@ package com.pranshulgg.watchmaster.feature.tv.detail.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -89,9 +90,10 @@ private fun FlowRowScope.EpisodeTile(
 ) {
     val colorScheme = MaterialTheme.colorScheme
 
-    // Lo ya visto se apaga para que destaque lo que queda por ver.
+    // Atenuar lo visto al 45% dejaba media temporada gris y sucia. Un velo mínimo basta para
+    // distinguirlo sin apagar el fotograma, que es lo que le da vida a esta vista.
     val imageAlpha by animateFloatAsState(
-        targetValue = if (episode.isWatched) .45f else 1f,
+        targetValue = if (episode.isWatched) .82f else 1f,
         animationSpec = motionScheme.defaultEffectsSpec(),
         label = "episode-tile-alpha",
     )
@@ -116,9 +118,16 @@ private fun FlowRowScope.EpisodeTile(
     Surface(
         shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
         color = colorScheme.surfaceContainerHigh,
+        // El anillo marca lo visto sin tocar la imagen; el color por sí solo no vale, pero
+        // sumado a la insignia del check da una lectura clara de un vistazo.
+        border = if (episode.isWatched) {
+            BorderStroke(2.dp, colorScheme.primary)
+        } else {
+            null
+        },
         modifier = Modifier
             .weight(1f)
-            .height(132.dp)
+            .height(140.dp)
             .clip(RoundedCornerShape(ShapeRadius.ExtraLarge))
             .combinedClickable(onClick = onToggle, onLongClick = onInfo)
             // El estado no puede quedarse solo en el color y la opacidad.
@@ -132,7 +141,7 @@ private fun FlowRowScope.EpisodeTile(
                     posterUrl = episode.still_path?.let { "https://image.tmdb.org/t/p/w500$it" },
                     apiPath = episode.still_path,
                     fillMaxWidth = true,
-                    height = 132.dp,
+                    height = 140.dp,
                     cornerRadius = ShapeRadius.None,
                     progressIndicatorSize = 24.dp,
                     placeholder = { PosterPlaceholder(size = 0.4f) },
@@ -145,8 +154,10 @@ private fun FlowRowScope.EpisodeTile(
                     .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
-                            0.35f to Color.Transparent,
-                            1f to Color.Black.copy(alpha = .8f),
+                            // Degradado solo en la mitad baja y menos denso: antes ensombrecía
+                            // el fotograma entero y todo se veía apagado.
+                            0.5f to Color.Transparent,
+                            1f to Color.Black.copy(alpha = .62f),
                         )
                     )
             )

@@ -62,7 +62,7 @@ fun TvHeroHeader(
     Box(modifier = Modifier.fillMaxWidth()) {
 
         AsyncImage(
-            model = "https://image.tmdb.org/t/p/original${tv.backdrop_path}",
+            model = "https://image.tmdb.org/t/p/w1280${tv.backdrop_path}",
             contentDescription = tv.name,
             modifier = Modifier
                 .fillMaxWidth()

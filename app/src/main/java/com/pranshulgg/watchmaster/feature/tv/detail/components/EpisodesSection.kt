@@ -94,7 +94,10 @@ fun EpisodesSection(
         titleIcon = R.drawable.list_alt_24px,
         trailingContent = {
             MediaChip(
-                "$watchedItems / ${episodes.size} watched",
+                localized(
+                    "$watchedItems de ${episodes.size} vistos",
+                    "$watchedItems of ${episodes.size} watched",
+                ),
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                 shapeRadius = ShapeRadius.Small
