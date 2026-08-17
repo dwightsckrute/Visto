@@ -3,6 +3,8 @@ package com.pranshulgg.watchmaster.feature.search.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +44,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchRow(
     item: SearchItem,
@@ -134,7 +138,13 @@ fun SearchRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(5.dp))
-                Row {
+                // FlowRow y no Row: con font scale alto o títulos largos en español, tres
+                // distintivos no caben en una línea y deben envolver en vez de recortarse.
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                ) {
+                    MediaTypeChip(mediaType = item.mediaType)
                     StarDateChip(
                         if (item.releaseDate == "" || item.releaseDate == null) {
                             localized("Sin fecha", "No date")
@@ -144,37 +154,86 @@ fun SearchRow(
                             )
                         },
                         isDate = true,
-                        mediaType = item.mediaType,
                     )
-                    Spacer(Modifier.width(5.dp))
-                    StarDateChip("%.1f".format(item.avg_rating))
+                    if (item.mediaType != "person") {
+                        StarDateChip("%.1f".format(item.avg_rating))
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * Distintivo del tipo de contenido de un resultado.
+ *
+ * Antes el tipo solo se insinuaba con un icono dentro del chip del año, fácil de pasar por alto,
+ * y `person` caía en la rama `else`, así que una persona se mostraba con icono de película.
+ * Ahora cada tipo tiene etiqueta, icono y pareja de color propias.
+ */
+@Composable
+private fun MediaTypeChip(mediaType: String?) {
+    val (containerColor, contentColor) = when (mediaType) {
+        "tv" -> MaterialTheme.colorScheme.tertiaryContainer to
+            MaterialTheme.colorScheme.onTertiaryContainer
+
+        "person" -> MaterialTheme.colorScheme.secondaryContainer to
+            MaterialTheme.colorScheme.onSecondaryContainer
+
+        else -> MaterialTheme.colorScheme.primaryContainer to
+            MaterialTheme.colorScheme.onPrimaryContainer
+    }
+    val icon = when (mediaType) {
+        "tv" -> R.drawable.tv_24px
+        "person" -> R.drawable.groups_2_24px
+        else -> R.drawable.movie_24px
+    }
+    val label = when (mediaType) {
+        "tv" -> localized("Serie", "TV show")
+        "person" -> localized("Persona", "Person")
+        else -> localized("Película", "Movie")
+    }
+
+    Chip(
+        text = label,
+        icon = icon,
+        // El texto ya nombra el tipo, así que el icono es decorativo: describirlo otra vez
+        // haría que TalkBack lo leyese por duplicado.
+        iconDesc = null,
+        containerColor = containerColor,
+        contentColor = contentColor,
+    )
+}
+
 @Composable
 private fun StarDateChip(
     text: String,
     isDate: Boolean = false,
-    mediaType: String? = null,
 ) {
-    val isTv = mediaType == "tv"
-    val containerColor = when {
-        !isDate -> MaterialTheme.colorScheme.surfaceContainerHigh
-        isTv -> MaterialTheme.colorScheme.tertiaryContainer
-        else -> MaterialTheme.colorScheme.primaryContainer
-    }
-    val contentColor = when {
-        !isDate -> MaterialTheme.colorScheme.onSurfaceVariant
-        isTv -> MaterialTheme.colorScheme.onTertiaryContainer
-        else -> MaterialTheme.colorScheme.onPrimaryContainer
-    }
+    Chip(
+        text = text,
+        icon = if (isDate) R.drawable.date_range_24px else R.drawable.star_24px,
+        iconDesc = if (isDate) {
+            localized("Año", "Year")
+        } else {
+            localized("Valoración", "Rating")
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
 
+@Composable
+private fun Chip(
+    text: String,
+    icon: Int,
+    iconDesc: String?,
+    containerColor: Color,
+    contentColor: Color,
+) {
     Surface(
         color = containerColor,
-        shape = CircleShape
+        shape = CircleShape,
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -182,16 +241,8 @@ private fun StarDateChip(
             modifier = Modifier.padding(start = 6.dp, end = 8.dp)
         ) {
             Symbol(
-                icon = when {
-                    !isDate -> R.drawable.star_24px
-                    isTv -> R.drawable.tv_24px
-                    else -> R.drawable.movie_24px
-                },
-                desc = when {
-                    !isDate -> localized("Valoración", "Rating")
-                    isTv -> localized("Serie", "TV show")
-                    else -> localized("Película", "Movie")
-                },
+                icon = icon,
+                desc = iconDesc,
                 color = contentColor,
                 size = 16.dp,
             )
@@ -199,8 +250,8 @@ private fun StarDateChip(
             Text(
                 text,
                 color = contentColor,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
             )
         }
     }
