@@ -2,6 +2,7 @@ package com.pranshulgg.watchmaster.core.ui.components.media
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,12 +26,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
+import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.theme.GoogleFlexBoldRounded
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+
+/** El alto y el alpha del plegado, atados a la misma duración y la misma curva. */
+private val FoldSizeSpec =
+    tween<IntSize>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)
+private val FoldFadeSpec =
+    tween<Float>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)
 
 @OptIn(ExperimentalTextApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -64,10 +73,11 @@ fun MediaSectionCard(
             .padding(horizontal = if (noPadding) 0.dp else 16.dp),
         shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
     ) {
-        Column(
-            modifier = Modifier.padding(bottom = if (isCollapsed) 8.dp else 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        // Todo lo que aparece y desaparece vive dentro del bloque que se anima: el relleno de
+        // abajo es constante y la separación con el encabezado la pone el propio contenido. Con
+        // el relleno cambiando de golpe de 16 a 8, la tarjeta pegaba un salto justo al terminar
+        // de plegarse, que es lo que se veía como un trozo perdido al final.
+        Column(modifier = Modifier.padding(bottom = 8.dp)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(
                     5.dp,
@@ -123,16 +133,22 @@ fun MediaSectionCard(
 
             AnimatedVisibility(
                 visible = !isCollapsed,
-                enter = expandVertically(motionScheme.defaultSpatialSpec()) +
-                    fadeIn(motionScheme.defaultEffectsSpec()),
-                exit = shrinkVertically(motionScheme.defaultSpatialSpec()) +
-                    fadeOut(motionScheme.defaultEffectsSpec()),
+                // El tamaño y el desvanecido comparten reloj a propósito. Con las specs de
+                // Material —espacial para el alto, de efectos para el alpha— el contenido se
+                // desvanecía bastante antes de que la caja terminara de encogerse, y quedaba un
+                // hueco vacío bajo el encabezado que lo hacía parecer más alto de lo que es;
+                // luego el hueco se cerraba de una vez y todo lo de abajo daba un tirón.
+                enter = expandVertically(FoldSizeSpec) + fadeIn(FoldFadeSpec),
+                exit = shrinkVertically(FoldSizeSpec) + fadeOut(FoldFadeSpec),
             ) {
                 // La columna no es envoltorio de más. `content` puede emitir varios hijos, y
                 // antes eran hijos directos de la columna de la tarjeta, que los apilaba con su
                 // separación. Dentro de AnimatedVisibility, que coloca como una caja, pasarían a
                 // dibujarse unos encima de otros: aquí recupera el apilado y la separación.
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     content()
                 }
             }
