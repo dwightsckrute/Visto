@@ -3,6 +3,8 @@ package com.pranshulgg.watchmaster.feature.calendar.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.theme.Spacing
 import com.pranshulgg.watchmaster.feature.calendar.WatchedEntry
@@ -94,9 +98,11 @@ fun MonthGrid(
                         )
                     } else {
                         val date = month.atDay(dayNumber)
+                        val entries = entriesByDate[date].orEmpty()
                         DayCell(
                             date = date,
-                            count = entriesByDate[date]?.size ?: 0,
+                            count = entries.size,
+                            posterPath = entries.firstOrNull()?.posterPath,
                             isSelected = date == selectedDate,
                             isToday = date == today,
                             onClick = { onSelectDate(date) },
@@ -109,6 +115,9 @@ fun MonthGrid(
     }
 }
 
+/** Lo justo para que el número aguante sobre cualquier carátula, sin apagarla. */
+private const val PosterScrim = 0.5f
+
 /**
  * Un día.
  *
@@ -117,14 +126,17 @@ fun MonthGrid(
  * —que la silueta signifique algo— y lo que hace que se localice de un vistazo entre treinta y un
  * círculos iguales.
  *
- * Los días con algo visto se rellenan. Antes llevaban un punto de cuatro puntos sobre un fondo
- * casi del color de la tarjeta, y a un palmo de distancia el mes se veía vacío tanto si habías
- * visto diez cosas como ninguna. Rellenos, el mes se lee sin leer un solo número.
+ * Y los días con algo visto llevan su carátula. Antes llevaban un punto de cuatro puntos sobre un
+ * fondo casi del color de la tarjeta, y a un palmo de distancia el mes se veía vacío tanto si
+ * habías visto diez cosas como ninguna; luego pasaron a un relleno liso, que ya se veía pero
+ * seguía sin decir nada. Con la carátula el mes deja de ser una cuadrícula de marcas y pasa a ser
+ * lo que viste, reconocible sin abrir ningún día.
  */
 @Composable
 private fun DayCell(
     date: LocalDate,
     count: Int,
+    posterPath: String?,
     isSelected: Boolean,
     isToday: Boolean,
     onClick: () -> Unit,
@@ -132,11 +144,13 @@ private fun DayCell(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val hasEntries = count > 0
+    val hasPoster = hasEntries && !posterPath.isNullOrBlank()
 
     val container by animateColorAsState(
         targetValue = when {
-            isSelected -> colorScheme.primary
+            // Con carátula el fondo no se ve; queda de reserva para mientras carga la imagen.
             hasEntries -> colorScheme.secondaryContainer
+            isSelected -> colorScheme.primary
             else -> Color.Transparent
         },
         animationSpec = motionScheme.defaultEffectsSpec(),
@@ -144,8 +158,9 @@ private fun DayCell(
     )
     val content by animateColorAsState(
         targetValue = when {
-            isSelected -> colorScheme.onPrimary
+            hasPoster -> Color.White
             hasEntries -> colorScheme.onSecondaryContainer
+            isSelected -> colorScheme.onPrimary
             isToday -> colorScheme.primary
             else -> colorScheme.onSurfaceVariant
         },
@@ -195,12 +210,13 @@ private fun DayCell(
         Surface(
             color = container,
             shape = shape,
-            // Hoy va con aro y no con relleno: el relleno ya significa "aquí viste algo", y
-            // gastarlo también en la fecha de hoy haría que un día vacío pareciera lleno.
-            border = if (isToday && !isSelected) {
-                BorderStroke(1.5.dp, colorScheme.primary)
-            } else {
-                null
+            // El aro marca dos cosas distintas y nunca a la vez: el día elegido, y hoy. El
+            // relleno no sirve para ninguna de las dos porque ya significa "aquí viste algo",
+            // y gastarlo haría que un día vacío pareciera lleno.
+            border = when {
+                isSelected -> BorderStroke(3.dp, colorScheme.primary)
+                isToday -> BorderStroke(1.5.dp, colorScheme.primary)
+                else -> null
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -210,6 +226,23 @@ private fun DayCell(
                 },
         ) {
             Box(contentAlignment = Alignment.Center) {
+                if (hasPoster) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = "https://image.tmdb.org/t/p/w154$posterPath",
+                        ),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                    // Un velo, porque una carátula clara se come el número del día y una oscura
+                    // se lo traga igual: sin él, el calendario deja de poder leerse como tal.
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = PosterScrim))
+                    )
+                }
                 Text(
                     text = date.dayOfMonth.toString(),
                     style = MaterialTheme.typography.labelLarge,

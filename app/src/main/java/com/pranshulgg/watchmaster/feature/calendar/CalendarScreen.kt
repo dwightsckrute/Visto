@@ -165,8 +165,6 @@ private fun CalendarContent(
                 locale = locale,
                 isPickingMonth = uiState.isPickingMonth,
                 onTogglePicker = onToggleMonthPicker,
-                onPrevious = onPreviousMonth,
-                onNext = onNextMonth,
             )
         }
 
@@ -179,6 +177,7 @@ private fun CalendarContent(
                 MonthPicker(
                     visibleMonth = uiState.visibleMonth,
                     monthsWithEntries = uiState.monthsWithEntries,
+                    selectableYears = uiState.selectableYears,
                     locale = locale,
                     onSelectMonth = onSelectMonth,
                     modifier = Modifier.padding(bottom = Spacing.sm),
@@ -256,8 +255,6 @@ private fun MonthHeader(
     locale: Locale,
     isPickingMonth: Boolean,
     onTogglePicker: () -> Unit,
-    onPrevious: () -> Unit,
-    onNext: () -> Unit,
 ) {
     val name = month.month
         .getDisplayName(TextStyle.FULL_STANDALONE, locale)
@@ -306,22 +303,6 @@ private fun MonthHeader(
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.rotate(pickerChevron),
-            )
-        }
-        IconButton(onClick = onPrevious) {
-            Symbol(
-                icon = R.drawable.keyboard_arrow_down_24px,
-                desc = localized("Mes anterior", "Previous month"),
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.rotate(90f),
-            )
-        }
-        IconButton(onClick = onNext) {
-            Symbol(
-                icon = R.drawable.keyboard_arrow_down_24px,
-                desc = localized("Mes siguiente", "Next month"),
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.rotate(-90f),
             )
         }
     }
