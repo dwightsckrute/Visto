@@ -6,6 +6,7 @@ import retrofit2.http.Query
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,6 +25,7 @@ import com.pranshulgg.watchmaster.data.WatchProvidersDto
 import com.pranshulgg.watchmaster.feature.person.PersonEntity
 import retrofit2.http.Path
 import retrofit2.http.Url
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 
@@ -203,8 +205,9 @@ interface TmdbApi {
 
     companion object {
         private const val BASE = "https://api.themoviedb.org/3/"
+        private const val HTTP_CACHE_BYTES = 30L * 1024 * 1024
 
-        fun create(): TmdbApi {
+        fun create(cacheDir: File? = null): TmdbApi {
             val logging = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             }
@@ -221,6 +224,15 @@ interface TmdbApi {
                 chain.proceed(request)
             }
             val client = OkHttpClient.Builder()
+                .apply {
+                    // Caché HTTP en disco. TMDB envía cabeceras de validación, así que esto
+                    // evita descargar de nuevo respuestas que no han cambiado y hace instantáneo
+                    // volver a una ficha ya visitada. Room sigue siendo la fuente de verdad de
+                    // la biblioteca; esto solo acelera las llamadas al catálogo.
+                    if (cacheDir != null) {
+                        cache(Cache(File(cacheDir, "tmdb-http"), HTTP_CACHE_BYTES))
+                    }
+                }
                 .addInterceptor(logging)
                 .addInterceptor(auth)
                 .connectTimeout(30, TimeUnit.SECONDS)

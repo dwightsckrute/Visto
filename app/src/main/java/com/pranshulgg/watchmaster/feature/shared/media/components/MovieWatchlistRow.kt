@@ -38,6 +38,8 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.pranshulgg.watchmaster.core.ui.components.listItemShape
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
+import com.pranshulgg.watchmaster.core.ui.navigation.posterSharedKey
+import com.pranshulgg.watchmaster.core.ui.navigation.sharedPoster
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
@@ -107,6 +109,8 @@ fun MovieWatchlistRow(
                 contentAlignment = Alignment.Center
             ) {
                 PosterBox(
+                    // Origen de la continuidad hacia la ficha.
+                    modifier = Modifier.sharedPoster(posterSharedKey("movie", item.id)),
                     posterUrl = poster,
                     apiPath = item.posterPath,
                     width = 80.dp,

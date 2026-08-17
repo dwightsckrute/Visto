@@ -67,8 +67,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTmdbApi(): TmdbApi =
-        TmdbApi.create()
+    fun provideTmdbApi(
+        @ApplicationContext context: Context
+    ): TmdbApi = TmdbApi.create(context.cacheDir)
 
     @Provides
     @Singleton

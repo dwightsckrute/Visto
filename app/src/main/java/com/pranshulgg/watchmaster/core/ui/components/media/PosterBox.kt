@@ -34,17 +34,28 @@ fun PosterBox(
     placeholder: @Composable () -> Unit = { PosterPlaceholder() },
     progressIndicatorSize: Dp = 24.dp,
     shape: Shape? = null,
+    modifier: Modifier = Modifier,
     apiPath: String? // to check if the API provided a valid image before loading
 ) {
     Box(
-        modifier = if (fillMaxWidth)
-            Modifier
-                .fillMaxWidth()
-                .height(height)
-                .clip(shape ?: RoundedCornerShape(if (circular) ShapeRadius.Full else cornerRadius))
-        else Modifier
-            .size(width = width, height = height)
-            .clip(shape ?: RoundedCornerShape(if (circular) ShapeRadius.Full else cornerRadius)),
+        modifier = modifier.then(
+            if (fillMaxWidth)
+                Modifier
+                    .fillMaxWidth()
+                    .height(height)
+                    .clip(
+                        shape ?: RoundedCornerShape(
+                            if (circular) ShapeRadius.Full else cornerRadius
+                        )
+                    )
+            else Modifier
+                .size(width = width, height = height)
+                .clip(
+                    shape ?: RoundedCornerShape(
+                        if (circular) ShapeRadius.Full else cornerRadius
+                    )
+                )
+        ),
         contentAlignment = Alignment.Center
     ) {
         if (!apiPath.isNullOrBlank()) {

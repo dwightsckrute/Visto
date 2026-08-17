@@ -13,7 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
@@ -34,7 +37,7 @@ import com.pranshulgg.watchmaster.feature.search.SearchType
 import com.pranshulgg.watchmaster.feature.setting.SettingsScreen
 import com.pranshulgg.watchmaster.feature.tv.detail.TvDetailsScreen
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavHost(
     navController: NavHostController,
@@ -56,6 +59,8 @@ fun AppNavHost(
                         .calculateBottomPadding()
                 )
         )
+        SharedTransitionLayout {
+        CompositionLocalProvider(LocalSharedTransitionScope provides this) {
         NavHost(
             navController = navController,
             startDestination = NavRoutes.MAIN,
@@ -69,7 +74,9 @@ fun AppNavHost(
             composable(
                 NavRoutes.MAIN
             ) {
-                MainScreen(navController)
+                CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                    MainScreen(navController)
+                }
             }
             composable(
                 NavRoutes.SETTINGS
@@ -88,7 +95,9 @@ fun AppNavHost(
                 )
             ) { backStackEntry ->
                 val id = backStackEntry.arguments!!.getLong("id")
-                MovieDetailPage(id = id, navController)
+                CompositionLocalProvider(LocalNavAnimatedVisibilityScope provides this) {
+                    MovieDetailPage(id = id, navController)
+                }
             }
             composable(
                 route = "${NavRoutes.SEARCH}?searchType={searchType}",
@@ -166,6 +175,8 @@ fun AppNavHost(
                 val id = backStackEntry.arguments!!.getLong("id")
                 PersonScreen(id = id, navController)
             }
+        }
+        }
         }
     }
 
