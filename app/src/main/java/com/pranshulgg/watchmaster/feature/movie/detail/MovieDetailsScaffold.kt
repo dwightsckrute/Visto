@@ -33,7 +33,7 @@ import androidx.compose.animation.core.tween
 import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.scaleIn
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -98,8 +98,11 @@ fun MovieDetailsScaffold(
 
         AnimatedVisibility(
             visible = contentAppeared,
+            // Espejo del gesto atrás: al volver la pantalla se encoge a 0,94, así que al
+            // entrar crece desde ahí. Nada de subir desde abajo, que introducía un eje que no
+            // usa ninguna otra transición de la aplicación.
             enter = fadeIn(tween(AppMotion.DurationShort)) +
-                slideInVertically(tween(AppMotion.DurationShort)) { it / 24 },
+                scaleIn(tween(AppMotion.DurationShort), initialScale = 0.94f),
         ) {
         MovieDetailsContent(
             movieItem,
