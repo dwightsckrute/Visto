@@ -83,11 +83,15 @@ fun MovieWatchlistRow(
     // para el vuelo dejaba un salto al empezar y otro al acabar, porque 16 dp en una carátula de
     // 80 dp se nota mucho. Así el radio se interpola y no hay ningún corte.
     val sharedTransitionActive = LocalSharedTransitionScope.current?.isTransitionActive == true
-    val posterCorner by animateDpAsState(
+    val animatedCorner by animateDpAsState(
         targetValue = if (sharedTransitionActive) ShapeRadius.Large else ShapeRadius.None,
         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
         label = "poster-corner",
     )
+    // Obligatorio: el spring rebasa por debajo del objetivo al volver a 0 y RoundedCornerShape
+    // revienta con un radio negativo. Es la regla de AGENTS.md sobre no mandar el overshoot de
+    // un spring a una API que no lo admite.
+    val posterCorner = animatedCorner.coerceAtLeast(ShapeRadius.None)
 
 
     Surface(

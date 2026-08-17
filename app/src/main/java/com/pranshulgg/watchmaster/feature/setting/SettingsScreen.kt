@@ -39,6 +39,7 @@ import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.snackbar.SnackbarManager
 import com.pranshulgg.watchmaster.core.utils.PreferencesHelper
 import com.pranshulgg.watchmaster.feature.setting.components.ColorPickerBtn
+import com.pranshulgg.watchmaster.feature.setting.components.TmdbApiKeyHelpCard
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -320,6 +321,7 @@ fun SettingsScreen(navController: NavController) {
                     ),
                 )
             )
+            TmdbApiKeyHelpCard(modifier = Modifier.padding(horizontal = 16.dp))
             SettingSection(
                 title = localized("Acerca de", "About"),
                 tiles = listOf(
