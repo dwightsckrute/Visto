@@ -22,6 +22,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.pranshulgg.watchmaster.feature.calendar.CalendarScreen
 import com.pranshulgg.watchmaster.feature.main.MainScreen
 import com.pranshulgg.watchmaster.feature.movie.detail.MovieDetailPage
 import com.pranshulgg.watchmaster.feature.lists.MovieListsScreen
@@ -74,6 +75,11 @@ fun AppNavHost(
                 NavRoutes.SETTINGS
             ) {
                 SettingsScreen(navController)
+            }
+            composable(
+                NavRoutes.CALENDAR
+            ) {
+                CalendarScreen(navController)
             }
             composable(
                 route = "${NavRoutes.MOVIE_DETAIL_SCREEN}/{id}",

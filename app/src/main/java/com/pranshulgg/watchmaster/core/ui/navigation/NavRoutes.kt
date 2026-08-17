@@ -9,6 +9,8 @@ object NavRoutes {
 
     const val LISTS_SCREEN = "lists_screen"
 
+    const val CALENDAR = "calendar"
+
     const val LISTS_ENTRY_SCREEN = "lists_entry_screen"
 
     const val LISTS_VIEW_SCREEN = "lists_view_screen"

@@ -68,6 +68,11 @@ fun MainScreen(
                 },
                 actions = {
                     TooltipIconBtn(
+                        onClick = { navController.navigate(NavRoutes.CALENDAR) },
+                        icon = R.drawable.date_range_24px,
+                        tooltipText = localized("Diario", "Diary")
+                    )
+                    TooltipIconBtn(
                         onClick = { navController.navigate(NavRoutes.LISTS_SCREEN) },
                         icon = R.drawable.lists_24px,
                         tooltipText = localized("Listas", "Lists")
