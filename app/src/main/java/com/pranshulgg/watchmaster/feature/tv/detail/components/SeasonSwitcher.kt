@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
+import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.core.ui.theme.Spacing
@@ -69,82 +71,83 @@ fun SeasonSwitcher(
         label = "season-switcher-chevron",
     )
 
-    Box(modifier = modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm)) {
-        FilledTonalButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = Spacing.minTouchTarget),
-            shapes = ButtonDefaults.shapes(),
-            onClick = { expanded = true },
-        ) {
-            Symbol(
-                icon = R.drawable.list_alt_24px,
-                desc = null,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text(
-                text = selected.seasonLabel(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-            )
-            Symbol(
-                icon = R.drawable.keyboard_arrow_down_24px,
-                desc = null,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.rotate(chevronRotation),
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            shape = RoundedCornerShape(ShapeRadius.Large),
-        ) {
-            ordered.forEach { season ->
-                val isSelected = season.seasonId == selectedSeasonId
-                val label = season.seasonLabel()
-                val state = season.stateLabel()
-
-                DropdownMenuItem(
-                    modifier = Modifier.semantics { contentDescription = "$label, $state" },
-                    onClick = {
-                        expanded = false
-                        if (!isSelected) onSelectSeason(season)
-                    },
-                    leadingIcon = {
-                        if (isSelected) {
-                            Symbol(
-                                icon = R.drawable.check_24px,
-                                desc = null,
-                                color = MaterialTheme.colorScheme.primary,
-                            )
-                        } else {
-                            Spacer(Modifier.size(24.dp))
-                        }
-                    },
-                    text = {
-                        Text(
-                            text = label,
-                            color = if (isSelected) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                        )
-                    },
-                    trailingIcon = {
-                        Text(
-                            text = state,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    },
+    Spacer(Modifier.height(Spacing.lg))
+    MediaSectionCard(
+        title = localized("Temporadas", "Seasons"),
+        titleIcon = R.drawable.list_alt_24px,
+    ) {
+        Box(modifier = modifier.padding(horizontal = Spacing.lg, vertical = Spacing.xs)) {
+            FilledTonalButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = Spacing.minTouchTarget),
+                shapes = ButtonDefaults.shapes(),
+                onClick = { expanded = true },
+            ) {
+                Text(
+                    text = selected.seasonLabel(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
                 )
+                Symbol(
+                    icon = R.drawable.keyboard_arrow_down_24px,
+                    desc = null,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier.rotate(chevronRotation),
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                shape = RoundedCornerShape(ShapeRadius.Large),
+            ) {
+                ordered.forEach { season ->
+                    val isSelected = season.seasonId == selectedSeasonId
+                    val label = season.seasonLabel()
+                    val state = season.stateLabel()
+
+                    DropdownMenuItem(
+                        modifier = Modifier.semantics { contentDescription = "$label, $state" },
+                        onClick = {
+                            expanded = false
+                            if (!isSelected) onSelectSeason(season)
+                        },
+                        leadingIcon = {
+                            if (isSelected) {
+                                Symbol(
+                                    icon = R.drawable.check_24px,
+                                    desc = null,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            } else {
+                                Spacer(Modifier.size(24.dp))
+                            }
+                        },
+                        text = {
+                            Text(
+                                text = label,
+                                color = if (isSelected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                },
+                            )
+                        },
+                        trailingIcon = {
+                            Text(
+                                text = state,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
+                    )
+                }
             }
         }
     }
+    Spacer(Modifier.height(Spacing.md))
 }
 
 @Composable
