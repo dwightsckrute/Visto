@@ -29,6 +29,14 @@ import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.ui.FloatingToolbarMediaActionsParams
 import com.pranshulgg.watchmaster.feature.shared.media.ui.MediaActionsFloatingToolbar
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvWatchProviderSheet
+import androidx.compose.animation.core.tween
+import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -81,6 +89,18 @@ fun MovieDetailsScaffold(
         },
 
         ) { _ ->
+        // Con la ficha en caché el contenido ya está listo en el primer frame y entraba de
+        // golpe; sin caché aparecía tras el marcador, igual de seco. Este asentamiento corto lo
+        // iguala. El disparador es un estado aparte porque animateFloatAsState arranca ya en su
+        // objetivo, así que sin él no habría animación justo en el caso cacheado.
+        var contentAppeared by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { contentAppeared = true }
+
+        AnimatedVisibility(
+            visible = contentAppeared,
+            enter = fadeIn(tween(AppMotion.DurationShort)) +
+                slideInVertically(tween(AppMotion.DurationShort)) { it / 24 },
+        ) {
         MovieDetailsContent(
             movieItem,
             watchlistItem,
@@ -89,6 +109,7 @@ fun MovieDetailsScaffold(
             viewModel,
             watchlistViewModel,
         )
+        }
     }
 
 

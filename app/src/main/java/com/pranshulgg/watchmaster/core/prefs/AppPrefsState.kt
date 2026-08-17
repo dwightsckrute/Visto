@@ -27,4 +27,8 @@ data class AppPrefsState(
     /** true: al desplegar una serie se muestra su progreso combinado en vez de cada temporada. */
     val groupSeasons: Boolean,
     val setGroupSeasons: (Boolean) -> Unit,
+
+    /** "carousel" (por defecto) o "grid": cómo se listan los episodios de una temporada. */
+    val episodeLayout: String,
+    val setEpisodeLayout: (String) -> Unit,
 )

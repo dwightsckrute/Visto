@@ -15,6 +15,7 @@ object AppPrefs {
 
     private val _defaultTab = mutableStateOf("home")
     private val _groupSeasons = mutableStateOf(false)
+    private val _episodeLayout = mutableStateOf("carousel")
 
     private val _themeVariant =
         mutableStateOf(ThemeVariantType.EXPRESSIVE)
@@ -39,6 +40,7 @@ object AppPrefs {
                 }
                 ?: ThemeVariantType.EXPRESSIVE
         _groupSeasons.value = PreferencesHelper.getBool("group_seasons") ?: false
+        _episodeLayout.value = PreferencesHelper.getString("episode_layout") ?: "carousel"
         _defaultTab.value = when (val saved = PreferencesHelper.getString("default_tab")) {
             "Películas", "Movies", "movies" -> "movies"
             "Series", "tv" -> "tv"
@@ -95,6 +97,12 @@ object AppPrefs {
         setGroupSeasons = {
             _groupSeasons.value = it
             PreferencesHelper.setBool("group_seasons", it)
+        },
+
+        episodeLayout = _episodeLayout.value,
+        setEpisodeLayout = {
+            _episodeLayout.value = it
+            PreferencesHelper.setString("episode_layout", it)
         },
     )
 }

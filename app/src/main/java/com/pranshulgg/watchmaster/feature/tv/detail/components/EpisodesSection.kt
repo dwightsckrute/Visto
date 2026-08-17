@@ -36,6 +36,7 @@ import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvDetailsEpisodeInfoSheet
 import kotlinx.coroutines.launch
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
+import com.pranshulgg.watchmaster.core.prefs.LocalAppPrefs
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +70,25 @@ fun EpisodesSection(
     }
 
 
+    // Una sola regla de marcado para las dos vistas: si divergieran, la cuadrícula y el carrusel
+    // se comportarían distinto ante el mismo toque.
+    val toggleEpisode: (TvEpisodeEntity) -> Unit = { item ->
+        when {
+            season.status == WatchStatus.WANT_TO_WATCH || season.status == WatchStatus.FINISHED ->
+                SnackbarManager.show(
+                    AppLanguage.text(
+                        "Marca la temporada como 'Viendo' para llevar el seguimiento de episodios",
+                        "Mark the season as Watching to track episodes",
+                    )
+                )
+
+            item.isWatched ->
+                viewModel.markEpUnWatched(item.epId, season.seasonId, item.episode_number)
+
+            else -> viewModel.markEpWatched(item.epId, season.seasonId, item.episode_number)
+        }
+    }
+
     MediaSectionCard(
         title = localized("Episodios", "Episodes"),
         titleIcon = R.drawable.list_alt_24px,
@@ -81,6 +101,19 @@ fun EpisodesSection(
             )
         }
     ) {
+
+        if (LocalAppPrefs.current.episodeLayout == "grid") {
+            EpisodesGrid(
+                episodes = episodes,
+                onToggle = toggleEpisode,
+                onInfo = { episode ->
+                    currentEp = episode
+                    showSheet = true
+                },
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            return@MediaSectionCard
+        }
 
         HorizontalMultiBrowseCarousel(
             state = carouselState,

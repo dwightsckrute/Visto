@@ -97,6 +97,10 @@ fun SettingsScreen(navController: NavController) {
         "es" to localized("Español", "Spanish"),
         "en" to localized("Inglés", "English"),
     )
+    val episodeLayoutLabels = mapOf(
+        "carousel" to localized("Carrusel", "Carousel"),
+        "grid" to localized("Cuadrícula", "Grid"),
+    )
     val tabLabels = mapOf(
         "home" to localized("Inicio", "Home"),
         "movies" to localized("Películas", "Movies"),
@@ -226,6 +230,18 @@ fun SettingsScreen(navController: NavController) {
                         onOptionSelected = {
                             prefs.setDefaultTab(it)
                         }
+                    ),
+                    SettingTile.DialogOptionTile(
+                        leading = { SettingsTileIcon(R.drawable.list_alt_24px) },
+                        title = localized("Vista de los episodios", "Episode layout"),
+                        description = localized(
+                            "Carrusel para seguir la temporada al día, cuadrícula para verla entera de un vistazo",
+                            "Carousel to keep up week to week, grid to see the whole season at once",
+                        ),
+                        options = listOf("carousel", "grid"),
+                        selectedOption = prefs.episodeLayout,
+                        optionLabel = { episodeLayoutLabels[it] ?: it },
+                        onOptionSelected = { prefs.setEpisodeLayout(it) },
                     ),
                     SettingTile.SwitchTile(
                         leading = { SettingsTileIcon(R.drawable.view_apps_24px) },

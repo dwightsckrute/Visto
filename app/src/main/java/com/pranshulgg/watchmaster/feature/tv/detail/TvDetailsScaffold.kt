@@ -25,6 +25,14 @@ import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvDetailsConfirmationDial
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvDetailsNoteDialog
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvDetailsRatingDialog
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvWatchProviderSheet
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.pranshulgg.watchmaster.core.ui.theme.AppMotion
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -94,6 +102,17 @@ fun TvDetailsScaffold(
 
         )
     { _ ->
+        // Mismo asentamiento que en la ficha de película: con datos en caché el contenido
+        // entraba de golpe. El disparador va en un estado aparte porque las animaciones de
+        // Compose arrancan ya en su objetivo en la primera composición.
+        var contentAppeared by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) { contentAppeared = true }
+
+        AnimatedVisibility(
+            visible = contentAppeared,
+            enter = fadeIn(tween(AppMotion.DurationShort)) +
+                slideInVertically(tween(AppMotion.DurationShort)) { it / 24 },
+        ) {
         TvDetailsContent(
             tvItem,
             navController,
@@ -105,6 +124,7 @@ fun TvDetailsScaffold(
             allSeasons = seasons,
             onSelectSeason = onSelectSeason,
         )
+        }
     }
 
     TvDetailsNoteDialog(viewModel, watchlistViewModel, season)
