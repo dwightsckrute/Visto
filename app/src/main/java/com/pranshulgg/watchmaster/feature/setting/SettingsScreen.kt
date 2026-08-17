@@ -237,7 +237,17 @@ fun SettingsScreen(navController: NavController) {
                         onOptionSelected = {
                             prefs.setDefaultTab(it)
                         }
-                    )
+                    ),
+                    SettingTile.SwitchTile(
+                        leading = { SettingsTileIcon(R.drawable.view_apps_24px) },
+                        title = localized("Agrupar temporadas", "Group seasons"),
+                        description = localized(
+                            "Al desplegar una serie, mostrar su progreso combinado en vez de cada temporada",
+                            "When expanding a show, show its combined progress instead of each season",
+                        ),
+                        checked = prefs.groupSeasons,
+                        onCheckedChange = prefs.setGroupSeasons,
+                    ),
                 )
             )
             SettingSection(

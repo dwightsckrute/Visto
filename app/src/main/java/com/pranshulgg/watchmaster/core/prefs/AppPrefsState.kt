@@ -22,5 +22,9 @@ data class AppPrefsState(
     val setThemeVariant: (ThemeVariantType) -> Unit,
 
     val defaultTab: String,
-    val setDefaultTab: (String) -> Unit
+    val setDefaultTab: (String) -> Unit,
+
+    /** true: al desplegar una serie se muestra su progreso combinado en vez de cada temporada. */
+    val groupSeasons: Boolean,
+    val setGroupSeasons: (Boolean) -> Unit,
 )

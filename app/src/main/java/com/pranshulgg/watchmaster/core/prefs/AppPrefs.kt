@@ -14,6 +14,7 @@ object AppPrefs {
     private val _useAmoledBlack = mutableStateOf(false)
 
     private val _defaultTab = mutableStateOf("home")
+    private val _groupSeasons = mutableStateOf(false)
 
     private val _themeVariant =
         mutableStateOf(ThemeVariantType.EXPRESSIVE)
@@ -37,6 +38,7 @@ object AppPrefs {
                     runCatching { ThemeVariantType.valueOf(it) }.getOrNull()
                 }
                 ?: ThemeVariantType.EXPRESSIVE
+        _groupSeasons.value = PreferencesHelper.getBool("group_seasons") ?: false
         _defaultTab.value = when (val saved = PreferencesHelper.getString("default_tab")) {
             "Películas", "Movies", "movies" -> "movies"
             "Series", "tv" -> "tv"
@@ -87,6 +89,12 @@ object AppPrefs {
         setDefaultTab = {
             _defaultTab.value = it
             PreferencesHelper.setString("default_tab", it)
-        }
+        },
+
+        groupSeasons = _groupSeasons.value,
+        setGroupSeasons = {
+            _groupSeasons.value = it
+            PreferencesHelper.setBool("group_seasons", it)
+        },
     )
 }

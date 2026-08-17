@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
+import com.pranshulgg.watchmaster.core.prefs.LocalAppPrefs
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.components.listItemShape
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
@@ -61,6 +62,7 @@ fun TvWatchlistRow(
     var expanded by rememberSaveable(item.id) { mutableStateOf(false) }
 
     val motionScheme = MaterialTheme.motionScheme
+    val groupSeasons = LocalAppPrefs.current.groupSeasons
 
     Surface(
         shape = shape,
@@ -144,23 +146,28 @@ fun TvWatchlistRow(
                 ) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainer)
                     Spacer(Modifier.height(8.dp))
-                    seasons.forEachIndexed { i, season ->
-                        val isOnly = seasons.singleOrNull() == season
-                        val isFirst = i == 0
-                        val isLast = i == seasons.lastIndex
+                    if (groupSeasons) {
+                        TvSeasonsSummary(seasons)
+                    } else {
+                        seasons.forEachIndexed { i, season ->
+                            val isOnlySeason = seasons.singleOrNull() == season
+                            val isFirstSeason = i == 0
+                            val isLastSeason = i == seasons.lastIndex
 
-                        val shapeSeasonRow = listItemShape(isOnly, isFirst, isLast)
+                            val shapeSeasonRow =
+                                listItemShape(isOnlySeason, isFirstSeason, isLastSeason)
 
-                        TvWatchlistSeasonRow(
-                            season,
-                            shapeSeasonRow,
-                            navController,
-                            onLongActionTvSeasonRequest = {
-                                onLongActionTvSeasonRequest(
-                                    season,
-                                    item
-                                )
-                            })
+                            TvWatchlistSeasonRow(
+                                season,
+                                shapeSeasonRow,
+                                navController,
+                                onLongActionTvSeasonRequest = {
+                                    onLongActionTvSeasonRequest(
+                                        season,
+                                        item
+                                    )
+                                })
+                        }
                     }
                 }
 
