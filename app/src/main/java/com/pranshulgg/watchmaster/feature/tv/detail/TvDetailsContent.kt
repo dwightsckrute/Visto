@@ -177,6 +177,7 @@ fun TvDetailsContent(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
                     CastTvSection(tvItem, onCastClick = { personId ->
                         navController.navigate(
                             NavRoutes.personScreen(personId)

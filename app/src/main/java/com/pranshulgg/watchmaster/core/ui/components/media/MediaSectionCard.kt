@@ -128,7 +128,13 @@ fun MediaSectionCard(
                 exit = shrinkVertically(motionScheme.defaultSpatialSpec()) +
                     fadeOut(motionScheme.defaultEffectsSpec()),
             ) {
-                content()
+                // La columna no es envoltorio de más. `content` puede emitir varios hijos, y
+                // antes eran hijos directos de la columna de la tarjeta, que los apilaba con su
+                // separación. Dentro de AnimatedVisibility, que coloca como una caja, pasarían a
+                // dibujarse unos encima de otros: aquí recupera el apilado y la separación.
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    content()
+                }
             }
         }
     }

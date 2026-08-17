@@ -218,7 +218,9 @@ fun EpisodesSection(
         }
     }
 
-    Spacer(modifier = Modifier.height(12.dp))
+    // El espacio que separa esta sección de la siguiente lo pone quien las coloca. Aquí no
+    // serviría: la sección se compone dentro de un AnimatedContent, que ordena a sus hijos como
+    // una caja, así que un espaciador suelto se dibujaría encima de la tarjeta en vez de debajo.
 
     TvDetailsEpisodeInfoSheet(
         show = showSheet,
