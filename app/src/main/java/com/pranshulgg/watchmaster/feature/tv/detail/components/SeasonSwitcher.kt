@@ -1,20 +1,12 @@
 package com.pranshulgg.watchmaster.feature.tv.detail.components
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.theme.Spacing
@@ -27,8 +19,13 @@ import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
  * sus episodios. Sin esto, entrar a una serie te dejaba encerrado en la temporada por la que
  * habías entrado, sin forma de marcar episodios de las demás.
  *
+ * Usa `ButtonGroup`, el grupo conectado de Material 3 Expressive: es el componente pensado para
+ * una selección única entre pocas opciones, se ensancha al pulsar y manda las que no caben a un
+ * menú de desbordamiento, cosa necesaria en series con muchas temporadas.
+ *
  * Se oculta con una sola temporada, donde no habría nada que elegir.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SeasonSwitcher(
     seasons: List<SeasonEntity>,
@@ -38,41 +35,38 @@ fun SeasonSwitcher(
 ) {
     if (seasons.size < 2) return
 
-    val ordered = seasons.sortedBy { it.seasonNumber }
+    // El contenido de ButtonGroup no es un ámbito @Composable, así que las etiquetas se
+    // resuelven aquí. De paso el estado va en el texto y no solo en el color del botón.
+    val entries = seasons.sortedBy { it.seasonNumber }.map { season ->
+        val number = localized(
+            "Temporada ${season.seasonNumber}",
+            "Season ${season.seasonNumber}",
+        )
+        val state = when (season.status) {
+            WatchStatus.FINISHED -> localized("terminada", "finished")
+            WatchStatus.WATCHING -> localized("en curso", "watching")
+            WatchStatus.INTERRUPTED -> localized("interrumpida", "paused")
+            else -> localized("pendiente", "not started")
+        }
+        season to "$number · $state"
+    }
 
-    Row(
+    ButtonGroup(
+        overflowIndicator = { menuState ->
+            ButtonGroupDefaults.OverflowIndicator(menuState)
+        },
         modifier = modifier
             .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
             .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        ordered.forEach { season ->
-            val selected = season.seasonId == selectedSeasonId
-            val label = localized(
-                "Temporada ${season.seasonNumber}",
-                "Season ${season.seasonNumber}",
-            )
-            // El estado no puede quedarse solo en el color del chip: se dice en la descripción.
-            val stateLabel = when (season.status) {
-                WatchStatus.FINISHED -> localized("terminada", "finished")
-                WatchStatus.WATCHING -> localized("en curso", "watching")
-                WatchStatus.INTERRUPTED -> localized("interrumpida", "paused")
-                else -> localized("pendiente", "not started")
-            }
-
-            FilterChip(
-                selected = selected,
-                onClick = { onSelectSeason(season) },
-                modifier = Modifier
-                    .heightIn(min = Spacing.minTouchTarget)
-                    .semantics { contentDescription = "$label, $stateLabel" },
-                label = { Text(label) },
-                shape = FilterChipDefaults.shape,
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
+        entries.forEach { (season, label) ->
+            toggleableItem(
+                checked = season.seasonId == selectedSeasonId,
+                label = label,
+                onCheckedChange = { checked ->
+                    // Selección única: volver a pulsar la activa no la desmarca.
+                    if (checked) onSelectSeason(season)
+                },
             )
         }
     }

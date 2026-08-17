@@ -35,6 +35,7 @@ import com.pranshulgg.watchmaster.core.network.TvSeasonDto
 import com.pranshulgg.watchmaster.core.ui.components.ActionBottomSheet
 import com.pranshulgg.watchmaster.core.ui.components.SettingSection
 import com.pranshulgg.watchmaster.core.ui.components.SettingTile
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
@@ -54,6 +55,10 @@ fun SearchItemInfoSeasonSection(
     var seasonChanged by remember { mutableStateOf(false) }
     val totalSeasons = remember { mutableStateListOf<TvSeasonDto>() }
     var isSheetOpen by remember { mutableStateOf(false) }
+    // Por defecto entra la serie entera. Antes se preseleccionaba solo la primera temporada sin
+    // guardar, así que añadir una serie completa obligaba a repetir el flujo una vez por
+    // temporada. El selector sigue disponible para quien quiera añadir solo una.
+    var addAllSeasons by remember { mutableStateOf(true) }
 
 
     val savedSeasons by watchlistViewModel
@@ -67,20 +72,15 @@ fun SearchItemInfoSeasonSection(
     }
 
 
+    val unsavedSeasons = remember(filteredSeasons, savedSeasons) {
+        filteredSeasons.filter { season -> savedSeasons.none { it.name == season.name } }
+    }
+
     LaunchedEffect(savedSeasons) {
         if (!seasonChanged) {
-            val firstUnsaved = filteredSeasons.firstOrNull { season ->
-                savedSeasons.none { it.name == season.name }
-            }
-
-            selectedSeason = filteredSeasons.indexOf(firstUnsaved ?: -1)
-
-            if (firstUnsaved != null) {
-                onSelectedSeason(listOf(firstUnsaved))
-            } else {
-                onSelectedSeason(null)
-            }
-
+            selectedSeason = -1
+            addAllSeasons = unsavedSeasons.isNotEmpty()
+            onSelectedSeason(unsavedSeasons.takeIf { it.isNotEmpty() })
         }
     }
 
@@ -96,10 +96,8 @@ fun SearchItemInfoSeasonSection(
                 .heightIn(size)
                 .fillMaxWidth(),
             shapes = ButtonDefaults.shapes(),
-            onClick = {
-                if (selectedSeason != -1)
-                    isSheetOpen = true
-            },
+            enabled = addAllSeasons || selectedSeason != -1,
+            onClick = { isSheetOpen = true },
             contentPadding = ButtonDefaults.contentPaddingFor(size)
         ) {
             Symbol(
@@ -109,7 +107,19 @@ fun SearchItemInfoSeasonSection(
             )
             Spacer(Modifier.size(ButtonDefaults.iconSpacingFor(size)))
             Text(
-                if (selectedSeason == -1) "Todas las temporadas guardadas" else filteredSeasons[selectedSeason].name,
+                when {
+                    addAllSeasons -> localized(
+                        "Todas las temporadas (${unsavedSeasons.size})",
+                        "All seasons (${unsavedSeasons.size})",
+                    )
+
+                    selectedSeason == -1 -> localized(
+                        "Todas las temporadas guardadas",
+                        "Every season already saved",
+                    )
+
+                    else -> filteredSeasons[selectedSeason].name
+                },
                 style = ButtonDefaults.textStyleFor(size),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -156,6 +166,7 @@ fun SearchItemInfoSeasonSection(
                                 onClick = {
                                     if (!seasonExists) {
                                         seasonChanged = true
+                                        addAllSeasons = false
                                         selectedSeason = index
                                         if (!totalSeasons.contains(item)) {
                                             totalSeasons.add(item)

@@ -1,6 +1,10 @@
 package com.pranshulgg.watchmaster.feature.tv.detail
 
 import java.util.concurrent.TimeUnit
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -132,12 +136,25 @@ fun TvDetailsContent(
                         selectedSeasonId = season.seasonId,
                         onSelectSeason = onSelectSeason,
                     )
-                    if (episodes.isNotEmpty()) {
-                        EpisodesSection(
-                            episodes,
-                            viewModel,
-                            season
-                        )
+                    // Los episodios se cruzan con un fundido en lugar de desaparecer y volver.
+                    // Quitar el bloque mientras carga la temporada nueva hacía saltar el layout
+                    // y daba la sensación de estar entrando en otra pantalla.
+                    AnimatedContent(
+                        targetState = episodes,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        label = "season-episodes",
+                    ) { seasonEpisodes ->
+                        if (seasonEpisodes.isEmpty()) {
+                            // Hueco del mismo alto mientras llegan: sin spinner, porque los
+                            // episodios salen de Room y aparecen enseguida.
+                            Spacer(Modifier.height(120.dp))
+                        } else {
+                            EpisodesSection(
+                                seasonEpisodes,
+                                viewModel,
+                                season
+                            )
+                        }
                     }
                     CastTvSection(tvItem, onCastClick = { personId ->
                         navController.navigate(
