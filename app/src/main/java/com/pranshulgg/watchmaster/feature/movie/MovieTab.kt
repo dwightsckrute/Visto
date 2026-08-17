@@ -1,7 +1,21 @@
 package com.pranshulgg.watchmaster.feature.movie
 
-enum class MovieTab(val title: String) {
-    WATCHLIST("Pendientes"),
-    WATCHING("Viendo"),
-    FINISHED("Finalizadas"),
+import androidx.compose.runtime.Composable
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+
+enum class MovieTab {
+    WATCHLIST,
+    WATCHING,
+    FINISHED;
+
+    /**
+     * El título va aquí y no en el constructor del enum porque `localized` es @Composable: como
+     * constante se fijaba en español al cargar la clase y ya no cambiaba al conmutar el idioma.
+     */
+    val title: String
+        @Composable get() = when (this) {
+            WATCHLIST -> localized("Pendientes", "Watchlist")
+            WATCHING -> localized("Viendo", "Watching")
+            FINISHED -> localized("Finalizadas", "Finished")
+        }
 }

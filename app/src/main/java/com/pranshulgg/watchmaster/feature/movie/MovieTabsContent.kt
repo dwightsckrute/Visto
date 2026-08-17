@@ -9,9 +9,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -19,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.pranshulgg.watchmaster.core.ui.components.MediaTabRow
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.movie.finished.FinishedMovies
 import com.pranshulgg.watchmaster.feature.movie.watching.WatchingMovies
@@ -42,23 +41,13 @@ fun MovieTabsContent(
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
-            PrimaryTabRow(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                selectedTabIndex = pagerState.currentPage,
-            ) {
-                tabs.forEachIndexed { index, tab ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-
-                        },
-                        text = { Text(tab.title) }
-                    )
-                }
-            }
+            MediaTabRow(
+                titles = tabs.map { it.title },
+                pagerState = pagerState,
+                onTabClick = { index ->
+                    scope.launch { pagerState.animateScrollToPage(index) }
+                },
+            )
         },
     ) { innerPadding ->
         HorizontalPager(
