@@ -9,6 +9,7 @@ import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaConfirmationDialogContent
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaNoteDialogContent
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaRatingDialogContent
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @Composable
 fun MovieDetailsNoteDialog(
@@ -68,7 +69,7 @@ fun MovieDetailsConfirmationDialog(
             viewModel::hideConfirmationDialog,
             onConfirm = {
                 watchlistViewModel.delete(item.id)
-                SnackbarManager.show("Película eliminada: ${item.title}")
+                SnackbarManager.show(AppLanguage.text("Película eliminada: ${item.title}", "Movie deleted: ${item.title}"))
                 navController.popBackStack()
             }
         )

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 data class HomeMediaItem(
     val id: Long,
@@ -71,7 +72,7 @@ private fun buildHomeState(
                 HomeMediaItem(
                     id = movie.id,
                     title = movie.title,
-                    subtitleEs = if (movie.status == WatchStatus.INTERRUPTED) "Pausada" else "Película",
+                    subtitleEs = if (movie.status == WatchStatus.INTERRUPTED) "Pausada" else AppLanguage.text("Película", "Movie"),
                     subtitleEn = if (movie.status == WatchStatus.INTERRUPTED) "Paused" else "Movie",
                     posterPath = movie.posterPath,
                     mediaType = "movie",
@@ -109,7 +110,7 @@ private fun buildHomeState(
                 HomeMediaItem(
                     id = movie.id,
                     title = movie.title,
-                    subtitleEs = "Película",
+                    subtitleEs = AppLanguage.text("Película", "Movie"),
                     subtitleEn = "Movie",
                     posterPath = movie.posterPath,
                     mediaType = "movie",
@@ -145,7 +146,7 @@ private fun buildHomeState(
             HomeMediaItem(
                 id = item.id,
                 title = item.title,
-                subtitleEs = if (item.mediaType == "tv") "Serie" else "Película",
+                subtitleEs = if (item.mediaType == "tv") AppLanguage.text("Serie", "TV show") else AppLanguage.text("Película", "Movie"),
                 subtitleEn = if (item.mediaType == "tv") "TV show" else "Movie",
                 posterPath = item.posterPath,
                 mediaType = item.mediaType,

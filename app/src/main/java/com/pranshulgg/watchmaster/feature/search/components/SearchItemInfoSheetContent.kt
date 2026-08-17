@@ -38,6 +38,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.data.getMovieGenreNames
 import com.pranshulgg.watchmaster.feature.search.ui.SearchItemInfoSeasonSection
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -89,7 +90,7 @@ fun SearchItemInfoSheetContent(
 
                     MediaChip(
                         if (item.releaseDate == "" || item.releaseDate == null) {
-                            "Sin fecha"
+                            localized("Sin fecha", "No date")
                         } else {
                             item.releaseDate.take(
                                 4

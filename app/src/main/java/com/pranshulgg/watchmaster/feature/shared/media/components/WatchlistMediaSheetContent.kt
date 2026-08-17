@@ -18,6 +18,7 @@ import com.pranshulgg.watchmaster.core.ui.components.SettingsTileIcon
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.actionLabel
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.confirmAction
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +72,7 @@ fun WatchlistMediaSheetContent(
 
             SettingTile.ActionTile(
                 leading = { SettingsTileIcon(R.drawable.delete_24px) },
-                title = if ((isTv && !mediaOptions)) "Eliminar serie" else "Eliminar",
+                title = if ((isTv && !mediaOptions)) "Eliminar serie" else localized("Eliminar", "Delete"),
                 onClick = {
                     if ((isTv && !mediaOptions)) {
                         onDeleteSeries(id)
@@ -96,7 +97,7 @@ fun WatchlistMediaSheetContent(
             if (status == WatchStatus.FINISHED && mediaOptions) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.star_24px) },
-                    title = "Actualizar valoración",
+                    title = localized("Actualizar valoración", "Update rating"),
                     onClick = {
                         onUpdateRating()
                         onDismiss()
@@ -107,7 +108,7 @@ fun WatchlistMediaSheetContent(
             if (status == WatchStatus.FINISHED) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.date_range_24px) },
-                    title = "Cambiar fecha de finalización",
+                    title = localized("Cambiar fecha de finalización", "Change finish date"),
                     onClick = {
                         onChangeFinishData()
                         onDismiss()

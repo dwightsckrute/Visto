@@ -13,6 +13,7 @@ import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.tv.components.TvItems
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +46,7 @@ fun WatchlistTv(
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
             "No se encontraron series",
-            description = "Tu lista está vacía. Añade alguna serie para empezar a crearla."
+            description = localized("Tu lista está vacía. Añade alguna serie para empezar a crearla.", "Your list is empty. Add a show to start building it.")
         )
         return
     }

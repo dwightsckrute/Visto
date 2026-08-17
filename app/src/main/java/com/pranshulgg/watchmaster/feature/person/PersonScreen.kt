@@ -44,6 +44,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.MediaChip
 import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @Composable
@@ -66,7 +67,7 @@ fun PersonScreen(id: Long, navController: NavController) {
                 isError = false
                 viewModel.fetchPersonData(id, onError = { isError = true })
             },
-            errorDescription = "No se pudieron obtener los datos de la persona"
+            errorDescription = localized("No se pudieron obtener los datos de la persona", "Could not fetch this person's data")
         )
     }
 
@@ -124,7 +125,7 @@ fun PersonScreen(id: Long, navController: NavController) {
                     Gap(16.dp)
 
                     MediaSectionCard(
-                        title = "Biografía",
+                        title = localized("Biografía", "Biography"),
                         titleIcon = R.drawable.article_person_24px
                     ) {
                         Text(

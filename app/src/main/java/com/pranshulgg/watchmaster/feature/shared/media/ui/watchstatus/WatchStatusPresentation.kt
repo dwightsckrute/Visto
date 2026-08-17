@@ -2,28 +2,59 @@ package com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus
 
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.R
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
+
+// Estas son funciones normales, no composables, así que el idioma se resuelve con
+// AppLanguage.text en lugar de localized().
 
 fun WatchStatus.dialogMessage(isTv: Boolean = false): String {
     return when (this) {
         WatchStatus.WATCHING -> if (isTv) {
-            "¿Quieres terminar esta temporada y marcar todos sus episodios como vistos?"
+            AppLanguage.text(
+                "¿Quieres terminar esta temporada y marcar todos sus episodios como vistos?",
+                "Finish this season and mark all its episodes as watched?",
+            )
         } else {
-            "¿Quieres marcar esta película como terminada?"
+            AppLanguage.text(
+                "¿Quieres marcar esta película como terminada?",
+                "Mark this movie as finished?",
+            )
         }
+
         WatchStatus.INTERRUPTED -> if (isTv) {
-            "¿Quieres continuar viendo esta temporada?"
+            AppLanguage.text(
+                "¿Quieres continuar viendo esta temporada?",
+                "Carry on watching this season?",
+            )
         } else {
-            "¿Quieres continuar viendo esta película?"
+            AppLanguage.text(
+                "¿Quieres continuar viendo esta película?",
+                "Carry on watching this movie?",
+            )
         }
+
         WatchStatus.FINISHED -> if (isTv) {
-            "¿Quieres restablecer esta temporada, marcar sus episodios como no vistos y devolverla a pendientes?"
+            AppLanguage.text(
+                "¿Quieres restablecer esta temporada, marcar sus episodios como no vistos y devolverla a pendientes?",
+                "Reset this season, mark its episodes as unwatched and send it back to the watchlist?",
+            )
         } else {
-            "¿Quieres restablecer esta película y devolverla a pendientes?"
+            AppLanguage.text(
+                "¿Quieres restablecer esta película y devolverla a pendientes?",
+                "Reset this movie and send it back to the watchlist?",
+            )
         }
+
         else -> if (isTv) {
-            "¿Quieres empezar a ver esta temporada?"
+            AppLanguage.text(
+                "¿Quieres empezar a ver esta temporada?",
+                "Start watching this season?",
+            )
         } else {
-            "¿Quieres empezar a ver esta película?"
+            AppLanguage.text(
+                "¿Quieres empezar a ver esta película?",
+                "Start watching this movie?",
+            )
         }
     }
 }
@@ -42,10 +73,10 @@ fun WatchStatus.confirmAction(
 
 val WatchStatus.actionLabel: String
     get() = when (this) {
-        WatchStatus.WATCHING -> "Marcar como terminada"
-        WatchStatus.INTERRUPTED -> "Continuar viendo"
-        WatchStatus.FINISHED -> "Restablecer"
-        else -> "Marcar como en curso"
+        WatchStatus.WATCHING -> AppLanguage.text("Marcar como terminada", "Mark as finished")
+        WatchStatus.INTERRUPTED -> AppLanguage.text("Continuar viendo", "Carry on watching")
+        WatchStatus.FINISHED -> AppLanguage.text("Restablecer", "Reset")
+        else -> AppLanguage.text("Marcar como en curso", "Mark as watching")
     }
 
 val WatchStatus.buttonIcon: Int

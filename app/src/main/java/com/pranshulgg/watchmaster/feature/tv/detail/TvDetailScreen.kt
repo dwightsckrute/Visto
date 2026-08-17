@@ -18,6 +18,7 @@ import com.pranshulgg.watchmaster.core.ui.components.ErrorContainer
 import com.pranshulgg.watchmaster.data.CountryWatchProviders
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvDetailEffects
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 data class TvDetailsUiState(
     val showNoteDialog: Boolean = false,
@@ -56,7 +57,7 @@ fun TvDetailsScreen(id: Long, seasonNumber: Int, navController: NavController, s
         ErrorContainer(onRetry = {
             showError = false
             viewModel.load(id, onError = { showError = true })
-        }, errorDescription = "No se pudieron cargar los detalles de la serie. Inténtalo de nuevo.")
+        }, errorDescription = localized("No se pudieron cargar los detalles de la serie. Inténtalo de nuevo.", "Could not load the show details. Try again."))
     }
 
 

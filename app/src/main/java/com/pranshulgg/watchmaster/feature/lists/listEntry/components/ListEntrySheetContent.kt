@@ -48,7 +48,7 @@ fun ListEntrySheetContent(
             Column {
                 Gap(15.dp)
                 EmptyContainerPlaceholder(
-                    text = "No se encontró contenido",
+                    text = localized("No se encontró contenido", "Nothing found"),
                     icon = R.drawable.movie_info_24px,
                     size = 0.8f
                 )

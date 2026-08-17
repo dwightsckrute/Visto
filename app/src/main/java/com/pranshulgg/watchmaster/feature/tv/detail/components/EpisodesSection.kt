@@ -34,6 +34,8 @@ import com.pranshulgg.watchmaster.data.local.entity.TvEpisodeEntity
 import com.pranshulgg.watchmaster.feature.tv.detail.TvDetailsViewModel
 import com.pranshulgg.watchmaster.feature.tv.detail.ui.TvDetailsEpisodeInfoSheet
 import kotlinx.coroutines.launch
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -129,12 +131,12 @@ fun EpisodesSection(
                         }
 
                         if (season.status == WatchStatus.WANT_TO_WATCH || season.status == WatchStatus.FINISHED) {
-                            SnackbarManager.show("Marca la temporada como 'Viendo' para llevar el seguimiento de episodios")
+                            SnackbarManager.show(AppLanguage.text("Marca la temporada como 'Viendo' para llevar el seguimiento de episodios", "Mark the season as Watching to track episodes"))
                             return@EpisodeItem
                         }
 
                         if (!isUnlocked) {
-                            SnackbarManager.show("El episodio anterior no está marcado como visto")
+                            SnackbarManager.show(AppLanguage.text("El episodio anterior no está marcado como visto", "The previous episode is not marked as watched"))
                             return@EpisodeItem
                         }
 
@@ -170,7 +172,7 @@ fun EpisodesSection(
         onConfirm = {
             currentEp?.let {
                 if (season.status == WatchStatus.WANT_TO_WATCH || season.status == WatchStatus.FINISHED) {
-                    SnackbarManager.show("Marca la temporada como 'Viendo' para llevar el seguimiento de episodios")
+                    SnackbarManager.show(AppLanguage.text("Marca la temporada como 'Viendo' para llevar el seguimiento de episodios", "Mark the season as Watching to track episodes"))
                     return@let
                 }
                 if (it.isWatched) {

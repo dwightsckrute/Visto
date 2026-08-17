@@ -151,10 +151,7 @@ fun SearchScreenContent(
                         SearchType.TV -> localized("Encuentra tu próxima serie", "Find your next TV show")
                         else -> localized("¿Qué quieres ver?", "What do you want to watch?")
                     },
-                    description = localized(
-                        "Escribe al menos dos letras; Visto buscará automáticamente en TMDB.",
-                        "Type at least two characters; Visto will search TMDB automatically.",
-                    ),
+                    description = localized("Escribe al menos dos letras; Visto buscará automáticamente en TMDB.", "Type at least two characters; Visto will search TMDB automatically."),
                 )
 
                 SearchContentState.LOADING -> Box(
@@ -167,10 +164,7 @@ fun SearchScreenContent(
                 SearchContentState.ERROR -> SearchMessage(
                     icon = R.drawable.refresh_24px,
                     title = localized("No se pudo completar la búsqueda", "Search could not be completed"),
-                    description = localized(
-                        "Comprueba la conexión e inténtalo otra vez.",
-                        "Check your connection and try again.",
-                    ),
+                    description = localized("Comprueba la conexión e inténtalo otra vez.", "Check your connection and try again."),
                     action = {
                         Button(onClick = { viewModel.search(searchType) }) {
                             Text(localized("Reintentar", "Try again"))
@@ -181,10 +175,7 @@ fun SearchScreenContent(
                 SearchContentState.EMPTY -> SearchMessage(
                     icon = R.drawable.search_24px,
                     title = localized("No hay resultados", "No results"),
-                    description = localized(
-                        "Prueba con otro título o revisa la ortografía.",
-                        "Try another title or check the spelling.",
-                    ),
+                    description = localized("Prueba con otro título o revisa la ortografía.", "Try another title or check the spelling."),
                 )
 
                 SearchContentState.RESULTS -> LazyColumn(

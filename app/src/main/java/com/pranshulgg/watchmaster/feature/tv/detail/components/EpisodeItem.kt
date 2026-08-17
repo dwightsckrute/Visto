@@ -39,6 +39,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.data.local.entity.TvEpisodeEntity
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -117,7 +118,7 @@ fun EpisodeItem(
                         .padding(12.dp),
                 ) {
                     Tooltip(
-                        "Opciones del episodio",
+                        localized("Opciones del episodio", "Episode options"),
                         preferredPosition = TooltipAnchorPosition.Below,
                         spacing = 5.dp
                     ) {

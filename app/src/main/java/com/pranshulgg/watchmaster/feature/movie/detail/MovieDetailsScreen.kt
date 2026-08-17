@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.core.ui.components.ErrorContainer
 import com.pranshulgg.watchmaster.data.CountryWatchProviders
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 data class MovieDetailsUiState(
@@ -50,7 +51,7 @@ fun MovieDetailPage(
         ErrorContainer(onRetry = {
             showError = false
             viewModel.load(id, onError = { showError = true })
-        }, errorDescription = "No se pudieron cargar los detalles de la película. Inténtalo de nuevo.")
+        }, errorDescription = localized("No se pudieron cargar los detalles de la película. Inténtalo de nuevo.", "Could not load the movie details. Try again."))
     }
 
 

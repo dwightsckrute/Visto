@@ -145,10 +145,7 @@ fun SettingsScreen(navController: NavController) {
                             )
                         },
                         title = localized("Usar un color personalizado", "Use a custom color"),
-                        description = localized(
-                            "Elige un color base para generar el tema",
-                            "Choose a base color to generate the theme",
-                        ),
+                        description = localized("Elige un color base para generar el tema", "Choose a base colour to generate the theme"),
                         checked = prefs.isCustomTheme,
                         enabled = !prefs.useDynamicColor,
                         onCheckedChange = { checked ->
@@ -165,10 +162,7 @@ fun SettingsScreen(navController: NavController) {
                             )
                         },
                         title = localized("Colores dinámicos", "Dynamic colors"),
-                        description = localized(
-                            "Usar los colores del fondo de pantalla",
-                            "Use colors from your wallpaper",
-                        ),
+                        description = localized("Usar los colores del fondo de pantalla", "Use the wallpaper colours"),
                         checked = prefs.useDynamicColor,
                         enabled = isAndroid12Plus && !prefs.isCustomTheme,
                         onCheckedChange = { checked ->
@@ -178,10 +172,7 @@ fun SettingsScreen(navController: NavController) {
                     SettingTile.SwitchTile(
                         leading = { SettingsTileIcon(R.drawable.bedtime_24px) },
                         title = localized("Negro OLED", "OLED black"),
-                        description = localized(
-                            "Usar negro puro en los fondos del tema oscuro",
-                            "Use pure black backgrounds in the dark theme",
-                        ),
+                        description = localized("Usar negro puro en los fondos del tema oscuro", "Use pure black backgrounds in the dark theme"),
                         checked = prefs.useAmoledBlack,
                         enabled = prefs.appTheme != "light",
                         onCheckedChange = prefs.setAmoledBlack,
@@ -210,15 +201,12 @@ fun SettingsScreen(navController: NavController) {
                     SettingTile.ActionTile(
                         leading = { SettingsTileIcon(R.drawable.refresh_24px) },
                         title = localized("Actualizar textos de TMDB", "Refresh TMDB text"),
-                        description = localized(
-                            "Traduce de nuevo títulos, sinopsis, temporadas y episodios guardados",
-                            "Refresh saved titles, summaries, seasons, and episodes",
-                        ),
+                        description = localized("Traduce de nuevo títulos, sinopsis, temporadas y episodios guardados", "Re-translate saved titles, summaries, seasons and episodes"),
                         onClick = {
                             MetadataSync.enqueue(context)
                             SnackbarManager.show(
                                 AppLanguage.text(
-                                    "Actualización programada; se aplicará en segundo plano",
+                                    AppLanguage.text("Actualización programada; se aplicará en segundo plano", "Update scheduled; it will run in the background"),
                                     "Refresh scheduled; it will run in the background",
                                 )
                             )
@@ -277,10 +265,7 @@ fun SettingsScreen(navController: NavController) {
                     SettingTile.ActionTile(
                         leading = { SettingsTileIcon(R.drawable.folder_24px) },
                         title = localized("Cambiar archivo de copia", "Change backup file"),
-                        description = localized(
-                            "Elige dónde se guardará la copia automática",
-                            "Choose where the automatic backup is saved",
-                        ),
+                        description = localized("Elige dónde se guardará la copia automática", "Choose where the automatic backup is saved"),
                         onClick = {
                             pendingFrequency = automaticFrequency.takeUnless { it == BackupFrequency.OFF }
                                 ?: BackupFrequency.WEEKLY
@@ -340,10 +325,7 @@ fun SettingsScreen(navController: NavController) {
                 tiles = listOf(
                     SettingTile.TextTile(
                         title = "Visto ${BuildConfig.VERSION_NAME}",
-                        description = localized(
-                            "Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica.",
-                            "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-                        )
+                        description = localized("Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica.", "This product uses the TMDB API but is not endorsed or certified by TMDB.")
                     )
                 )
             )
@@ -371,10 +353,7 @@ fun SettingsScreen(navController: NavController) {
             ) { exportMovieListChecked = it }
 
             Text(
-                localized(
-                    "Crea siempre una copia después de actualizar la aplicación: es posible que las copias antiguas no funcionen con versiones futuras.",
-                    "Create a new backup after updating the app; old backups might not work with future versions.",
-                ),
+                localized("Crea siempre una copia después de actualizar la aplicación: es posible que las copias antiguas no funcionen con versiones futuras.", "Always make a backup after updating the app: older backups may not work with future versions."),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 10.dp, start = 16.dp, end = 16.dp)
@@ -392,10 +371,7 @@ fun SettingsScreen(navController: NavController) {
             val intent = createOpenDocumentIntent()
             importLauncher(intent)
         },
-        message = localized(
-            "La importación sustituirá los datos actuales. ¿Seguro que quieres continuar?",
-            "Importing will replace the current data. Are you sure you want to continue?",
-        )
+        message = localized("La importación sustituirá los datos actuales. ¿Seguro que quieres continuar?", "Importing will replace your current data. Are you sure you want to continue?")
     )
 }
 

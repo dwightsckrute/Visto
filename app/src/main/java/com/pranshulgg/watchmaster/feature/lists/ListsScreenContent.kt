@@ -26,6 +26,7 @@ import com.pranshulgg.watchmaster.data.local.mapper.toIcon
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaListsRow
 import com.pranshulgg.watchmaster.feature.shared.media.components.tv.TvWatchlistRow
 import kotlin.collections.orEmpty
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun ListsScreenContent(
@@ -150,7 +151,7 @@ private fun ListItemRow(
                 }
             } else {
                 Text(
-                    "No se encontraron películas",
+                    localized("No se encontraron películas", "No movies found"),
                     fontStyle = FontStyle.Italic,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

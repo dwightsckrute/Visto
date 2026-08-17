@@ -121,10 +121,7 @@ private fun CalendarContent(
             EmptyContainerPlaceholder(
                 icon = R.drawable.date_range_24px,
                 text = localized("Aún no hay nada visto", "Nothing watched yet"),
-                description = localized(
-                    "Cuando marques una película o serie como terminada, aparecerá aquí el día en que la viste.",
-                    "When you mark a movie or show as finished, the day you watched it shows up here.",
-                ),
+                description = localized("Cuando marques una película o serie como terminada, aparecerá aquí el día en que la viste.", "When you mark a movie or show as finished, the day you watched it shows up here."),
             )
         }
         return

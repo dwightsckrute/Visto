@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.DialogBasic
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +115,7 @@ fun MediaDetailsScreenHeader(
 
     DialogBasic(
         show = showRatingDialog,
-        title = "Actualizar valoración",
+        title = localized("Actualizar valoración", "Update rating"),
         showDefaultActions = false,
         onDismiss = { showRatingDialog = false },
         content = {

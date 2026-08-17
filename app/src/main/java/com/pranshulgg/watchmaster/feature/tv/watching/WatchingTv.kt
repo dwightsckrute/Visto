@@ -18,6 +18,7 @@ import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.tv.components.TvItems
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -51,7 +52,7 @@ fun WatchingTv(
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
             "Nada en curso",
-            description = "Parece que aún no has empezado a ver nada. ¡Encuentra tu próximo maratón!"
+            description = localized("Parece que aún no has empezado a ver nada. ¡Encuentra tu próximo maratón!", "Looks like you have not started anything. Find your next binge!")
         )
     }
 

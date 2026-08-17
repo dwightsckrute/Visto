@@ -10,6 +10,8 @@ import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaConfirmationDialogContent
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaRatingDialogContent
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.confirmAction
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 
 @Composable
@@ -26,7 +28,7 @@ fun MovieWatchlistConfirmationDialog(
             movieHomeViewModel::hideConfirmationDialog,
             onConfirm = {
                 watchlistViewModel.delete(item.id)
-                SnackbarManager.show("Película eliminada: ${item.title}")
+                SnackbarManager.show(AppLanguage.text("Película eliminada: ${item.title}", "Movie deleted: ${item.title}"))
             }
         )
     }
@@ -49,7 +51,7 @@ fun MovieWatchlistRatingDialog(
             onConfirm = { rating ->
                 watchlistViewModel.setUserRating(item.id, rating)
                 watchlistViewModel.finish(item.id)
-                if (uiState.isUpdateRating) SnackbarManager.show("Valoración actualizada")
+                if (uiState.isUpdateRating) SnackbarManager.show(AppLanguage.text("Valoración actualizada", "Rating updated"))
             }
         )
     }

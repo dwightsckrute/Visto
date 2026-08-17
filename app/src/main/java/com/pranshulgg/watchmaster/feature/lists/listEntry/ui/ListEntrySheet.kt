@@ -32,6 +32,7 @@ import com.pranshulgg.watchmaster.core.ui.components.LoadingPlaceholder
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.lists.ListsViewModel
 import com.pranshulgg.watchmaster.feature.lists.listEntry.components.ListEntrySheetContent
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 private enum class SelectedTab(val type: String) {
     MOVIES("movie"),
@@ -55,8 +56,8 @@ fun ListEntrySheet(
     val uiState = viewModel.uiState.value
 
     val options = listOf(
-        Option(SelectedTab.MOVIES, "Películas"),
-        Option(SelectedTab.TV_SERIES, "Series")
+        Option(SelectedTab.MOVIES, localized("Películas", "Movies")),
+        Option(SelectedTab.TV_SERIES, localized("Series", "TV shows"))
     )
 
     var selected by remember { mutableStateOf(SelectedTab.MOVIES) }

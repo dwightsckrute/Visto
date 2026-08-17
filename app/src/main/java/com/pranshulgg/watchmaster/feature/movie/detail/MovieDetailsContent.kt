@@ -33,6 +33,8 @@ import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.components.CastMovieSection
 import com.pranshulgg.watchmaster.feature.shared.media.components.NotesSection
 import com.pranshulgg.watchmaster.feature.shared.media.components.OverviewSection
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -61,16 +63,16 @@ fun MovieDetailsContent(
             isRefreshing = true
 
             if (refreshUnlocked) {
-                SnackbarManager.show("Obteniendo datos…")
+                SnackbarManager.show(AppLanguage.text("Obteniendo datos…", "Fetching data…"))
                 viewModel.load(
                     movieItem.id,
                     forceFetch = true,
                     onError = {
-                        SnackbarManager.show("No se pudieron obtener los datos de la película")
+                        SnackbarManager.show(AppLanguage.text("No se pudieron obtener los datos de la película", "Could not fetch the movie data"))
                     })
                 isRefreshing = false
             } else {
-                SnackbarManager.show("Los datos ya están actualizados")
+                SnackbarManager.show(AppLanguage.text("Los datos ya están actualizados", "The data is already up to date"))
                 isRefreshing = false
             }
         },
@@ -102,7 +104,7 @@ fun MovieDetailsContent(
                         watchlistItem.userRating,
                         onUpdateRating = { newRating ->
                             watchlistViewModel.setUserRating(watchlistItem.id, newRating)
-                            SnackbarManager.show("Valoración actualizada")
+                            SnackbarManager.show(AppLanguage.text("Valoración actualizada", "Rating updated"))
                         }
                     )
                     MediaStatusSection(

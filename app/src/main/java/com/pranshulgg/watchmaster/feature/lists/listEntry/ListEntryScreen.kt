@@ -38,6 +38,8 @@ import com.pranshulgg.watchmaster.feature.lists.ListsViewModel
 import com.pranshulgg.watchmaster.feature.lists.listEntry.ui.ListEntrySelectIconSheet
 import com.pranshulgg.watchmaster.feature.lists.listEntry.ui.ListEntrySheet
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 
 data class ListEntryScreenUiState(
@@ -87,7 +89,7 @@ fun ListEntryScreen(id: Long = -1L, navController: NavController) {
 
 
     LargeTopBarScaffold(
-        title = if (id != -1L) "Actualizar lista" else "Crear lista",
+        title = if (id != -1L) "Actualizar lista" else localized("Crear lista", "Create list"),
         navigationIcon = { NavigateUpBtn(navController) },
         bottomBar = {
             val size = ButtonDefaults.MediumContainerHeight
@@ -100,10 +102,10 @@ fun ListEntryScreen(id: Long = -1L, navController: NavController) {
                         .padding(horizontal = 16.dp)
                 ) {
                     M3eButton(
-                        text = if (id != -1L) "Actualizar lista" else "Guardar lista",
+                        text = if (id != -1L) localized("Actualizar lista", "Update list") else "Guardar lista",
                         onClick = {
                             viewModel.saveList(id != -1L, id)
-                            SnackbarManager.show("Lista guardada")
+                            SnackbarManager.show(AppLanguage.text("Lista guardada", "List saved"))
                             navController.popBackStack()
                         },
                         size = size,
@@ -115,7 +117,7 @@ fun ListEntryScreen(id: Long = -1L, navController: NavController) {
                     Gap(horizontal = 10.dp)
 
                     M3eOutlinedButton(
-                        text = "Añadir",
+                        text = localized("Añadir", "Add"),
                         onClick = viewModel::showCustomListScreenSheet,
                         icon = R.drawable.add_24px,
                         size = size

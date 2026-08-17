@@ -15,6 +15,7 @@ import com.pranshulgg.watchmaster.core.ui.components.TextAlertDialog
 import com.pranshulgg.watchmaster.core.ui.components.media.RateMediaDialogContent
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.dialogMessage
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun MediaNoteDialogContent(
@@ -27,7 +28,7 @@ fun MediaNoteDialogContent(
 ) {
     DialogBasic(
         show = show,
-        title = "Añadir una nota",
+        title = localized("Añadir una nota", "Add a note"),
         showDefaultActions = true,
         onDismiss = {
             onDismiss()
@@ -45,7 +46,7 @@ fun MediaNoteDialogContent(
                 shape = RoundedCornerShape(ShapeRadius.Large),
                 value = note,
                 onValueChange = onNoteChange,
-                placeholder = { Text("Nota…") }
+                placeholder = { Text(localized("Nota…", "Note…")) }
             )
         }
     )
@@ -62,7 +63,7 @@ fun MediaRatingDialogContent(
 ) {
     DialogBasic(
         show = show,
-        title = if (isUpdateRating) "Actualizar valoración" else if (isTv) "Valorar esta temporada" else "Valorar esta película",
+        title = if (isUpdateRating) localized("Actualizar valoración", "Update rating") else if (isTv) "Valorar esta temporada" else "Valorar esta película",
         showDefaultActions = false,
         onDismiss = {
             onDismiss()
@@ -94,11 +95,22 @@ fun MediaConfirmationDialogContent(
     customMessage: String? = null
 ) {
 
-    val text = if (isTv) "temporada" else "película"
+    val text = if (isTv) {
+        localized("temporada", "season")
+    } else {
+        localized("película", "movie")
+    }
 
-    val headline = if (status != null) "Estado de visualización" else "Eliminar $text"
+    val headline = if (status != null) {
+        localized("Estado de visualización", "Watch status")
+    } else {
+        localized("Eliminar $text", "Delete $text")
+    }
     val message = status?.dialogMessage(isTv)
-        ?: "¿Seguro que quieres eliminar esta $text? Esta acción no se puede deshacer."
+        ?: localized(
+            "¿Seguro que quieres eliminar esta $text? Esta acción no se puede deshacer.",
+            "Delete this $text? This cannot be undone.",
+        )
 
     TextAlertDialog(
         show = show,

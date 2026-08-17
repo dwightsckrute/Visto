@@ -113,10 +113,7 @@ fun SearchItemInfoSeasonSection(
                         "All seasons (${unsavedSeasons.size})",
                     )
 
-                    selectedSeason == -1 -> localized(
-                        "Todas las temporadas guardadas",
-                        "Every season already saved",
-                    )
+                    selectedSeason == -1 -> localized("Todas las temporadas guardadas", "Every season already saved")
 
                     else -> filteredSeasons[selectedSeason].name
                 },
@@ -144,7 +141,7 @@ fun SearchItemInfoSeasonSection(
             LazyColumn() {
                 item {
                     SettingSection(
-                        title = "Todas las temporadas",
+                        title = localized("Todas las temporadas", "All seasons"),
                         isModalOption = true,
                         tiles = filteredSeasons.mapIndexed { index, item ->
 

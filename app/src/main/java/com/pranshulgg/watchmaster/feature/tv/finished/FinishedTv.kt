@@ -18,6 +18,7 @@ import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
 import com.pranshulgg.watchmaster.feature.tv.components.TvItems
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -50,7 +51,7 @@ fun FinishedTv(
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
             "No hay series terminadas",
-            description = "Aún no has terminado ninguna. ¡Es hora de empezar y acabar una serie!"
+            description = localized("Aún no has terminado ninguna. ¡Es hora de empezar y acabar una serie!", "You have not finished any yet. Time to start and finish a show!")
         )
     }
 

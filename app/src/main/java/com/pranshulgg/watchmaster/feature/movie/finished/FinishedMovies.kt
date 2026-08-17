@@ -11,6 +11,7 @@ import com.pranshulgg.watchmaster.core.ui.components.EmptyContainerPlaceholder
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.movie.components.MovieItems
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -31,8 +32,8 @@ fun FinishedMovies(
     if (items.isEmpty()) {
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
-            "No hay películas terminadas",
-            description = "Aún no has terminado ninguna. ¡Es hora de empezar y acabar una película!"
+            localized("No hay películas terminadas", "No finished movies"),
+            description = localized("Aún no has terminado ninguna. ¡Es hora de empezar y acabar una película!", "You have not finished any yet. Time to start and finish a movie!")
         )
     }
 

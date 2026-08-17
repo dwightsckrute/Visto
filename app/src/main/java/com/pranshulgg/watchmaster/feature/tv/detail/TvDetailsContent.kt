@@ -45,6 +45,8 @@ import com.pranshulgg.watchmaster.feature.tv.detail.components.SeasonSwitcher
 import com.pranshulgg.watchmaster.feature.tv.detail.components.TvHeroHeader
 import kotlinx.coroutines.launch
 import kotlin.text.get
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -84,11 +86,11 @@ fun TvDetailsContent(
             isRefreshing = true
 
             if (season != null && (episodes.isEmpty() || refreshUnlocked)) {
-                SnackbarManager.show("Obteniendo datos…")
+                SnackbarManager.show(AppLanguage.text("Obteniendo datos…", "Fetching data…"))
                 viewModel.refreshSeasonData(season)
                 isRefreshing = false
             } else {
-                SnackbarManager.show("Los datos ya están actualizados")
+                SnackbarManager.show(AppLanguage.text("Los datos ya están actualizados", "The data is already up to date"))
                 isRefreshing = false
             }
         },
@@ -119,7 +121,7 @@ fun TvDetailsContent(
                         userRating = season.seasonUserRating,
                         onUpdateRating = { newRating ->
                             watchlistViewModel.setSeasonUserRating(season.seasonId, newRating)
-                            SnackbarManager.show("Valoración actualizada")
+                            SnackbarManager.show(AppLanguage.text("Valoración actualizada", "Rating updated"))
                         }
                     )
 
@@ -176,7 +178,7 @@ fun TvDetailsContent(
                     })
                     Spacer(modifier = Modifier.height(56.dp))
                 } else {
-                    Text("No se encontró ninguna temporada")
+                    Text(localized("No se encontró ninguna temporada", "No season found"))
                 }
             }
         }

@@ -19,6 +19,7 @@ import com.pranshulgg.watchmaster.core.ui.components.NavigateUpBtn
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
 import com.pranshulgg.watchmaster.core.ui.navigation.NavRoutes
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun ListsScreenScaffold(
@@ -43,7 +44,7 @@ fun ListsScreenScaffold(
         fab = {
             ExtendedFloatingActionButton(
                 onClick = { navController.navigate(NavRoutes.listEntryScreen(-1L)) },
-                text = { Text("Crear lista", style = MaterialTheme.typography.titleMedium) },
+                text = { Text(localized("Crear lista", "Create list"), style = MaterialTheme.typography.titleMedium) },
                 icon = {
                     Symbol(
                         R.drawable.add_24px,
@@ -60,7 +61,7 @@ fun ListsScreenScaffold(
             if (customLists.isEmpty()) {
                 EmptyContainerPlaceholder(
                     text = "No se encontraron listas",
-                    description = "Crea una lista para empezar",
+                    description = localized("Crea una lista para empezar", "Create a list to get started"),
                     icon = R.drawable.lists_24px
                 )
             }

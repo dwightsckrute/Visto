@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pranshulgg.watchmaster.R
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +26,7 @@ fun NavigateUpBtn(navController: NavController) {
         ) {
             Symbol(
                 R.drawable.arrow_back_24px,
-                desc = "icono de ajustes",
+                desc = localized("icono de ajustes", "back"),
                 color = MaterialTheme.colorScheme.onSurface
             )
         }

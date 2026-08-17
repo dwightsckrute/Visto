@@ -9,6 +9,7 @@ import com.pranshulgg.watchmaster.core.utils.formatDate
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import java.time.Instant
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 
 data class WatchListItemStatusUiPill(
@@ -73,7 +74,7 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         else -> {
             WatchListItemStatusUiPill(
-                statusLabel = "Añadida • ${item.addedDate.formatDate()}",
+                statusLabel = AppLanguage.text("Añadida • ${item.addedDate.formatDate()}", "Added • ${item.addedDate.formatDate()}"),
                 containerColor = statusColor.pending.bg,
                 contentColor = statusColor.pending.on
             )

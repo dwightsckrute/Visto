@@ -36,6 +36,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.MediaChip
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -131,7 +132,7 @@ fun ListEntrySelectableMediaItem(
                     }
                 )
                 Text(
-                    item.overview ?: "No se encontró ninguna sinopsis",
+                    item.overview ?: localized("No se encontró ninguna sinopsis", "No summary was found"),
                     maxLines = overviewMaxLines.intValue,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
@@ -146,7 +147,7 @@ fun ListEntrySelectableMediaItem(
 @Composable
 private fun SelectedStatusPill(selected: Boolean = false) {
     MediaChip(
-        text = if (selected) "Seleccionado" else "Añadir",
+        text = if (selected) "Seleccionado" else localized("Añadir", "Add"),
         containerColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerLowest,
         contentColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
         icon = if (selected) R.drawable.check_24px else R.drawable.add_24px,

@@ -31,6 +31,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.feature.shared.media.components.MovieWatchlistRow
 import com.pranshulgg.watchmaster.feature.shared.media.components.tv.TvWatchlistRow
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -51,7 +52,7 @@ fun ViewListContent(
 
     if ((selectedTab == 0 && movies.isEmpty()) || (selectedTab == 1 && tv.isEmpty())) {
         EmptyContainerPlaceholder(
-            text = if (selectedTab == 0) "No se encontraron películas" else "No se encontraron series",
+            text = if (selectedTab == 0) localized("No se encontraron películas", "No movies found") else "No se encontraron series",
             description = "Añade ${if (selectedTab == 0) "películas" else "series"} a esta lista para empezar",
             icon = R.drawable.lists_24px
         )
@@ -66,7 +67,7 @@ fun ViewListContent(
         item {
             if (description.isNotBlank()) {
                 MediaSectionCard(
-                    title = "Descripción",
+                    title = localized("Descripción", "Description"),
                     titleIcon = R.drawable.description_24px,
                     noPadding = true
                 ) {

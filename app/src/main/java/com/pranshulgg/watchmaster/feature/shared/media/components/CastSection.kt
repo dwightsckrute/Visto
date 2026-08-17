@@ -19,6 +19,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.CastItem
 import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
 import com.pranshulgg.watchmaster.data.local.entity.MovieBundle
 import com.pranshulgg.watchmaster.data.local.entity.TvBundle
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @Composable
@@ -32,7 +33,7 @@ fun CastTvSection(tvItem: TvBundle, onCastClick: (Long) -> Unit) {
         val mainCast = tvItem.credits.cast.take(10)
 
         if (mainCast.isEmpty()) {
-            Text("No se encontró reparto", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            Text(localized("No se encontró reparto", "No cast found"), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             return@MediaSectionCard
         }
         LazyRow {
@@ -83,7 +84,7 @@ fun CastMovieSection(movieItem: MovieBundle, onCastClick: (Long) -> Unit) {
                 }
                 item {
                     CastItem(
-                        character = "Dirección",
+                        character = localized("Dirección", "Director"),
                         name = director.name,
                         profilePath = director.profile_path,
                         onCastClick = { onCastClick(director.id) }

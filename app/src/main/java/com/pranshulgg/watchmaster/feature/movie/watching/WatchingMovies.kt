@@ -11,6 +11,7 @@ import com.pranshulgg.watchmaster.core.ui.components.EmptyContainerPlaceholder
 import com.pranshulgg.watchmaster.core.ui.components.LoadingScreenPlaceholder
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.movie.components.MovieItems
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -31,7 +32,7 @@ fun WatchingMovies(
         EmptyContainerPlaceholder(
             R.drawable.movie_info_24px,
             "Nada en curso",
-            description = "Parece que aún no has empezado a ver nada. ¡Encuentra tu próximo maratón!"
+            description = localized("Parece que aún no has empezado a ver nada. ¡Encuentra tu próximo maratón!", "Looks like you have not started anything. Find your next binge!")
         )
     }
 

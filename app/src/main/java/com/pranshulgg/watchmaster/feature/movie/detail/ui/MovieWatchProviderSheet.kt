@@ -13,6 +13,7 @@ import com.pranshulgg.watchmaster.core.ui.components.EmptyContainerPlaceholder
 import com.pranshulgg.watchmaster.feature.movie.detail.MovieDetailsViewModel
 import com.pranshulgg.watchmaster.feature.shared.media.components.WatchProviderItem
 import com.pranshulgg.watchmaster.feature.tv.detail.TvDetailsViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +38,7 @@ fun MovieWatchProviderSheet(
             if (providers != null) {
 
                 if (providers.flatrate != null) {
-                    WatchProviderItem("Suscripción", providers.flatrate)
+                    WatchProviderItem(localized("Suscripción", "Subscription"), providers.flatrate)
                 }
 
                 if (providers.buy != null) {

@@ -65,6 +65,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
 import com.pranshulgg.watchmaster.core.ui.components.media.PosterPlaceholder
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -94,7 +95,7 @@ fun ListEntryContent(
             value = listNameText,
             onValueChange = { onNameChange(it) },
             title = "Nombre",
-            supportingText = "Ponle a tu lista un nombre corto y fácil de recordar",
+            supportingText = localized("Ponle a tu lista un nombre corto y fácil de recordar", "Give your list a short, memorable name"),
             hasSelectIcon = true,
             selectedListIcon = selectedListIcon,
             onSelectIcon = {
@@ -105,8 +106,8 @@ fun ListEntryContent(
         Field(
             value = listDescriptionText,
             onValueChange = { onDescriptionChange(it) },
-            title = "Descripción (opcional)",
-            supportingText = "Añade una breve descripción de la lista"
+            title = localized("Descripción (opcional)", "Description (optional)"),
+            supportingText = localized("Añade una breve descripción de la lista", "Add a short description for the list")
         )
 
         if (selectedMovieList.isNotEmpty()) {
@@ -150,7 +151,7 @@ private fun Field(
             ) {
 
                 Tooltip(
-                    tooltipText = "Seleccionar icono de la lista",
+                    tooltipText = localized("Seleccionar icono de la lista", "Choose a list icon"),
                     preferredPosition = TooltipAnchorPosition.Below,
 
                     ) {
@@ -204,7 +205,7 @@ private fun AddedMovieChips(selectedItems: List<WatchlistItemEntity>) {
     Gap(15.dp)
 
     MediaSectionCard(
-        title = "Seleccionado",
+        title = localized("Seleccionado", "Selected"),
         titleIcon = R.drawable.lists_24px
     ) {
 

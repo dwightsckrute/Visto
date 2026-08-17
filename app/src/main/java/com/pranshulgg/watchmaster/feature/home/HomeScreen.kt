@@ -98,10 +98,7 @@ fun HomeScreen(
             item {
                 HomeSection(
                     title = localized("Visto recientemente", "Recently watched"),
-                    subtitle = localized(
-                        "Tus últimas películas y temporadas terminadas",
-                        "Your latest completed movies and seasons",
-                    ),
+                    subtitle = localized("Tus últimas películas y temporadas terminadas", "Your latest finished movies and seasons"),
                     items = state.recentlyWatched,
                     navController = navController,
                     showDate = true,
@@ -163,10 +160,7 @@ private fun SummaryCard(
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = localized(
-                            "Todo lo que estás disfrutando, de un vistazo",
-                            "Everything you are enjoying, at a glance",
-                        ),
+                        text = localized("Todo lo que estás disfrutando, de un vistazo", "Everything you are enjoying, at a glance"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -383,10 +377,7 @@ private fun EmptyHome(onAdd: () -> Unit) {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                localized(
-                    "Añade películas y series para ver tu actividad reciente, continuar temporadas y descubrir tus hábitos.",
-                    "Add movies and TV shows to see recent activity, continue seasons, and discover your habits.",
-                ),
+                localized("Añade películas y series para ver tu actividad reciente, continuar temporadas y descubrir tus hábitos.", "Add movies and shows to see your recent activity, carry on with seasons and discover your habits."),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

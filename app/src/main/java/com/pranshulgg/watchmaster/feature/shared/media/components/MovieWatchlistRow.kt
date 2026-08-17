@@ -46,6 +46,7 @@ import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.asStatusDates
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.toWatchListItemStatusUiPill
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -127,9 +128,11 @@ fun MovieWatchlistRow(
             ) {
                 Text(
                     text = item.title,
-                    fontWeight = FontWeight.W900,
+                    // titleMedium de la escala del tema en vez de 17.sp con peso 900: ese peso
+                    // no existe en Google Sans Flex tal como está configurada y el tamaño se
+                    // salía de la escala, así que los títulos no acompañaban al resto.
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 17.sp,
                     maxLines = titleMaxLines,
                     overflow = TextOverflow.Ellipsis,
                     onTextLayout = { result ->
@@ -144,7 +147,7 @@ fun MovieWatchlistRow(
 
                 )
                 Text(
-                    item.overview ?: "No se encontró ninguna sinopsis",
+                    item.overview ?: localized("No se encontró ninguna sinopsis", "No summary was found"),
                     maxLines = overviewMaxLines.intValue,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,

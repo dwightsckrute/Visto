@@ -23,6 +23,7 @@ import com.pranshulgg.watchmaster.core.ui.theme.LocalStatusColors
 import com.pranshulgg.watchmaster.core.model.WatchStatus
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.core.ui.components.Symbol
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -101,7 +102,7 @@ fun MediaStatusSection(status: WatchStatus, onClick: () -> Unit = {}) {
             shapes = ButtonDefaults.shapes()
         ) {
             Text(
-                "Dónde ver",
+                localized("Dónde ver", "Where to watch"),
                 style = MaterialTheme.typography.titleMedium
 
             )

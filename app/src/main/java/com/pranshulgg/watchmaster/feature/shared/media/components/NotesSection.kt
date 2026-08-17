@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.pranshulgg.watchmaster.R
 import com.pranshulgg.watchmaster.core.ui.components.media.MediaSectionCard
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @Composable
 fun NotesSection(isSeasonNoteNull: Boolean = true, action: () -> Unit, noteText: String) {
@@ -26,7 +27,7 @@ fun NotesSection(isSeasonNoteNull: Boolean = true, action: () -> Unit, noteText:
         actionOnClick = {
             action()
         },
-        actionText = "Editar nota"
+        actionText = localized("Editar nota", "Edit note")
     ) {
         if (!isSeasonNoteNull) {
             Column(

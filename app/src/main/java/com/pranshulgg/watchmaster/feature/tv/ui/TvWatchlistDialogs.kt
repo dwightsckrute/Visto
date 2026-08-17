@@ -10,6 +10,8 @@ import com.pranshulgg.watchmaster.feature.shared.media.components.MediaConfirmat
 import com.pranshulgg.watchmaster.feature.shared.media.components.MediaRatingDialogContent
 import com.pranshulgg.watchmaster.feature.shared.media.ui.watchstatus.confirmAction
 import com.pranshulgg.watchmaster.feature.tv.TvHomeViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @Composable
 fun TvWatchlistConfirmationDialog(
@@ -22,8 +24,8 @@ fun TvWatchlistConfirmationDialog(
     MediaConfirmationDialogContent(
         uiState.showConfirmationDialog,
         tvHomeViewModel::hideConfirmationDialog,
-        customHeadline = if (uiState.seriesId != null) "Eliminar serie" else null,
-        customMessage = if (uiState.seriesId != null) "¿Seguro que quieres eliminar esta serie? Se borrarán todas las temporadas. Esta acción no se puede deshacer." else null,
+        customHeadline = if (uiState.seriesId != null) localized("Eliminar serie", "Delete show") else null,
+        customMessage = if (uiState.seriesId != null) localized("¿Seguro que quieres eliminar esta serie? Se borrarán todas las temporadas. Esta acción no se puede deshacer.", "Delete this show? Every season will be removed. This cannot be undone.") else null,
         isTv = true,
         onConfirm = {
             if (uiState.seriesId != null) {
@@ -34,7 +36,7 @@ fun TvWatchlistConfirmationDialog(
             SnackbarManager.show(
                 if (season != null) {
                     "Temporada eliminada: ${season.name}"
-                } else "Serie eliminada"
+                } else AppLanguage.text("Serie eliminada", "Show deleted")
             )
         }
     )
@@ -57,7 +59,7 @@ fun TvWatchlistRatingDialog(
             onConfirm = { rating ->
                 watchlistViewModel.setSeasonUserRating(item.seasonId, rating)
                 watchlistViewModel.finishSeason(item.seasonId, item.seasonNumber)
-                if (uiState.isUpdateRating) SnackbarManager.show("Valoración actualizada")
+                if (uiState.isUpdateRating) SnackbarManager.show(AppLanguage.text("Valoración actualizada", "Rating updated"))
             }
         )
     }

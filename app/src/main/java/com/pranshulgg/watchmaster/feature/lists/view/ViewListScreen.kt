@@ -71,6 +71,8 @@ import com.pranshulgg.watchmaster.data.local.mapper.toIcon
 import com.pranshulgg.watchmaster.feature.lists.ListsViewModel
 import com.pranshulgg.watchmaster.feature.lists.view.components.ViewListFloatingToolbar
 import com.pranshulgg.watchmaster.feature.shared.WatchlistViewModel
+import com.pranshulgg.watchmaster.core.ui.localization.localized
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -111,7 +113,7 @@ fun ViewListScreen(navController: NavController, id: Long) {
 
 
     LargeTopBarScaffold(
-        title = customListEntity?.name ?: "Lista",
+        title = customListEntity?.name ?: localized("Lista", "List"),
         navigationIcon = { NavigateUpBtn(navController) },
         actions = {
             AvatarIcon(
@@ -162,12 +164,20 @@ fun ViewListScreen(navController: NavController, id: Long) {
     TextAlertDialog(
         show = isConfirmationDialogOpen,
         onConfirm = {
-            SnackbarManager.show("Se eliminó ${customListEntity?.name ?: "la lista"}")
+            SnackbarManager.show(
+                AppLanguage.text(
+                    "Se eliminó ${customListEntity?.name ?: "la lista"}",
+                    "Deleted ${customListEntity?.name ?: "the list"}",
+                )
+            )
             viewModel.delete(id)
             navController.popBackStack()
         },
         onDismiss = { isConfirmationDialogOpen = false },
-        title = "Eliminar ${customListEntity?.name ?: "lista"}",
-        message = "¿Seguro que quieres eliminar esta lista? Esta acción no se puede deshacer."
+        title = localized(
+            "Eliminar ${customListEntity?.name ?: "lista"}",
+            "Delete ${customListEntity?.name ?: "list"}",
+        ),
+        message = localized("¿Seguro que quieres eliminar esta lista? Esta acción no se puede deshacer.", "Delete this list? This cannot be undone.")
     )
 }

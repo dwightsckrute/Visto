@@ -44,6 +44,7 @@ import com.pranshulgg.watchmaster.core.ui.components.media.PosterBox
 import com.pranshulgg.watchmaster.core.ui.theme.ShapeRadius
 import com.pranshulgg.watchmaster.data.local.entity.SeasonEntity
 import com.pranshulgg.watchmaster.data.local.entity.WatchlistItemEntity
+import com.pranshulgg.watchmaster.core.ui.localization.localized
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -115,15 +116,14 @@ fun TvWatchlistRow(
                 ) {
                     Text(
                         text = item.title,
-                        fontWeight = FontWeight.W900,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 17.sp,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
 
                         )
                     Text(
-                        item.overview ?: "No se encontró ninguna sinopsis",
+                        item.overview ?: localized("No se encontró ninguna sinopsis", "No summary was found"),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.bodyMedium,

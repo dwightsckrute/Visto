@@ -1,32 +1,38 @@
 package com.pranshulgg.watchmaster.data
 
+import com.pranshulgg.watchmaster.core.ui.localization.AppLanguage
+
+/** Ver la nota de [MovieGenre]: los nombres se resuelven aquí porque TMDB solo manda ids. */
 data class TvGenre(
     val id: Int,
-    val name: String
+    val name: String,
+    val nameEn: String,
 )
 
 val LOCAL_TV_GENRES = listOf(
-    TvGenre(10759, "Acción y aventura"),
-    TvGenre(16, "Animación"),
-    TvGenre(35, "Comedia"),
-    TvGenre(80, "Crimen"),
-    TvGenre(99, "Documental"),
-    TvGenre(18, "Drama"),
-    TvGenre(10751, "Familia"),
-    TvGenre(10762, "Infantil"),
-    TvGenre(9648, "Misterio"),
-    TvGenre(10763, "Noticias"),
-    TvGenre(10764, "Telerrealidad"),
-    TvGenre(10765, "Ciencia ficción y fantasía"),
-    TvGenre(10766, "Telenovela"),
-    TvGenre(10767, "Programa de entrevistas"),
-    TvGenre(10768, "Guerra y política"),
-    TvGenre(37, "Wéstern")
+    TvGenre(10759, "Acción y aventura", "Action & Adventure"),
+    TvGenre(16, "Animación", "Animation"),
+    TvGenre(35, "Comedia", "Comedy"),
+    TvGenre(80, "Crimen", "Crime"),
+    TvGenre(99, "Documental", "Documentary"),
+    TvGenre(18, "Drama", "Drama"),
+    TvGenre(10751, "Familia", "Family"),
+    TvGenre(10762, "Infantil", "Kids"),
+    TvGenre(9648, "Misterio", "Mystery"),
+    TvGenre(10763, "Noticias", "News"),
+    TvGenre(10764, "Telerrealidad", "Reality"),
+    TvGenre(10765, "Ciencia ficción y fantasía", "Sci-Fi & Fantasy"),
+    TvGenre(10766, "Telenovela", "Soap"),
+    TvGenre(10767, "Programa de entrevistas", "Talk"),
+    TvGenre(10768, "Guerra y política", "War & Politics"),
+    TvGenre(37, "Wéstern", "Western"),
 )
 
-val TV_GENRE_MAP: Map<Int, String> =
-    LOCAL_TV_GENRES.associate { it.id to it.name }
+val TV_GENRE_MAP: Map<Int, TvGenre> =
+    LOCAL_TV_GENRES.associateBy { it.id }
 
 fun getTvGenreNames(genreIds: List<Int>): List<String> {
-    return genreIds.mapNotNull { TV_GENRE_MAP[it] }
+    return genreIds.mapNotNull { id ->
+        TV_GENRE_MAP[id]?.let { AppLanguage.text(it.name, it.nameEn) }
+    }
 }
