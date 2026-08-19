@@ -35,6 +35,12 @@ Do not introduce another framework, dependency, Gradle plugin, or code-generatio
 
 Material 3 is pinned to an explicit `1.5.0-alpha` version in `gradle/libs.versions.toml` instead of being governed by the Compose BOM, because Visto depends on the Expressive APIs. Declare it once. MaterialKolor also lifts part of the Compose graph above the BOM; check `dependencyInsight` before changing Compose or Material 3 versions.
 
+## Build environment
+
+- Gradle needs `JAVA_HOME` pointing at a real JDK. The system `/usr/lib/jvm/java-25-openjdk` is a JRE with no `javac`, so `test`, `lint` and every `assemble*` fail on it with "does not provide the required capabilities: [JAVA_COMPILER]". `.claude/settings.local.json` sets it; outside that, export it.
+- Keep `JAVA_HOME` the same across invocations. Gradle keys its daemon and its configuration cache by JVM, so alternating between two JDKs silently throws away both and rebuilds from scratch.
+- Configuration cache, build cache and parallel execution are on in `gradle.properties`. A no-op `test lint assembleDebug assembleRelease` costs about a second because of them; without them it was about ninety. If a change makes the configuration cache fail, fix the cause rather than disabling it.
+
 ## Product invariants
 
 - Never change the Android `applicationId` from `com.dwightsckrute.visto`. A different ID creates a separate application and makes the existing private data unavailable.

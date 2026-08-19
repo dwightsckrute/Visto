@@ -18,3 +18,6 @@ keystore.properties
 *.jks
 *.keystore
 .kotlin
+
+# Ajustes de Claude Code propios de esta máquina (rutas absolutas, JDK).
+.claude/settings.local.json
