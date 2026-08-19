@@ -52,7 +52,10 @@ fun SearchItemInfoBottomSheet(
     val item = viewModel.uiState.value.selectedItem
     val tvDetailsList = viewModel.uiState.value.selectedSeasonList
     val scope = rememberCoroutineScope()
-    val disabled = (item?.mediaType != "movie" && tvDetailsList.isNullOrEmpty())
+    // Lo que impide añadir es una serie cuyas temporadas aún no han llegado, no "no ser una
+    // película": escrito de aquella forma, cualquier tipo nuevo nacía desactivado, y eso es lo
+    // que dejó a los libros sin poder añadirse.
+    val disabled = item?.mediaType == "tv" && tvDetailsList.isNullOrEmpty()
 
     // Se guarda antes de cerrar la hoja porque cerrarla limpia la selección del ViewModel, y
     // el selector de fecha aún necesita saber sobre qué título se está actuando.

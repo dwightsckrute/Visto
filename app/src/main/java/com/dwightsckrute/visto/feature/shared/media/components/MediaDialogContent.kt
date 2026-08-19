@@ -60,10 +60,16 @@ fun MediaRatingDialogContent(
     isUpdateRating: Boolean = false,
     originalRating: Float = 0f,
     isTv: Boolean = false,
+    isBook: Boolean = false,
 ) {
     DialogBasic(
         show = show,
-        title = if (isUpdateRating) localized("Actualizar valoración", "Update rating") else if (isTv) "Valorar esta temporada" else "Valorar esta película",
+        title = when {
+            isUpdateRating -> localized("Actualizar valoración", "Update rating")
+            isBook -> localized("Valorar este libro", "Rate this book")
+            isTv -> localized("Valorar esta temporada", "Rate this season")
+            else -> localized("Valorar esta película", "Rate this film")
+        },
         showDefaultActions = false,
         onDismiss = {
             onDismiss()
@@ -90,15 +96,18 @@ fun MediaConfirmationDialogContent(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     isTv: Boolean = false,
+    isBook: Boolean = false,
     status: WatchStatus? = null,
     customHeadline: String? = null,
     customMessage: String? = null
 ) {
 
-    val text = if (isTv) {
-        localized("temporada", "season")
-    } else {
-        localized("película", "movie")
+    // Cómo se llama esto que se va a borrar. Antes solo había dos respuestas posibles, así que
+    // un libro se anunciaba como película: al copiar el flujo se copió también su vocabulario.
+    val text = when {
+        isBook -> localized("libro", "book")
+        isTv -> localized("temporada", "season")
+        else -> localized("película", "film")
     }
 
     val headline = if (status != null) {
@@ -116,7 +125,7 @@ fun MediaConfirmationDialogContent(
         show = show,
         title = customHeadline ?: headline,
         message = customMessage ?: message,
-        confirmText = "Confirmar",
+        confirmText = localized("Confirmar", "Confirm"),
         onConfirm = {
             onConfirm()
         },

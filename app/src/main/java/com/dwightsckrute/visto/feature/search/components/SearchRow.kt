@@ -150,18 +150,18 @@ fun SearchRow(
                     verticalArrangement = Arrangement.spacedBy(5.dp),
                 ) {
                     MediaTypeChip(mediaType = item.mediaType)
+                    // El año, extraído en vez de recortado. TMDB da "2016-09-06", donde los
+                    // cuatro primeros caracteres son el año; un libro trae "Autor · 2016", donde
+                    // los cuatro primeros son el principio del apellido.
                     StarDateChip(
-                        if (item.releaseDate == "" || item.releaseDate == null) {
-                            localized("Sin fecha", "No date")
-                        } else {
-                            item.releaseDate.take(
-                                4
-                            )
-                        },
+                        item.releaseDate.orEmpty().releaseYear()
+                            ?: localized("Sin fecha", "No date"),
                         isDate = true,
                     )
-                    if (item.mediaType != "person") {
-                        StarDateChip("%.1f".format(item.avg_rating))
+                    // Solo si hay nota. Sin esta comprobación, un libro —que nunca la trae—
+                    // enseñaba una estrella con la palabra "null" al lado.
+                    item.avg_rating?.takeIf { it > 0.0 }?.let { rating ->
+                        StarDateChip("%.1f".format(rating))
                     }
                 }
             }
@@ -250,3 +250,7 @@ private fun Chip(
         contentDescription = iconDesc?.let { "$it, $text" },
     )
 }
+
+/** El primer grupo de cuatro cifras que parezca un año, venga la fecha como venga. */
+private fun String.releaseYear(): String? =
+    Regex("(1[5-9]\\d{2}|2\\d{3})").find(this)?.value
