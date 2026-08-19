@@ -67,61 +67,76 @@ fun TvDetailsEpisodeInfoSheet(
         ) {
             Column {
                 EpisodeInfoSheetContent(episode)
-                // Solo cuando hay fecha que cambiar. En uno sin ver no habría nada que corregir,
-                // y ofrecerlo insinuaría que fechar y marcar son cosas distintas.
-                episode.watchedDate?.takeIf { episode.isWatched }?.let { watched ->
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        shape = RoundedCornerShape(ShapeRadius.Large),
+                // Siempre, tenga fecha o no. Los episodios marcados antes de que existiera la
+                // fecha se quedaron sin ella, y eran justo los que hacía falta poder fechar:
+                // condicionar la fila a que ya hubiera una dejaba fuera todo el historial.
+                val watched = episode.watchedDate
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = RoundedCornerShape(ShapeRadius.Large),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
+                        .clip(RoundedCornerShape(ShapeRadius.Large))
+                        .clickable { pickingDate = true },
+                ) {
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Spacing.lg, vertical = Spacing.sm)
-                            .clip(RoundedCornerShape(ShapeRadius.Large))
-                            .clickable { pickingDate = true },
+                            .heightIn(min = Spacing.minTouchTarget)
+                            .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .heightIn(min = Spacing.minTouchTarget)
-                                .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-                            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Symbol(
-                                icon = R.drawable.date_range_24px,
-                                desc = null,
+                        Symbol(
+                            icon = R.drawable.date_range_24px,
+                            desc = null,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = localized("Visto el", "Watched on"),
+                                style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = localized("Visto el", "Watched on"),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                Text(
-                                    text = watched.formatDate(),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                            }
                             Text(
-                                text = localized("Cambiar", "Change"),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
+                                text = when {
+                                    watched != null -> watched.formatDate()
+                                    episode.isWatched ->
+                                        localized("Sin fecha", "No date")
+                                    else ->
+                                        localized("Elegir un día", "Pick a day")
+                                },
+                                style = MaterialTheme.typography.titleMedium,
+                                color = if (watched != null) {
+                                    MaterialTheme.colorScheme.onSurface
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
                             )
                         }
+                        Text(
+                            text = if (watched != null) {
+                                localized("Cambiar", "Change")
+                            } else {
+                                localized("Añadir", "Add")
+                            },
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     }
-
-                    DatePickerSheet(
-                        show = pickingDate,
-                        initialDate = watched.toEpochMilli(),
-                        id = episode.epId,
-                        onDateSelected = { selected, _ ->
-                            onChangeWatchedDate(selected)
-                            pickingDate = false
-                        },
-                        onDismiss = { pickingDate = false },
-                    )
                 }
+
+                DatePickerSheet(
+                    show = pickingDate,
+                    // Sin fecha propia, el selector abre por hoy en vez de por 1970.
+                    initialDate = watched?.toEpochMilli() ?: System.currentTimeMillis(),
+                    id = episode.epId,
+                    onDateSelected = { selected, _ ->
+                        onChangeWatchedDate(selected)
+                        pickingDate = false
+                    },
+                    onDismiss = { pickingDate = false },
+                )
             }
         }
     }

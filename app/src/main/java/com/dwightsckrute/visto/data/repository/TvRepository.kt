@@ -142,9 +142,26 @@ class TvRepository(
         return episodeDao.getEpisodesForSeason(seasonId)
     }
 
-    /** Cambia el día en que consta visto un episodio, sin tocar el resto de la temporada. */
-    suspend fun updateEpisodeWatchedDate(epId: Long, watchedAt: Instant) {
+    /**
+     * Fija el día en que consta visto un episodio.
+     *
+     * Fechar uno que no lo estaba lo da por visto, así que la temporada tiene que enterarse: si
+     * no, quedaría marcado en la lista y sin contar en el progreso. Al corregir la fecha de uno
+     * que ya estaba visto no se toca el progreso, porque cambiar un día no deshace lo que viste
+     * después.
+     */
+    @Transaction
+    suspend fun updateEpisodeWatchedDate(
+        epId: Long,
+        seasonId: Long,
+        episodeNumber: Int,
+        watchedAt: Instant,
+        wasWatched: Boolean,
+    ) {
         episodeDao.updateEpisodeWatchedDate(epId, watchedAt.toEpochMilli())
+        if (!wasWatched) {
+            seasonDao.updateLastEpWatched(seasonId, episodeNumber)
+        }
     }
 
     /** Los episodios fechados, para el diario. */

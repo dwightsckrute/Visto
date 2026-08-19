@@ -181,10 +181,16 @@ class TvDetailsViewModel @Inject constructor(
         }
     }
 
-    /** Reubicar un episodio en el diario, sin tocar su estado ni el de la temporada. */
-    fun updateEpisodeWatchedDate(epId: Long, watchedAtMillis: Long) {
+    /** Situar un episodio en un día del diario, marcándolo visto si aún no lo estaba. */
+    fun updateEpisodeWatchedDate(episode: TvEpisodeEntity, watchedAtMillis: Long) {
         viewModelScope.launch {
-            repo.updateEpisodeWatchedDate(epId, Instant.ofEpochMilli(watchedAtMillis))
+            repo.updateEpisodeWatchedDate(
+                epId = episode.epId,
+                seasonId = episode.seasonId,
+                episodeNumber = episode.episode_number,
+                watchedAt = Instant.ofEpochMilli(watchedAtMillis),
+                wasWatched = episode.isWatched,
+            )
         }
     }
 

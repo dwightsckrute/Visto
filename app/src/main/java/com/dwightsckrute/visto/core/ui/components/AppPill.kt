@@ -70,14 +70,18 @@ fun AppPill(
             horizontalArrangement = Arrangement.spacedBy(metrics.gap),
         ) {
             if (icon != null) {
-                Surface(shape = CircleShape, color = onContainer.copy(alpha = IconWellAlpha)) {
-                    Symbol(
-                        icon = icon,
-                        desc = null,
-                        color = onContainer,
-                        size = metrics.icon,
-                        modifier = Modifier.padding(metrics.iconWell),
-                    )
+                if (metrics.iconWell) {
+                    Surface(shape = CircleShape, color = onContainer.copy(alpha = IconWellAlpha)) {
+                        Symbol(
+                            icon = icon,
+                            desc = null,
+                            color = onContainer,
+                            size = metrics.icon,
+                            modifier = Modifier.padding(6.dp),
+                        )
+                    }
+                } else {
+                    Symbol(icon = icon, desc = null, color = onContainer, size = metrics.icon)
                 }
             }
             if (value != null) {
@@ -103,7 +107,8 @@ private class PillMetrics(
     val vertical: Dp,
     val gap: Dp,
     val icon: Dp,
-    val iconWell: Dp,
+    /** El círculo tras el icono. Solo en la grande: en la pequeña era casi toda su altura. */
+    val iconWell: Boolean,
     val large: Boolean,
 ) {
     @Composable
@@ -117,7 +122,7 @@ private class PillMetrics(
     fun labelStyle() = if (large) {
         MaterialTheme.typography.labelLarge
     } else {
-        MaterialTheme.typography.labelMedium
+        MaterialTheme.typography.labelSmall
     }
 }
 
@@ -129,17 +134,19 @@ private fun PillSize.metrics(): PillMetrics = when (this) {
         vertical = Spacing.md,
         gap = Spacing.sm,
         icon = 18.dp,
-        iconWell = 6.dp,
+        iconWell = true,
         large = true,
     )
+    // Sin el círculo del icono y con menos aire vertical. Con ellos, tres géneros y una nota
+    // bajo el título de una ficha pesaban más que el propio título.
     PillSize.Small -> PillMetrics(
         radius = ShapeRadius.ExtraLarge,
-        minHeight = 30.dp,
-        horizontal = Spacing.sm,
-        vertical = 3.dp,
-        gap = Spacing.xs,
+        minHeight = 24.dp,
+        horizontal = 10.dp,
+        vertical = 2.dp,
+        gap = 3.dp,
         icon = 14.dp,
-        iconWell = 4.dp,
+        iconWell = false,
         large = false,
     )
 }
