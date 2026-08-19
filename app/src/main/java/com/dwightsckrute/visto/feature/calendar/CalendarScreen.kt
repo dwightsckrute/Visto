@@ -105,10 +105,19 @@ fun CalendarScreen(navController: NavController) {
             onToggleMonthPicker = viewModel::toggleMonthPicker,
             onSelectDate = viewModel::selectDate,
             onEntryClick = { entry ->
-                if (entry.mediaType == "tv") {
-                    navController.navigate(NavRoutes.tvDetail(entry.id, 1, -1))
-                } else {
-                    navController.navigate(NavRoutes.movieDetail(entry.id))
+                when (entry.mediaType) {
+                    // Un episodio devuelve a su temporada, con su identificador, no a la serie
+                    // por la primera: volver desde el diario a "temporada 1" de algo que viste
+                    // en la cuarta no ayudaba a nada.
+                    EntryType.EPISODE -> navController.navigate(
+                        NavRoutes.tvDetail(
+                            entry.showId ?: entry.id,
+                            entry.seasonNumber ?: 1,
+                            entry.seasonId ?: -1,
+                        )
+                    )
+                    EntryType.TV -> navController.navigate(NavRoutes.tvDetail(entry.id, 1, -1))
+                    else -> navController.navigate(NavRoutes.movieDetail(entry.id))
                 }
             },
         )
@@ -169,6 +178,7 @@ private fun CalendarContent(
                 month = uiState.visibleMonth,
                 movies = uiState.visibleMonthMovies,
                 shows = uiState.visibleMonthShows,
+                episodes = uiState.visibleMonthEpisodes,
                 locale = locale,
                 isPickingMonth = uiState.isPickingMonth,
                 onTogglePicker = onToggleMonthPicker,
@@ -280,6 +290,7 @@ private fun MonthHeader(
     month: YearMonth,
     movies: Int,
     shows: Int,
+    episodes: Int,
     locale: Locale,
     isPickingMonth: Boolean,
     onTogglePicker: () -> Unit,
@@ -317,7 +328,7 @@ private fun MonthHeader(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = monthSummary(movies, shows),
+                    text = monthSummary(movies, shows, episodes),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -350,10 +361,12 @@ private fun MonthHeader(
     }
 }
 
-/** "2 películas · 3 series", y solo la mitad que tenga algo. */
+/** "2 películas · 3 series · 12 episodios", y solo las partes que tengan algo. */
 @Composable
-private fun monthSummary(movies: Int, shows: Int): String {
-    if (movies == 0 && shows == 0) return localized("Sin actividad", "No activity")
+private fun monthSummary(movies: Int, shows: Int, episodes: Int): String {
+    if (movies == 0 && shows == 0 && episodes == 0) {
+        return localized("Sin actividad", "No activity")
+    }
 
     val moviePart = when (movies) {
         0 -> null
@@ -365,7 +378,12 @@ private fun monthSummary(movies: Int, shows: Int): String {
         1 -> localized("1 serie", "1 show")
         else -> localized("$shows series", "$shows shows")
     }
-    return listOfNotNull(moviePart, showPart).joinToString(" · ")
+    val episodePart = when (episodes) {
+        0 -> null
+        1 -> localized("1 episodio", "1 episode")
+        else -> localized("$episodes episodios", "$episodes episodes")
+    }
+    return listOfNotNull(moviePart, showPart, episodePart).joinToString(" · ")
 }
 
 /** Cuánto hay que arrastrar para que cuente como cambio de mes. */

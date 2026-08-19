@@ -18,12 +18,14 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dwightsckrute.visto.R
-import com.dwightsckrute.visto.core.ui.components.Symbol
+import com.dwightsckrute.visto.core.ui.components.AppPill
+import com.dwightsckrute.visto.core.ui.components.PillSize
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
 import com.dwightsckrute.visto.core.ui.components.media.PosterPlaceholder
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.theme.Spacing
+import com.dwightsckrute.visto.feature.calendar.EntryType
 import com.dwightsckrute.visto.feature.calendar.WatchedEntry
 
 /**
@@ -40,13 +42,19 @@ fun WatchedEntryRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isTv = entry.mediaType == "tv"
+    val isEpisode = entry.mediaType == EntryType.EPISODE
+    val isTv = entry.mediaType == EntryType.TV || isEpisode
     val poster = entry.posterPath?.let { "https://image.tmdb.org/t/p/w342$it" }
-    val kind = if (isTv) localized("Serie", "TV show") else localized("Película", "Movie")
+    val kind = when {
+        isEpisode -> localized("Episodio", "Episode")
+        isTv -> localized("Serie", "TV show")
+        else -> localized("Película", "Movie")
+    }
     val ratingLabel = entry.userRating?.let {
         localized("tu nota, %.1f".format(it), "your rating, %.1f".format(it))
     }
-    val description = listOfNotNull(entry.title, kind, ratingLabel).joinToString(", ")
+    val description = listOfNotNull(entry.title, entry.subtitle, kind, ratingLabel)
+        .joinToString(", ")
 
     Surface(
         modifier = modifier
@@ -82,71 +90,49 @@ fun WatchedEntryRow(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
+                // Qué episodio, bajo el nombre de la serie. Un día con cuatro capítulos seguidos
+                // serían cuatro filas idénticas sin esto.
+                entry.subtitle?.let { subtitle ->
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    KindChip(
-                        icon = if (isTv) R.drawable.tv_24px else R.drawable.movie_24px,
+                    AppPill(
                         label = kind,
+                        icon = if (isTv) R.drawable.tv_24px else R.drawable.movie_24px,
+                        container = if (isEpisode) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.secondaryContainer
+                        },
+                        onContainer = if (isEpisode) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        },
+                        size = PillSize.Small,
                     )
                     // La nota solo si la pusiste. Un hueco vacío donde debería ir una nota
                     // sugiere que falta algo, y no falta nada.
                     entry.userRating?.let { rating ->
-                        RatingChip(rating)
+                        AppPill(
+                            label = "%.1f".format(rating),
+                            icon = R.drawable.star_24px,
+                            container = MaterialTheme.colorScheme.tertiaryContainer,
+                            onContainer = MaterialTheme.colorScheme.onTertiaryContainer,
+                            size = PillSize.Small,
+                        )
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun KindChip(icon: Int, label: String) {
-    Surface(
-        shape = RoundedCornerShape(ShapeRadius.Small),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = 3.dp),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Symbol(
-                icon = icon,
-                desc = null,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                size = 14.dp,
-            )
-            Text(text = label, style = MaterialTheme.typography.labelMedium)
-        }
-    }
-}
-
-@Composable
-private fun RatingChip(rating: Double) {
-    Surface(
-        shape = RoundedCornerShape(ShapeRadius.Small),
-        color = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Spacing.sm, vertical = 3.dp),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Symbol(
-                icon = R.drawable.star_24px,
-                // La cifra de al lado ya lo dice; describir el icono lo duplicaría.
-                desc = null,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                size = 14.dp,
-            )
-            Text(
-                text = "%.1f".format(rating),
-                style = MaterialTheme.typography.labelMedium,
-            )
         }
     }
 }

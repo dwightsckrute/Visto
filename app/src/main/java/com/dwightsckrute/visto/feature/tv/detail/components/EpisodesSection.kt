@@ -242,6 +242,9 @@ fun EpisodesSection(
 
             }
         },
+        onChangeWatchedDate = { millis ->
+            currentEp?.let { viewModel.updateEpisodeWatchedDate(it.epId, millis) }
+        },
         sheetState = sheetState
     )
 

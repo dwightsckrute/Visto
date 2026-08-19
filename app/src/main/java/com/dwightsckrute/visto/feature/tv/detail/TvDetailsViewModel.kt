@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 import kotlin.collections.emptyList
 import kotlin.coroutines.cancellation.CancellationException
@@ -177,6 +178,13 @@ class TvDetailsViewModel @Inject constructor(
     fun markAllEpsWatched(seasonId: Long, lastEpNumber: Int) {
         viewModelScope.launch {
             repo.markAllEpWatched(seasonId, lastEpNumber)
+        }
+    }
+
+    /** Reubicar un episodio en el diario, sin tocar su estado ni el de la temporada. */
+    fun updateEpisodeWatchedDate(epId: Long, watchedAtMillis: Long) {
+        viewModelScope.launch {
+            repo.updateEpisodeWatchedDate(epId, Instant.ofEpochMilli(watchedAtMillis))
         }
     }
 

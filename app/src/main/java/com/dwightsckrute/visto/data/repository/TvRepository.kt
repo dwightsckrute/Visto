@@ -89,7 +89,7 @@ class TvRepository(
         seasonId: Long,
         episodeNumber: Int
     ) {
-        episodeDao.updateEpisodeStatus(epId, true)
+        episodeDao.updateEpisodeStatus(epId, true, Instant.now().toEpochMilli())
         seasonDao.updateLastEpWatched(seasonId, episodeNumber)
     }
 
@@ -99,7 +99,7 @@ class TvRepository(
         seasonId: Long,
         episodeNumber: Int
     ) {
-        episodeDao.updateEpisodeStatus(epId, false)
+        episodeDao.updateEpisodeStatus(epId, false, null)
         seasonDao.updateLastEpWatched(seasonId, episodeNumber.minus(1))
     }
 
@@ -109,7 +109,7 @@ class TvRepository(
     }
 
     suspend fun markAllEpWatched(seasonId: Long, lastEpNumber: Int) {
-        episodeDao.markAllEpWatched(seasonId)
+        episodeDao.markAllEpWatched(seasonId, Instant.now().toEpochMilli())
         seasonDao.updateLastEpWatched(seasonId, lastEpNumber)
     }
 
@@ -142,8 +142,16 @@ class TvRepository(
         return episodeDao.getEpisodesForSeason(seasonId)
     }
 
+    /** Cambia el día en que consta visto un episodio, sin tocar el resto de la temporada. */
+    suspend fun updateEpisodeWatchedDate(epId: Long, watchedAt: Instant) {
+        episodeDao.updateEpisodeWatchedDate(epId, watchedAt.toEpochMilli())
+    }
+
+    /** Los episodios fechados, para el diario. */
+    fun watchedEpisodes(): Flow<List<TvEpisodeEntity>> = episodeDao.getWatchedEpisodes()
+
     suspend fun markEpWatchedFromCount(seasonId: Long, count: Int) {
-        episodeDao.markEpWatchedFromCount(seasonId, count)
+        episodeDao.markEpWatchedFromCount(seasonId, count, Instant.now().toEpochMilli())
     }
 
     suspend fun refreshSeasonData(season: SeasonEntity): SeasonEntity {

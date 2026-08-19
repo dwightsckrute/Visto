@@ -31,7 +31,7 @@ import com.dwightsckrute.visto.data.local.entity.TvEpisodeEntity
 
 @Database(
     entities = [WatchlistItemEntity::class, MovieBundleEntity::class, TvBundleEntity::class, SeasonEntity::class, TvEpisodeEntity::class, CustomListEntity::class, TrendingEntity::class],
-    version = 34
+    version = 35
 )
 @TypeConverters(
     GenreIdsConverter::class,
@@ -107,7 +107,8 @@ abstract class VistoDatabase : RoomDatabase() {
                     MIGRATION_30_31,
                     MIGRATION_31_32,
                     MIGRATION_32_33,
-                    MIGRATION_33_34
+                    MIGRATION_33_34,
+                    MIGRATION_34_35
                 )
                     .build()
                     .also { INSTANCE = it }
@@ -298,5 +299,18 @@ val MIGRATION_33_34 = object : Migration(33, 34) {
 
         db.execSQL("DROP TABLE trending_data")
         db.execSQL("ALTER TABLE trending_data_new RENAME TO trending_data")
+    }
+}
+
+/**
+ * Añade la fecha de visionado a los episodios.
+ *
+ * Nulo para todo lo que ya estaba: de los episodios marcados antes de esto no se guardó cuándo, y
+ * inventar una fecha —la de hoy, la de emisión— habría llenado el diario de días en los que no
+ * viste nada. Sin fecha simplemente no salen; los que marques a partir de ahora sí.
+ */
+val MIGRATION_34_35 = object : Migration(34, 35) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE tv_episodes ADD COLUMN watchedDate INTEGER")
     }
 }

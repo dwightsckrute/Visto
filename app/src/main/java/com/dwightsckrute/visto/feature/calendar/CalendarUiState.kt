@@ -15,7 +15,24 @@ data class WatchedEntry(
     val mediaType: String,
     val posterPath: String?,
     val userRating: Double?,
+    /** El episodio, cuando la entrada es uno: "T2E5 · Grilled". */
+    val subtitle: String? = null,
+    /**
+     * A dónde lleva tocarla. Un episodio abre su temporada, no la serie.
+     *
+     * `id` es el del episodio, que no sirve para navegar, así que la serie viaja aparte.
+     */
+    val showId: Long? = null,
+    val seasonNumber: Int? = null,
+    val seasonId: Long? = null,
 )
+
+/** Los tres tipos que puede tener una entrada del diario. */
+object EntryType {
+    const val MOVIE = "movie"
+    const val TV = "tv"
+    const val EPISODE = "episode"
+}
 
 data class CalendarUiState(
     val isLoading: Boolean = true,
@@ -46,10 +63,13 @@ data class CalendarUiState(
      * cada entrada.
      */
     val visibleMonthMovies: Int
-        get() = visibleMonthEntries.count { it.mediaType != "tv" }
+        get() = visibleMonthEntries.count { it.mediaType == EntryType.MOVIE }
 
     val visibleMonthShows: Int
-        get() = visibleMonthEntries.count { it.mediaType == "tv" }
+        get() = visibleMonthEntries.count { it.mediaType == EntryType.TV }
+
+    val visibleMonthEpisodes: Int
+        get() = visibleMonthEntries.count { it.mediaType == EntryType.EPISODE }
 
     /** Los meses con algo visto, para marcarlos en el selector y no navegar a ciegas. */
     val monthsWithEntries: Set<YearMonth>

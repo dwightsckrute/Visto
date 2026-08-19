@@ -1,54 +1,35 @@
 package com.dwightsckrute.visto.core.ui.components.media
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.dwightsckrute.visto.core.ui.components.Symbol
+import com.dwightsckrute.visto.core.ui.components.AppPill
+import com.dwightsckrute.visto.core.ui.components.PillSize
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 
+/**
+ * Chip de una ficha: género, año, nota, progreso.
+ *
+ * Ya no dibuja nada por su cuenta. Tenía su propio 12sp en negrita, su relleno asimétrico y su
+ * radio configurable, y el resultado era que dos chips contiguos de sitios distintos no se
+ * parecían. Ahora es [AppPill] en pequeño, así que hereda forma, alturas y tipografía del resto.
+ *
+ * Sigue existiendo con esta firma porque lo llaman ocho sitios y cambiarlos todos por algo
+ * idéntico solo habría hecho el cambio más difícil de revisar.
+ */
 @Composable
 fun MediaChip(
     text: String,
     icon: Int? = null,
     contentColor: Color,
     containerColor: Color,
-    shapeRadius: Dp = ShapeRadius.Full
+    @Suppress("UNUSED_PARAMETER") shapeRadius: Dp = ShapeRadius.Full,
 ) {
-
-    Surface(
-        color = containerColor,
-        shape = RoundedCornerShape(shapeRadius)
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = if (icon != null) 6.dp else 8.dp, end = 8.dp)
-        ) {
-            if (icon != null) {
-                Symbol(icon, size = 16.dp, color = contentColor)
-                Spacer(Modifier.width(3.dp))
-            }
-            Text(
-                text,
-                color = contentColor,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
+    AppPill(
+        label = text,
+        icon = icon,
+        container = containerColor,
+        onContainer = contentColor,
+        size = PillSize.Small,
+    )
 }

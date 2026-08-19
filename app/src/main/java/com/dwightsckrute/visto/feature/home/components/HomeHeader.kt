@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
+import com.dwightsckrute.visto.core.ui.components.AppPill
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
@@ -116,41 +117,13 @@ fun HomeStatsRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         items(stats, key = { it.label }) { stat ->
-            Surface(
-                shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
-                color = stat.container,
-                contentColor = stat.onContainer,
-                // Cifra y etiqueta se anuncian como una sola frase.
-                modifier = Modifier.clearAndSetSemantics {
-                    contentDescription = "${stat.value} ${stat.label}"
-                },
-            ) {
-                Row(
-                    modifier = Modifier
-                        .heightIn(min = Spacing.minTouchTarget)
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.md),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-                ) {
-                    Surface(shape = CircleShape, color = stat.onContainer.copy(alpha = .12f)) {
-                        Symbol(
-                            icon = stat.icon,
-                            desc = null,
-                            color = stat.onContainer,
-                            size = 18.dp,
-                            modifier = Modifier.padding(6.dp),
-                        )
-                    }
-                    Text(
-                        text = stat.value.toString(),
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                    Text(
-                        text = stat.label,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-            }
+            AppPill(
+                label = stat.label,
+                value = stat.value.toString(),
+                icon = stat.icon,
+                container = stat.container,
+                onContainer = stat.onContainer,
+            )
         }
     }
 }
