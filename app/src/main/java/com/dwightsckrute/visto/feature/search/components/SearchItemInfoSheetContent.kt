@@ -94,21 +94,25 @@ fun SearchItemInfoSheetContent(
                         if (item.releaseDate == "" || item.releaseDate == null) {
                             localized("Sin fecha", "No date")
                         } else {
-                            item.releaseDate.take(
-                                4
-                            )
+                            // Buscado y no recortado: los cuatro primeros caracteres son el año
+                            // en "2016-09-06" y el principio del apellido en "Aramburu · 2016".
+                            item.releaseDate.releaseYear() ?: localized("Sin fecha", "No date")
                         },
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                         contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                     )
-                    Spacer(Modifier.width(3.dp))
-                    MediaChip(
-                        "%.1f".format(item.avg_rating),
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                        shapeRadius = ShapeRadius.Small,
-                        icon = R.drawable.star_24px
-                    )
+                    // Solo si hay nota: un libro no la trae y aquí se enseñaba una estrella con
+                    // la palabra "null" al lado, igual que pasaba en la lista de resultados.
+                    item.avg_rating?.takeIf { it > 0.0 }?.let { rating ->
+                        Spacer(Modifier.width(3.dp))
+                        MediaChip(
+                            "%.1f".format(rating),
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary,
+                            shapeRadius = ShapeRadius.Small,
+                            icon = R.drawable.star_24px
+                        )
+                    }
                 }
 
             }
@@ -157,3 +161,7 @@ fun SearchItemInfoSheetContent(
     }
 
 }
+
+/** El primer grupo de cuatro cifras que parezca un año, venga la fecha como venga. */
+private fun String.releaseYear(): String? =
+    Regex("(1[5-9]\\d{2}|2\\d{3})").find(this)?.value

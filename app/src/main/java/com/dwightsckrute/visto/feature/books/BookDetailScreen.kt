@@ -153,9 +153,12 @@ fun BookDetailScreen(id: Long, navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior),
+            // Hueco para la barra flotante. Con solo `xxl` la última sección quedaba debajo de
+            // ella y no había forma de sacarla: una ficha corta no da recorrido suficiente para
+            // que la barra se retire, así que el hueco tiene que estar aunque no se desplace.
             contentPadding = PaddingValues(
                 top = padding.calculateTopPadding(),
-                bottom = Spacing.xxl,
+                bottom = FLOATING_BAR_CLEARANCE,
             ),
             verticalArrangement = Arrangement.spacedBy(Spacing.md),
         ) {
@@ -401,3 +404,11 @@ private fun ReadDateRow(
         onDismiss = { picking = false },
     )
 }
+
+/**
+ * Lo que hay que dejar libre bajo el contenido para que la barra flotante no tape nada.
+ *
+ * Su alto más el aire con el que se separa del borde. La ficha de una película se remata con un
+ * espaciador equivalente; aquí va como relleno de la lista, que es lo mismo dicho una sola vez.
+ */
+private val FLOATING_BAR_CLEARANCE = 112.dp

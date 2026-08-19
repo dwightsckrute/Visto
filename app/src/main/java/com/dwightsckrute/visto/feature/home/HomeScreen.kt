@@ -16,6 +16,8 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,6 +55,7 @@ import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
 import com.dwightsckrute.visto.core.ui.navigation.NavRoutes
+import com.dwightsckrute.visto.core.utils.posterUrl
 import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.feature.search.SearchType
@@ -62,7 +65,7 @@ import java.util.Locale
 import com.dwightsckrute.visto.feature.home.components.HomeGreeting
 import com.dwightsckrute.visto.feature.home.components.HomeStat
 import com.dwightsckrute.visto.feature.home.components.HomeStatsRow
-import com.dwightsckrute.visto.feature.home.components.ContinueWatchingCarousel
+import com.dwightsckrute.visto.feature.home.components.HomeProgressList
 
 @Composable
 fun HomeScreen(
@@ -150,7 +153,7 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    ContinueWatchingCarousel(
+                    HomeProgressList(
                         items = state.continueWatching,
                         onItemClick = { item ->
                             if (item.mediaType == MEDIA_TYPE_BOOK) {
@@ -192,7 +195,7 @@ fun HomeScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    ContinueWatchingCarousel(
+                    HomeProgressList(
                         items = state.readingBooks,
                         onItemClick = { item ->
                             navController.navigate(NavRoutes.bookDetail(item.id))
@@ -242,6 +245,7 @@ fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HomeSection(
     title: String,
@@ -259,15 +263,22 @@ private fun HomeSection(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
+        // Rejilla y no fila desplazable: en horizontal solo se veían dos tarjetas y media y había
+        // que arrastrar para saber qué más había. En tres columnas cabe todo lo que enseña la
+        // sección de una vez, que es lo que se quiere de una pantalla de inicio.
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            maxItemsInEachRow = HOME_GRID_COLUMNS,
         ) {
-            items(items, key = { "${it.mediaType}-${it.id}-${it.seasonId ?: 0}" }) { item ->
+            items.take(HOME_GRID_COLUMNS * 2).forEach { item ->
                 HomeMediaCard(
                     item = item,
                     showDate = showDate,
-                    modifier = Modifier.animateItem(),
+                    modifier = Modifier.weight(1f),
                     onClick = {
                         if (item.mediaType == MEDIA_TYPE_BOOK) {
                             navController.navigate(NavRoutes.bookDetail(item.id))
@@ -284,6 +295,14 @@ private fun HomeSection(
         }
     }
 }
+
+/**
+ * Columnas de las rejillas del inicio.
+ *
+ * Tres es lo que deja una carátula reconocible en un teléfono; con cuatro el título de debajo se
+ * parte en tres líneas. Se enseñan dos filas: la pantalla resume, no lista.
+ */
+private const val HOME_GRID_COLUMNS = 3
 
 @Composable
 private fun HomeMediaCard(
@@ -321,7 +340,7 @@ private fun HomeMediaCard(
     ) {
         Column {
             PosterBox(
-                posterUrl = item.posterPath?.let { "https://image.tmdb.org/t/p/w342$it" },
+                posterUrl = posterUrl(item.posterPath, "w342"),
                 apiPath = item.posterPath,
                 width = 136.dp,
                 height = 194.dp,
