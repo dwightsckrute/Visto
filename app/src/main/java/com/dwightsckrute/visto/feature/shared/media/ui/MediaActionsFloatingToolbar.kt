@@ -76,6 +76,7 @@ fun MediaActionsFloatingToolbar(
     actions: FloatingToolbarMediaActionsParams,
     isPinned: Boolean = false,
     isTv: Boolean = false,
+    isBook: Boolean = false,
 ) {
 
     val systemInsets = WindowInsets.systemBars.asPaddingValues()
@@ -207,8 +208,12 @@ fun MediaActionsFloatingToolbar(
 
     TextAlertDialog(
         show = uiState.showDialog,
-        title = localized("Estado de visualización", "Watch status"),
-        message = itemStatus.dialogMessage(isTv = isTv),
+        title = if (isBook) {
+            localized("Estado de lectura", "Reading status")
+        } else {
+            localized("Estado de visualización", "Watch status")
+        },
+        message = itemStatus.dialogMessage(isTv = isTv, isBook = isBook),
         confirmText = localized("Confirmar", "Confirm"),
         onConfirm = {
             itemStatus.confirmAction(

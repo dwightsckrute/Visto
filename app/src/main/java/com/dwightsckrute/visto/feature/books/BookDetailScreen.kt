@@ -110,6 +110,7 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                         },
                     ),
                     isPinned = item.isPinned,
+                    isBook = true,
                 )
             }
         },

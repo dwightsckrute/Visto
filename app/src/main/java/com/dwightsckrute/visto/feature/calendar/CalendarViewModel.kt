@@ -8,6 +8,8 @@ import com.dwightsckrute.visto.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -89,7 +91,11 @@ class CalendarViewModel @Inject constructor(
                     }
 
                 (fromLibrary + fromEpisodes).groupBy({ it.first }, { it.second })
-            }.collect { byDate ->
+            }
+                // El diario agrupa la biblioteca entera y todos los episodios fechados por día;
+                // hacerlo en Main significaba que abrirlo con muchos episodios se notara.
+                .flowOn(Dispatchers.Default)
+                .collect { byDate ->
                 _uiState.update { state ->
                     state.copy(isLoading = false, entriesByDate = byDate)
                 }

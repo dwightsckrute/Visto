@@ -12,6 +12,8 @@ import java.time.Instant
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import com.dwightsckrute.visto.core.ui.localization.AppLanguage
@@ -62,11 +64,17 @@ class HomeScreenViewModel @Inject constructor(
         repository.getAllSeasons(),
     ) { watchlist, seasons ->
         buildHomeState(watchlist, seasons)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = HomeUiState(),
-    )
+    }
+        // Fuera del hilo de interfaz. `viewModelScope` colecta en Main, así que sin esto el
+        // estado entero del inicio —filtrar la biblioteca, mapearla, ordenarla por fecha, tres
+        // veces— se construía sobre el hilo que tiene que dibujar, y en cada cambio de la base de
+        // datos. Es de los sitios donde más se nota, porque cualquier marca de visto lo dispara.
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = HomeUiState(),
+        )
 }
 
 private fun buildHomeState(
