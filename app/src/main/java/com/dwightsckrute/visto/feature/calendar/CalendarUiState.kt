@@ -32,6 +32,7 @@ object EntryType {
     const val MOVIE = "movie"
     const val TV = "tv"
     const val EPISODE = "episode"
+    const val BOOK = "book"
 }
 
 data class CalendarUiState(
@@ -70,6 +71,9 @@ data class CalendarUiState(
 
     val visibleMonthEpisodes: Int
         get() = visibleMonthEntries.count { it.mediaType == EntryType.EPISODE }
+
+    val visibleMonthBooks: Int
+        get() = visibleMonthEntries.count { it.mediaType == EntryType.BOOK }
 
     /** Los meses con algo visto, para marcarlos en el selector y no navegar a ciegas. */
     val monthsWithEntries: Set<YearMonth>

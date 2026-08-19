@@ -117,6 +117,9 @@ fun CalendarScreen(navController: NavController) {
                         )
                     )
                     EntryType.TV -> navController.navigate(NavRoutes.tvDetail(entry.id, 1, -1))
+                    // Sin esto un libro abría la ficha de una película con su identificador, que
+                    // no existe en TMDB: pantalla en blanco y a buscar por qué.
+                    EntryType.BOOK -> navController.navigate(NavRoutes.bookDetail(entry.id))
                     else -> navController.navigate(NavRoutes.movieDetail(entry.id))
                 }
             },
@@ -179,6 +182,7 @@ private fun CalendarContent(
                 movies = uiState.visibleMonthMovies,
                 shows = uiState.visibleMonthShows,
                 episodes = uiState.visibleMonthEpisodes,
+                books = uiState.visibleMonthBooks,
                 locale = locale,
                 isPickingMonth = uiState.isPickingMonth,
                 onTogglePicker = onToggleMonthPicker,
@@ -291,6 +295,7 @@ private fun MonthHeader(
     movies: Int,
     shows: Int,
     episodes: Int,
+    books: Int,
     locale: Locale,
     isPickingMonth: Boolean,
     onTogglePicker: () -> Unit,
@@ -328,7 +333,7 @@ private fun MonthHeader(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = monthSummary(movies, shows, episodes),
+                    text = monthSummary(movies, shows, episodes, books),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -363,8 +368,8 @@ private fun MonthHeader(
 
 /** "2 películas · 3 series · 12 episodios", y solo las partes que tengan algo. */
 @Composable
-private fun monthSummary(movies: Int, shows: Int, episodes: Int): String {
-    if (movies == 0 && shows == 0 && episodes == 0) {
+private fun monthSummary(movies: Int, shows: Int, episodes: Int, books: Int): String {
+    if (movies == 0 && shows == 0 && episodes == 0 && books == 0) {
         return localized("Sin actividad", "No activity")
     }
 
@@ -383,7 +388,12 @@ private fun monthSummary(movies: Int, shows: Int, episodes: Int): String {
         1 -> localized("1 episodio", "1 episode")
         else -> localized("$episodes episodios", "$episodes episodes")
     }
-    return listOfNotNull(moviePart, showPart, episodePart).joinToString(" · ")
+    val bookPart = when (books) {
+        0 -> null
+        1 -> localized("1 libro", "1 book")
+        else -> localized("$books libros", "$books books")
+    }
+    return listOfNotNull(moviePart, showPart, episodePart, bookPart).joinToString(" · ")
 }
 
 /** Cuánto hay que arrastrar para que cuente como cambio de mes. */

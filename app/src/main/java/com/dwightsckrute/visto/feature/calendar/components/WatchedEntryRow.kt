@@ -25,6 +25,7 @@ import com.dwightsckrute.visto.core.ui.components.media.PosterPlaceholder
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.theme.Spacing
+import com.dwightsckrute.visto.core.utils.posterUrl
 import com.dwightsckrute.visto.feature.calendar.EntryType
 import com.dwightsckrute.visto.feature.calendar.WatchedEntry
 
@@ -44,10 +45,13 @@ fun WatchedEntryRow(
 ) {
     val isEpisode = entry.mediaType == EntryType.EPISODE
     val isTv = entry.mediaType == EntryType.TV || isEpisode
-    val poster = entry.posterPath?.let { "https://image.tmdb.org/t/p/w342$it" }
+    val isBook = entry.mediaType == EntryType.BOOK
+    // Un libro trae la portada ya como URL; componerla otra vez daba una dirección imposible.
+    val poster = posterUrl(entry.posterPath, "w342")
     val kind = when {
         isEpisode -> localized("Episodio", "Episode")
         isTv -> localized("Serie", "TV show")
+        isBook -> localized("Libro", "Book")
         else -> localized("Película", "Movie")
     }
     val ratingLabel = entry.userRating?.let {
@@ -107,7 +111,11 @@ fun WatchedEntryRow(
                 ) {
                     AppPill(
                         label = kind,
-                        icon = if (isTv) R.drawable.tv_24px else R.drawable.movie_24px,
+                        icon = when {
+                            isBook -> R.drawable.book_24px
+                            isTv -> R.drawable.tv_24px
+                            else -> R.drawable.movie_24px
+                        },
                         container = if (isEpisode) {
                             MaterialTheme.colorScheme.primaryContainer
                         } else {

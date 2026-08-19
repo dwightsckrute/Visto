@@ -18,6 +18,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.material3.Surface
+import com.dwightsckrute.visto.core.ui.components.Symbol
+import com.dwightsckrute.visto.core.ui.components.media.DatePickerSheet
+import com.dwightsckrute.visto.core.utils.formatDate
+import java.time.Instant
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -145,6 +155,21 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                             size = PillSize.Small,
                         )
                     }
+                }
+            }
+
+            // La fecha en que lo terminaste, editable, igual que en un episodio. Marcar ocurre
+            // cuando te acuerdas y no cuando cerraste el libro, así que sin poder corregirla el
+            // diario registraría el día que tocaste el botón.
+            if (item.status == WatchStatus.FINISHED) {
+                item {
+                    ReadDateRow(
+                        finished = item.finishedDate,
+                        onPick = { millis ->
+                            viewModel.updateFinishedDate(item.id, Instant.ofEpochMilli(millis))
+                        },
+                        bookId = item.id,
+                    )
                 }
             }
 
@@ -324,4 +349,79 @@ private fun ReadingActions(
             }
         }
     }
+}
+
+/**
+ * El día en que lo terminaste.
+ *
+ * Solo aparece con el libro terminado: en uno pendiente no habría nada que fechar, y en uno a
+ * medias la fecha que importa es la de acabarlo.
+ */
+@Composable
+private fun ReadDateRow(
+    finished: Instant?,
+    bookId: Long,
+    onPick: (Long) -> Unit,
+) {
+    var picking by remember { mutableStateOf(false) }
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.lg)
+            .clip(RoundedCornerShape(ShapeRadius.ExtraLarge))
+            .clickable { picking = true },
+    ) {
+        Row(
+            modifier = Modifier
+                .heightIn(min = Spacing.minTouchTarget)
+                .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Symbol(
+                icon = R.drawable.date_range_24px,
+                desc = null,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = localized("Leído el", "Read on"),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = finished?.formatDate() ?: localized("Sin fecha", "No date"),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (finished != null) {
+                        MaterialTheme.colorScheme.onSurface
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
+            Text(
+                text = if (finished != null) {
+                    localized("Cambiar", "Change")
+                } else {
+                    localized("Añadir", "Add")
+                },
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+
+    DatePickerSheet(
+        show = picking,
+        initialDate = finished?.toEpochMilli() ?: System.currentTimeMillis(),
+        id = bookId,
+        onDateSelected = { _, date ->
+            date?.let(onPick)
+            picking = false
+        },
+        onDismiss = { picking = false },
+    )
 }
