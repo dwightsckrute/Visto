@@ -18,6 +18,7 @@ fun SearchScreenScaffold(
     viewModel: SearchViewModel,
     navController: NavController,
     searchType: SearchType,
+    onSearchTypeChange: (SearchType) -> Unit,
     watchlistViewModel: WatchlistViewModel,
 ) {
     val title = when (searchType) {
@@ -42,6 +43,7 @@ fun SearchScreenScaffold(
     ) { paddingValues ->
         SearchScreenContent(
             paddingValues = paddingValues,
+            onSearchTypeChange = onSearchTypeChange,
             viewModel = viewModel,
             searchType = searchType,
             watchlistViewModel = watchlistViewModel,

@@ -5,15 +5,16 @@
     android:viewportHeight="960"
     >
   <!--
-    Un libro cerrado de canto: tapa y lomo, en proporción de libro y no de cuadro.
-    Geometría recta y un solo grosor, como el televisor y la claqueta que tiene al lado. La
-    primera versión dibujaba un libro abierto con dos páginas y a 24dp era una mancha.
+    Un libro cerrado de canto: tapa y lomo.
+    Ocupa una caja parecida a la del televisor y la claqueta que tiene al lado. Antes iba en
+    proporción de libro real y, entre dos iconos anchos, se veía estrecho y desemparejado; lo
+    que empareja a un juego de iconos no es que cada uno mida lo suyo sino que ocupen lo mismo.
   -->
   <path
       android:fillColor="@android:color/white"
       android:fillType="evenOdd"
-      android:pathData="M320,120 L640,120 Q720,120 720,200 L720,760 Q720,840 640,840 L320,840 Q240,840 240,760 L240,200 Q240,120 320,120 Z M320,200 L320,760 L640,760 L640,200 Z" />
+      android:pathData="M280,180 L680,180 Q760,180 760,260 L760,700 Q760,780 680,780 L280,780 Q200,780 200,700 L200,260 Q200,180 280,180 Z M280,260 L280,700 L680,700 L680,260 Z" />
   <path
       android:fillColor="@android:color/white"
-      android:pathData="M370,200 L425,200 L425,760 L370,760 Z" />
+      android:pathData="M330,260 L390,260 L390,700 L330,700 Z" />
 </vector>

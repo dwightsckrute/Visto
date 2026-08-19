@@ -46,6 +46,12 @@ import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.theme.Spacing
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
 import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
+import androidx.compose.material3.rememberModalBottomSheetState
+import com.dwightsckrute.visto.feature.movie.MovieHomeViewModel
+import com.dwightsckrute.visto.feature.movie.ui.MovieWatchlistBottomSheet
+import com.dwightsckrute.visto.feature.movie.ui.MovieWatchlistConfirmationDialog
+import com.dwightsckrute.visto.feature.movie.ui.MovieWatchlistRatingDialog
+import com.dwightsckrute.visto.feature.movie.ui.MovieStatusWatchlistConfirmationDialog
 import com.dwightsckrute.visto.feature.movie.components.MovieItems
 import com.dwightsckrute.visto.feature.shared.WatchlistViewModel
 import kotlinx.coroutines.launch
@@ -72,6 +78,12 @@ fun BooksHomeScreen(
     val booksViewModel: BooksViewModel = hiltViewModel()
     val items by watchlistViewModel.watchlist.collectAsState()
     val state by booksViewModel.uiState.collectAsState()
+
+    // El mismo panel de acciones que las películas: cambiar estado, fijar, valorar, borrar. Era
+    // una lambda vacía, así que dejar pulsado sobre un libro no hacía nada.
+    val movieHomeViewModel: MovieHomeViewModel = hiltViewModel()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val currentItem = movieHomeViewModel.uiState.value.actionSheetItem
 
     val books = items.filter { it.mediaType == MEDIA_TYPE_BOOK }
     val tabs = BookTab.entries
@@ -116,13 +128,40 @@ fun BooksHomeScreen(
                     scrollBehavior = scrollBehavior,
                     scrollBehaviorTopBar = scrollBehaviorTopBar,
                     navController = navController,
-                    onLongActionMovieRequest = {},
+                    onLongActionMovieRequest = { movieHomeViewModel.showBottomSheet(it) },
                     pinnedItems = shown.filter { it.isPinned },
                     normalItems = shown.filterNot { it.isPinned },
                 )
             }
         }
     }
+
+    MovieWatchlistBottomSheet(
+        show = movieHomeViewModel.uiState.value.isSheetOpen,
+        sheetState = sheetState,
+        watchlistItem = currentItem,
+        onDismiss = movieHomeViewModel::hideBottomSheet,
+        viewModel = watchlistViewModel,
+        movieHomeViewModel = movieHomeViewModel,
+    )
+
+    MovieWatchlistConfirmationDialog(
+        watchlistViewModel = watchlistViewModel,
+        movieHomeViewModel = movieHomeViewModel,
+        watchlistItem = currentItem,
+    )
+
+    MovieWatchlistRatingDialog(
+        watchlistViewModel = watchlistViewModel,
+        movieHomeViewModel = movieHomeViewModel,
+        watchlistItem = currentItem,
+    )
+
+    MovieStatusWatchlistConfirmationDialog(
+        watchlistViewModel = watchlistViewModel,
+        movieHomeViewModel = movieHomeViewModel,
+        watchlistItem = currentItem,
+    )
 }
 
 /**

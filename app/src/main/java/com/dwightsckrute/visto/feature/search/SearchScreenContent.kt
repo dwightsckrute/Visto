@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.FilterChip
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -90,6 +93,7 @@ fun SearchScreenContent(
     paddingValues: PaddingValues,
     viewModel: SearchViewModel,
     searchType: SearchType,
+    onSearchTypeChange: (SearchType) -> Unit,
     watchlistViewModel: WatchlistViewModel,
 ) {
     val scope = rememberCoroutineScope()
@@ -149,9 +153,10 @@ fun SearchScreenContent(
                     title = when (searchType) {
                         SearchType.MOVIE -> localized("Encuentra tu próxima película", "Find your next movie")
                         SearchType.TV -> localized("Encuentra tu próxima serie", "Find your next TV show")
+                        SearchType.BOOK -> localized("Encuentra tu próximo libro", "Find your next book")
                         else -> localized("¿Qué quieres ver?", "What do you want to watch?")
                     },
-                    description = localized("Escribe al menos dos letras; Visto buscará automáticamente en TMDB.", "Type at least two characters; Visto will search TMDB automatically."),
+                    description = localized("Escribe al menos dos letras. Visto busca en TMDB y en Open Library.", "Type at least two characters. Visto searches TMDB and Open Library."),
                 )
 
                 SearchContentState.LOADING -> Box(
@@ -183,6 +188,15 @@ fun SearchScreenContent(
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
+                    // El filtro va con los resultados y no junto al campo: el campo se desplaza
+                    // con una animación de posición y meterle una fila más obligaba a recalcular
+                    // toda esa geometría para algo que solo importa cuando hay algo que filtrar.
+                    item {
+                        SearchTypeFilter(
+                            selected = searchType,
+                            onSelect = onSearchTypeChange,
+                        )
+                    }
                     item {
                         Text(
                             text = localized(
@@ -444,6 +458,42 @@ private fun SearchMessage(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             action?.invoke()
+        }
+    }
+}
+
+/**
+ * Acotar la búsqueda a un tipo.
+ *
+ * Buscar "dune" devuelve la película, la serie y el libro, que casi siempre es lo que se quiere;
+ * cuando no lo es, esto lo acota sin salir de la pantalla. Los tipos son los que se pueden
+ * guardar en la biblioteca: las personas se buscan desde la ficha de un reparto, no aquí.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SearchTypeFilter(
+    selected: SearchType,
+    onSelect: (SearchType) -> Unit,
+) {
+    val options = listOf(
+        SearchType.MULTI to localized("Todo", "All"),
+        SearchType.MOVIE to localized("Películas", "Movies"),
+        SearchType.TV to localized("Series", "Shows"),
+        SearchType.BOOK to localized("Libros", "Books"),
+    )
+
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        options.forEach { (type, label) ->
+            FilterChip(
+                selected = type == selected,
+                onClick = { onSelect(type) },
+                label = { Text(label) },
+            )
         }
     }
 }
