@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,6 +52,10 @@ import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.theme.Spacing
 import com.dwightsckrute.visto.core.utils.posterUrl
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
+import com.dwightsckrute.visto.feature.shared.media.ui.FloatingToolbarMediaActionsParams
+import com.dwightsckrute.visto.feature.shared.media.ui.MediaActionsFloatingToolbar
 import com.dwightsckrute.visto.feature.shared.WatchlistViewModel
 
 /**
@@ -64,6 +69,11 @@ import com.dwightsckrute.visto.feature.shared.WatchlistViewModel
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BookDetailScreen(id: Long, navController: NavController) {
+    // La barra se esconde al bajar, como en el cine. Se crea aquí y no se recibe porque esta
+    // pantalla no vive dentro de ninguna que ya tenga una.
+    val scrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+        exitDirection = FloatingToolbarExitDirection.Companion.Bottom,
+    )
     val viewModel: WatchlistViewModel = hiltViewModel()
     val detailViewModel: BookDetailViewModel = hiltViewModel()
     val flow = remember(id) { viewModel.item(id) }
@@ -75,6 +85,34 @@ fun BookDetailScreen(id: Long, navController: NavController) {
     LargeTopBarScaffold(
         title = book?.title.orEmpty(),
         navigationIcon = { NavigateUpBtn(navController) },
+        // La misma barra flotante que una película o una temporada. Tres botones arriba decían
+        // lo mismo, pero eran lo único de la aplicación que decía el estado de esa forma.
+        bottomBar = {
+            book?.let { item ->
+                MediaActionsFloatingToolbar(
+                    scrollBehavior = scrollBehavior,
+                    itemStatus = item.status,
+                    actions = FloatingToolbarMediaActionsParams(
+                        startWatching = { viewModel.start(item.id) },
+                        resetWatching = { viewModel.reset(item.id) },
+                        finishWatching = { viewModel.finish(item.id) },
+                        interruptWatching = { viewModel.interrupt(item.id) },
+                        delete = {
+                            viewModel.delete(item.id)
+                            navController.popBackStack()
+                        },
+                        togglePin = { viewModel.setPinned(item.id, !item.isPinned) },
+                        // Un libro no tiene página en TMDB que compartir; se comparte su título.
+                        share = {},
+                        markWatchedOn = { readAt ->
+                            viewModel.finish(item.id)
+                            viewModel.updateFinishedDate(item.id, readAt)
+                        },
+                    ),
+                    isPinned = item.isPinned,
+                )
+            }
+        },
         actions = {
             book?.let { item ->
                 TooltipIconBtn(
@@ -112,7 +150,9 @@ fun BookDetailScreen(id: Long, navController: NavController) {
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior),
             contentPadding = PaddingValues(
                 top = padding.calculateTopPadding(),
                 bottom = Spacing.xxl,
@@ -171,15 +211,6 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                         bookId = item.id,
                     )
                 }
-            }
-
-            item {
-                ReadingActions(
-                    status = item.status,
-                    onToRead = { viewModel.reset(item.id) },
-                    onReading = { viewModel.start(item.id) },
-                    onRead = { viewModel.finish(item.id) },
-                )
             }
 
             author?.let { info ->
@@ -290,61 +321,6 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = Spacing.lg),
                     )
-                }
-            }
-        }
-    }
-}
-
-/**
- * Los tres estados, como tres botones.
- *
- * Una barra flotante como la del cine daría un solo botón que va rotando de estado, y para un
- * libro eso obliga a pasar por "leyendo" para llegar a "leído". Aquí se salta directo, que es lo
- * que se hace al añadir algo que ya leíste.
- */
-@Composable
-private fun ReadingActions(
-    status: WatchStatus,
-    onToRead: () -> Unit,
-    onReading: () -> Unit,
-    onRead: () -> Unit,
-) {
-    val options = listOf(
-        Triple(WatchStatus.WANT_TO_WATCH, localized("Pendiente", "To read"), onToRead),
-        Triple(WatchStatus.WATCHING, localized("Leyendo", "Reading"), onReading),
-        Triple(WatchStatus.FINISHED, localized("Leído", "Read"), onRead),
-    )
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Spacing.lg),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-    ) {
-        options.forEach { (value, label, action) ->
-            val selected = status == value ||
-                (value == WatchStatus.WATCHING && status == WatchStatus.INTERRUPTED)
-            androidx.compose.material3.Surface(
-                onClick = action,
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
-                color = if (selected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerHigh
-                },
-                contentColor = if (selected) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            ) {
-                Box(
-                    modifier = Modifier.padding(vertical = Spacing.md),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(text = label, style = MaterialTheme.typography.labelLarge)
                 }
             }
         }
