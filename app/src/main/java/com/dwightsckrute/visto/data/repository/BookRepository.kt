@@ -1,6 +1,9 @@
 package com.dwightsckrute.visto.data.repository
 
 import com.dwightsckrute.visto.core.model.WatchStatus
+import com.dwightsckrute.visto.core.network.GoogleBooksApi
+import com.dwightsckrute.visto.core.network.GoogleBooksApiKey
+import com.dwightsckrute.visto.core.ui.localization.AppLanguage
 import com.dwightsckrute.visto.core.network.OpenLibraryApi
 import com.dwightsckrute.visto.core.network.OpenLibraryDoc
 import com.dwightsckrute.visto.data.local.dao.WatchlistDao
@@ -34,8 +37,20 @@ fun idToOpenLibraryKey(id: Long): String? =
 
 fun isBookId(id: Long): Boolean = id > BOOK_ID_OFFSET
 
+/** Lo que se sabe del autor de un libro, cuando se sabe. */
+data class AuthorInfo(
+    val id: String,
+    val name: String,
+    val years: String?,
+    val photoUrl: String?,
+    val bio: String?,
+    val works: List<BookResult>,
+    val totalWorks: Int,
+)
+
 class BookRepository(
     private val api: OpenLibraryApi,
+    private val googleBooks: GoogleBooksApi,
     private val dao: WatchlistDao,
 ) {
 
@@ -61,6 +76,79 @@ class BookRepository(
                 pages = doc.pages,
             )
         }
+    }
+
+    /**
+     * La sinopsis, en el idioma de quien lee si se puede.
+     *
+     * Open Library primero, porque es la fuente del catálogo y no cuesta nada. Si lo que devuelve
+     * está en otro idioma o no existe, y hay clave de Google Books configurada, se pregunta allí
+     * acotando por idioma. Sin clave no se intenta: la cuota anónima de Google está agotada y
+     * responde 429.
+     *
+     * Que falle cualquiera de las dos no impide guardar el libro. Una ficha sin resumen sigue
+     * siendo una ficha; no poder añadir el libro sería perderlo.
+     */
+    private suspend fun fetchOverview(book: BookResult): String? {
+        val fromOpenLibrary = runCatching {
+            idToOpenLibraryKey(book.id)?.let { api.work(it).descriptionText }
+        }.getOrNull()
+
+        val wantedLanguage = AppLanguage.currentCode()
+        if (!GoogleBooksApiKey.isConfigured()) return fromOpenLibrary
+
+        val fromGoogle = runCatching {
+            val key = GoogleBooksApiKey.userKey() ?: return@runCatching null
+            val terms = listOfNotNull(
+                book.title,
+                book.authors.firstOrNull()?.let { "inauthor:$it" },
+            ).joinToString(" ")
+            googleBooks.volumes(query = terms, language = wantedLanguage, key = key)
+                .items
+                ?.firstNotNullOfOrNull { it.volumeInfo?.description?.takeIf(String::isNotBlank) }
+        }.getOrNull()
+
+        return fromGoogle ?: fromOpenLibrary
+    }
+
+    /**
+     * El autor de un libro y lo demás que ha escrito.
+     *
+     * Sale de Open Library, que lo da gratis y sin clave, y que para autores en español trae
+     * hasta la biografía en español. Se resuelve a partir de la obra en lugar de guardarse al
+     * añadir el libro: guardarlo habría pedido una columna nueva para algo que solo hace falta
+     * cuando se abre la ficha.
+     */
+    suspend fun authorOf(bookId: Long): AuthorInfo? {
+        val workId = idToOpenLibraryKey(bookId) ?: return null
+        val authorId = runCatching { api.work(workId).authorId }.getOrNull() ?: return null
+        val author = runCatching { api.author(authorId) }.getOrNull() ?: return null
+        val works = runCatching { api.authorWorks(authorId) }.getOrNull()
+
+        val others = works?.entries.orEmpty().mapNotNull { entry ->
+            val id = entry.key?.let(::openLibraryKeyToId) ?: return@mapNotNull null
+            if (id == bookId) return@mapNotNull null
+            BookResult(
+                id = id,
+                title = entry.title ?: return@mapNotNull null,
+                authors = listOfNotNull(author.name),
+                year = null,
+                coverUrl = OpenLibraryApi.coverUrl(entry.covers?.firstOrNull(), 'M'),
+                coverId = entry.covers?.firstOrNull(),
+                pages = null,
+            )
+        }
+
+        return AuthorInfo(
+            id = authorId,
+            name = author.name ?: return null,
+            years = listOfNotNull(author.birthDate, author.deathDate)
+                .takeIf { it.isNotEmpty() }?.joinToString(" – "),
+            photoUrl = OpenLibraryApi.authorPhotoUrl(author.photos?.firstOrNull()),
+            bio = author.bioText,
+            works = others,
+            totalWorks = works?.size ?: others.size,
+        )
     }
 
     /**
@@ -91,9 +179,7 @@ class BookRepository(
      * mejor que ningún libro.
      */
     suspend fun add(book: BookResult) {
-        val overview = runCatching {
-            idToOpenLibraryKey(book.id)?.let { api.work(it).descriptionText }
-        }.getOrNull()
+        val overview = fetchOverview(book)
 
         dao.insert(
             WatchlistItemEntity(

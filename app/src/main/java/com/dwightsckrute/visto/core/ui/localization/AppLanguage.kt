@@ -26,6 +26,9 @@ object AppLanguage {
 
     fun text(es: String, en: String): String = if (activeCode == "en") en else es
 
+    /** El idioma activo, para pedir contenido en él a un catálogo externo. */
+    fun currentCode(): String = activeCode
+
     fun localizedContext(context: Context): Context {
         initialize(context)
         val locale = Locale.forLanguageTag(activeCode)

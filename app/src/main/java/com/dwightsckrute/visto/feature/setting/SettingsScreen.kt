@@ -33,6 +33,7 @@ import com.dwightsckrute.visto.core.ui.components.SettingSection
 import com.dwightsckrute.visto.core.ui.components.SettingTile
 import com.dwightsckrute.visto.core.ui.components.SettingsTileIcon
 import com.dwightsckrute.visto.core.ui.components.TextAlertDialog
+import com.dwightsckrute.visto.core.network.GoogleBooksApiKey
 import com.dwightsckrute.visto.core.network.TmdbApiKey
 import com.dwightsckrute.visto.core.ui.localization.AppLanguage
 import com.dwightsckrute.visto.core.ui.localization.localized
@@ -81,6 +82,8 @@ fun SettingsScreen(navController: NavController) {
 
     var tmdbKeyField by remember { mutableStateOf(TmdbApiKey.userKey().orEmpty()) }
     var tmdbKeyIsUserProvided by remember { mutableStateOf(TmdbApiKey.isUserProvided()) }
+    var googleKeyField by remember { mutableStateOf(GoogleBooksApiKey.userKey().orEmpty()) }
+    var googleKeyIsSet by remember { mutableStateOf(GoogleBooksApiKey.isConfigured()) }
     val tmdbKeySavedMessage = localized("Clave guardada", "Key saved")
     val tmdbKeyClearedMessage = localized("Se usará la clave incluida", "Using the bundled key")
     var isExportDialogOpen by remember { mutableStateOf(false) }
@@ -339,6 +342,45 @@ fun SettingsScreen(navController: NavController) {
                 )
             )
             TmdbApiKeyHelpCard(modifier = Modifier.padding(horizontal = 16.dp))
+            SettingSection(
+                title = localized("API de Google Books", "Google Books API"),
+                tiles = listOf(
+                    SettingTile.DialogTextFieldTile(
+                        leading = { SettingsTileIcon(R.drawable.book_24px) },
+                        title = localized("Clave de API propia", "Your own API key"),
+                        // Sin clave la aplicación funciona igual: el catálogo de libros es Open
+                        // Library. Esto solo sirve para la sinopsis en tu idioma, que Open
+                        // Library no puede dar porque guarda una sola por obra.
+                        description = if (googleKeyIsSet) {
+                            localized(
+                                "Se usará para traer la sinopsis de los libros en tu idioma.",
+                                "Used to fetch book synopses in your language.",
+                            )
+                        } else {
+                            localized(
+                                "Opcional. Sin ella, la sinopsis viene de Open Library en el idioma en que esté escrita.",
+                                "Optional. Without one, synopses come from Open Library in whatever language they were written.",
+                            )
+                        },
+                        initialText = googleKeyField,
+                        placeholder = localized("Clave de API", "API key"),
+                        placeholderTextField = localized("Pega aquí tu clave", "Paste your key here"),
+                        onTextSubmitted = { value ->
+                            val trimmed = value.trim()
+                            if (trimmed.isEmpty()) {
+                                GoogleBooksApiKey.clear()
+                            } else {
+                                GoogleBooksApiKey.set(trimmed)
+                            }
+                            googleKeyField = trimmed
+                            googleKeyIsSet = GoogleBooksApiKey.isConfigured()
+                            SnackbarManager.show(
+                                if (trimmed.isEmpty()) tmdbKeyClearedMessage else tmdbKeySavedMessage
+                            )
+                        },
+                    ),
+                )
+            )
             SettingSection(
                 title = localized("Acerca de", "About"),
                 tiles = listOf(

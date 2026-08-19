@@ -13,6 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -50,8 +55,12 @@ import com.dwightsckrute.visto.feature.shared.WatchlistViewModel
 @Composable
 fun BookDetailScreen(id: Long, navController: NavController) {
     val viewModel: WatchlistViewModel = hiltViewModel()
+    val detailViewModel: BookDetailViewModel = hiltViewModel()
     val flow = remember(id) { viewModel.item(id) }
     val book by flow.collectAsStateWithLifecycle()
+    val author by detailViewModel.author.collectAsStateWithLifecycle()
+
+    LaunchedEffect(id) { detailViewModel.load(id) }
 
     LargeTopBarScaffold(
         title = book?.title.orEmpty(),
@@ -146,6 +155,99 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                     onReading = { viewModel.start(item.id) },
                     onRead = { viewModel.finish(item.id) },
                 )
+            }
+
+            author?.let { info ->
+                item {
+                    MediaSectionCard(
+                        title = localized("El autor", "The author"),
+                        titleIcon = R.drawable.article_person_24px,
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.lg),
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                        ) {
+                            PosterBox(
+                                posterUrl = info.photoUrl,
+                                apiPath = info.photoUrl,
+                                width = 64.dp,
+                                height = 64.dp,
+                                circular = true,
+                                placeholder = { PosterPlaceholder(size = 0.5f) },
+                            )
+                            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                                Text(
+                                    text = info.name,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                info.years?.let { years ->
+                                    Text(
+                                        text = years,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                            }
+                        }
+                        info.bio?.takeIf { it.isNotBlank() }?.let { bio ->
+                            Text(
+                                text = bio,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 6,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(horizontal = Spacing.lg),
+                            )
+                        }
+                    }
+                }
+
+                if (info.works.isNotEmpty()) {
+                    item {
+                        MediaSectionCard(
+                            title = localized("Del mismo autor", "By the same author"),
+                            titleIcon = R.drawable.book_24px,
+                            trailingContent = {
+                                AppPill(
+                                    label = localized(
+                                        "${info.totalWorks} obras",
+                                        "${info.totalWorks} works",
+                                    ),
+                                    size = PillSize.Small,
+                                )
+                            },
+                        ) {
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = Spacing.lg),
+                                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                            ) {
+                                items(info.works, key = { it.id }) { other ->
+                                    Column(modifier = Modifier.width(96.dp)) {
+                                        PosterBox(
+                                            posterUrl = other.coverUrl,
+                                            apiPath = other.coverUrl,
+                                            width = 96.dp,
+                                            height = 144.dp,
+                                            cornerRadius = ShapeRadius.Medium,
+                                            placeholder = { PosterPlaceholder(size = 0.5f) },
+                                        )
+                                        Text(
+                                            text = other.title,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.padding(top = Spacing.xs),
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             item {

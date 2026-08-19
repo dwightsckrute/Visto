@@ -17,6 +17,7 @@ import com.dwightsckrute.visto.data.repository.PersonRepository
 import com.dwightsckrute.visto.data.repository.SearchRepository
 import com.dwightsckrute.visto.data.repository.TrendingRepository
 import dagger.Module
+import com.dwightsckrute.visto.core.network.GoogleBooksApi
 import com.dwightsckrute.visto.core.network.OpenLibraryApi
 import com.dwightsckrute.visto.data.repository.BookRepository
 import dagger.Provides
@@ -135,8 +136,13 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGoogleBooksApi(): GoogleBooksApi = GoogleBooksApi.create()
+
+    @Provides
+    @Singleton
     fun provideBookRepository(
         api: OpenLibraryApi,
+        googleBooks: GoogleBooksApi,
         dao: WatchlistDao,
-    ): BookRepository = BookRepository(api, dao)
+    ): BookRepository = BookRepository(api, googleBooks, dao)
 }
