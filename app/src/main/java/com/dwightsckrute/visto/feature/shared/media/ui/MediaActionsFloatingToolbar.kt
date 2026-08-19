@@ -39,6 +39,7 @@ import androidx.compose.ui.zIndex
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.model.WatchStatus
 import com.dwightsckrute.visto.core.ui.components.Symbol
+import com.dwightsckrute.visto.core.ui.theme.floatingBarLabel
 import com.dwightsckrute.visto.core.ui.components.TextAlertDialog
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.components.media.DatePickerSheet
@@ -257,11 +258,14 @@ private fun StatusMainActionBtn(onClick: () -> Unit, itemStatus: WatchStatus) {
         Symbol(
             itemStatus.buttonIcon,
             color = MaterialTheme.colorScheme.onSurface,
+            // El mismo icono de 20dp que lleva la barra de navegación: con los 24 por defecto,
+            // la acción pesaba más que el destino activo estando las dos en el mismo borde.
+            size = 20.dp,
         )
         Spacer(Modifier.width(ButtonDefaults.iconSpacingFor(48.dp)))
         Text(
             itemStatus.actionLabel,
-            style = MaterialTheme.typography.titleMedium
+            style = floatingBarLabel,
         )
     }
 }

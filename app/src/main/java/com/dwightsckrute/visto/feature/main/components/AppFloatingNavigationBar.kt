@@ -8,7 +8,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationItemIconPosition
+import com.dwightsckrute.visto.core.ui.theme.floatingBarLabel
 import androidx.compose.material3.ShortNavigationBarItem
+import com.dwightsckrute.visto.core.ui.theme.floatingBarLabel
 import androidx.compose.material3.ShortNavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -85,6 +87,7 @@ fun AppFloatingNavigationBar(
                         {
                             Text(
                                 text = destination.label,
+                                style = floatingBarLabel,
                                 maxLines = 1,
                                 overflow = TextOverflow.Clip,
                             )
