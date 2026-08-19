@@ -38,7 +38,8 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.feature.search.SearchItem
-import com.dwightsckrute.visto.core.ui.components.Symbol
+import com.dwightsckrute.visto.core.ui.components.AppPill
+import com.dwightsckrute.visto.core.ui.components.PillSize
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
 import com.dwightsckrute.visto.core.ui.components.media.PosterPlaceholder
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
@@ -233,28 +234,12 @@ private fun Chip(
     containerColor: Color,
     contentColor: Color,
 ) {
-    Surface(
-        color = containerColor,
-        shape = CircleShape,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 6.dp, end = 8.dp)
-        ) {
-            Symbol(
-                icon = icon,
-                desc = iconDesc,
-                color = contentColor,
-                size = 16.dp,
-            )
-            Spacer(Modifier.width(3.dp))
-            Text(
-                text,
-                color = contentColor,
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-    }
+    AppPill(
+        label = text,
+        icon = icon,
+        container = containerColor,
+        onContainer = contentColor,
+        size = PillSize.Small,
+        contentDescription = iconDesc?.let { "$it, $text" },
+    )
 }

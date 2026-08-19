@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.dwightsckrute.visto.R
+import com.dwightsckrute.visto.core.ui.components.AppPill
+import com.dwightsckrute.visto.core.ui.components.PillSize
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.MediaDetailsScreenHeader
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
@@ -140,42 +142,24 @@ fun TvHeroHeader(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     genreList.forEach { text ->
-                        GenreChip(text)
+                        AppPill(
+                            label = text,
+                            container = MaterialTheme.colorScheme.tertiaryContainer,
+                            onContainer = MaterialTheme.colorScheme.onTertiaryContainer,
+                            size = PillSize.Small,
+                        )
                     }
-                    GenreChip("%.1f".format(watchlistItem?.avgRating), rating = true)
+                    AppPill(
+                        label = "%.1f".format(watchlistItem?.avgRating),
+                        icon = R.drawable.star_24px,
+                        container = MaterialTheme.colorScheme.tertiaryContainer,
+                        onContainer = MaterialTheme.colorScheme.onTertiaryContainer,
+                        size = PillSize.Small,
+                    )
 
                 }
 
             }
-        }
-    }
-}
-
-@Composable
-private fun GenreChip(text: String, rating: Boolean = false) {
-    val schemeColor = MaterialTheme.colorScheme
-
-    Surface(
-        color = if (rating) schemeColor.tertiary else schemeColor.tertiaryContainer,
-        shape = if (rating) RoundedCornerShape(ShapeRadius.Small) else CircleShape
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(start = if (rating) 6.dp else 8.dp, end = 8.dp)
-                .height(24.dp)
-        ) {
-            if (rating) {
-                Symbol(R.drawable.star_24px, size = 16.dp, color = schemeColor.onTertiary)
-                Spacer(Modifier.width(3.dp))
-            }
-            Text(
-                text,
-                color = if (rating) schemeColor.onTertiary else schemeColor.onTertiaryContainer,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 }
