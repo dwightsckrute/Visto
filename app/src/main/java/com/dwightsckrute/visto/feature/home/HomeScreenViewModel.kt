@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dwightsckrute.visto.core.model.WatchStatus
 import com.dwightsckrute.visto.data.local.entity.SeasonEntity
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
+import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
 import com.dwightsckrute.visto.data.repository.WatchlistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
@@ -36,6 +37,15 @@ data class HomeUiState(
     val continueWatching: List<HomeMediaItem> = emptyList(),
     val recentlyWatched: List<HomeMediaItem> = emptyList(),
     val recentlyAdded: List<HomeMediaItem> = emptyList(),
+    /**
+     * Los libros van aparte de lo audiovisual.
+     *
+     * Comparten tabla y estados, pero mezclarlos en "continuar viendo" haría que una fila dijera
+     * "viendo" de algo que se lee. Separados, cada mitad se lee con su propio vocabulario.
+     */
+    val bookCount: Int = 0,
+    val readingBooks: List<HomeMediaItem> = emptyList(),
+    val recentlyRead: List<HomeMediaItem> = emptyList(),
     /** Cosas terminadas dentro del mes natural en curso. */
     val watchedThisMonth: Int = 0,
 ) {
@@ -65,6 +75,7 @@ private fun buildHomeState(
 ): HomeUiState {
     val showsById = watchlist.associateBy { it.id }
     val movieActivity = watchlist.filter { it.mediaType == "movie" }
+    val bookActivity = watchlist.filter { it.mediaType == MEDIA_TYPE_BOOK }
     val seasonActivity = seasons.filter { it.seasonNumber > 0 }
 
     val continueWatching = buildList {
@@ -148,8 +159,17 @@ private fun buildHomeState(
             HomeMediaItem(
                 id = item.id,
                 title = item.title,
-                subtitleEs = if (item.mediaType == "tv") AppLanguage.text("Serie", "TV show") else AppLanguage.text("Película", "Movie"),
-                subtitleEn = if (item.mediaType == "tv") "TV show" else "Movie",
+                // Un libro recién añadido se anunciaba como película: aquí solo había dos ramas.
+                subtitleEs = when (item.mediaType) {
+                    "tv" -> AppLanguage.text("Serie", "TV show")
+                    MEDIA_TYPE_BOOK -> AppLanguage.text("Libro", "Book")
+                    else -> AppLanguage.text("Película", "Movie")
+                },
+                subtitleEn = when (item.mediaType) {
+                    "tv" -> "TV show"
+                    MEDIA_TYPE_BOOK -> "Book"
+                    else -> "Movie"
+                },
                 posterPath = item.posterPath,
                 mediaType = item.mediaType,
                 seasonNumber = firstSeason?.seasonNumber,
@@ -165,8 +185,43 @@ private fun buildHomeState(
         .toInstant()
     val watchedThisMonth = recentlyWatched.count { !it.activityDate.isBefore(startOfMonth) }
 
+    val readingBooks = bookActivity
+        .filter { it.status == WatchStatus.WATCHING || it.status == WatchStatus.INTERRUPTED }
+        .map { book ->
+            HomeMediaItem(
+                id = book.id,
+                title = book.title,
+                subtitleEs = if (book.status == WatchStatus.INTERRUPTED) "Aparcado" else "Leyendo",
+                subtitleEn = if (book.status == WatchStatus.INTERRUPTED) "Paused" else "Reading",
+                posterPath = book.posterPath,
+                mediaType = MEDIA_TYPE_BOOK,
+                activityDate = book.interruptedAt ?: book.startedDate ?: book.addedDate,
+            )
+        }
+        .sortedByDescending { it.activityDate }
+        .take(12)
+
+    val recentlyRead = bookActivity
+        .filter { it.status == WatchStatus.FINISHED && it.finishedDate != null }
+        .map { book ->
+            HomeMediaItem(
+                id = book.id,
+                title = book.title,
+                subtitleEs = book.releaseDate.orEmpty(),
+                subtitleEn = book.releaseDate.orEmpty(),
+                posterPath = book.posterPath,
+                mediaType = MEDIA_TYPE_BOOK,
+                activityDate = book.finishedDate!!,
+            )
+        }
+        .sortedByDescending { it.activityDate }
+        .take(12)
+
     return HomeUiState(
         libraryCount = watchlist.size,
+        bookCount = bookActivity.size,
+        readingBooks = readingBooks,
+        recentlyRead = recentlyRead,
         inProgressCount = movieActivity.count { it.status == WatchStatus.WATCHING } +
             seasonActivity.count { it.status == WatchStatus.WATCHING },
         finishedCount = movieActivity.count { it.status == WatchStatus.FINISHED } +

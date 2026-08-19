@@ -53,6 +53,7 @@ import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
 import com.dwightsckrute.visto.core.ui.navigation.NavRoutes
+import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.feature.search.SearchType
 import java.time.ZoneId
@@ -113,6 +114,13 @@ fun HomeScreen(
                         onContainer = MaterialTheme.colorScheme.onSecondaryContainer,
                     ),
                     HomeStat(
+                        label = localized("Libros", "Books"),
+                        value = state.bookCount,
+                        icon = R.drawable.book_24px,
+                        container = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        onContainer = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    HomeStat(
                         label = localized("Favoritos", "Favourites"),
                         value = state.favoriteCount,
                         icon = R.drawable.favorite_24px,
@@ -145,7 +153,9 @@ fun HomeScreen(
                     ContinueWatchingCarousel(
                         items = state.continueWatching,
                         onItemClick = { item ->
-                            if (item.mediaType == "movie") {
+                            if (item.mediaType == MEDIA_TYPE_BOOK) {
+                                navController.navigate(NavRoutes.bookDetail(item.id))
+                            } else if (item.mediaType == "movie") {
                                 navController.navigate(NavRoutes.movieDetail(item.id))
                             } else if (item.seasonNumber != null && item.seasonId != null) {
                                 navController.navigate(
@@ -155,6 +165,55 @@ fun HomeScreen(
                         },
                     )
                 }
+            }
+        }
+
+        // Los libros, con su propio encabezado y su propio vocabulario. Van después de lo
+        // audiovisual y no mezclados con ello: "continuar viendo" no vale para algo que se lee, y
+        // una sola lista obligaría a que una de las dos mitades hablara mal.
+        if (state.readingBooks.isNotEmpty()) {
+            item {
+                Column(
+                    modifier = Modifier.animateItem(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        Text(
+                            text = localized("Leyendo ahora", "Reading now"),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = localized(
+                                "Los libros que tienes empezados",
+                                "The books you have on the go",
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    ContinueWatchingCarousel(
+                        items = state.readingBooks,
+                        onItemClick = { item ->
+                            navController.navigate(NavRoutes.bookDetail(item.id))
+                        },
+                    )
+                }
+            }
+        }
+
+        if (state.recentlyRead.isNotEmpty()) {
+            item {
+                HomeSection(
+                    title = localized("Leído recientemente", "Recently read"),
+                    subtitle = localized(
+                        "Tus últimos libros terminados",
+                        "Your latest finished books",
+                    ),
+                    items = state.recentlyRead,
+                    navController = navController,
+                    showDate = true,
+                )
             }
         }
 
@@ -210,7 +269,9 @@ private fun HomeSection(
                     showDate = showDate,
                     modifier = Modifier.animateItem(),
                     onClick = {
-                        if (item.mediaType == "movie") {
+                        if (item.mediaType == MEDIA_TYPE_BOOK) {
+                            navController.navigate(NavRoutes.bookDetail(item.id))
+                        } else if (item.mediaType == "movie") {
                             navController.navigate(NavRoutes.movieDetail(item.id))
                         } else if (item.seasonNumber != null && item.seasonId != null) {
                             navController.navigate(
