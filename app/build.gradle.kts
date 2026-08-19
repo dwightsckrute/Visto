@@ -113,6 +113,7 @@ dependencies {
     implementation(libs.core.splashscreen)
     implementation(libs.androidx.work.runtime)
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

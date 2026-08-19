@@ -9,6 +9,8 @@ import com.dwightsckrute.visto.core.network.OpenLibraryDoc
 import com.dwightsckrute.visto.data.local.dao.WatchlistDao
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
 import com.dwightsckrute.visto.feature.search.SearchItem
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.time.Instant
 
 /** El tipo con el que un libro vive en la misma tabla que las películas y las series. */
@@ -119,11 +121,18 @@ class BookRepository(
      * añadir el libro: guardarlo habría pedido una columna nueva para algo que solo hace falta
      * cuando se abre la ficha.
      */
-    suspend fun authorOf(bookId: Long): AuthorInfo? {
-        val workId = idToOpenLibraryKey(bookId) ?: return null
-        val authorId = runCatching { api.work(workId).authorId }.getOrNull() ?: return null
-        val author = runCatching { api.author(authorId) }.getOrNull() ?: return null
-        val works = runCatching { api.authorWorks(authorId) }.getOrNull()
+    suspend fun authorOf(bookId: Long): AuthorInfo? = coroutineScope {
+        val workId = idToOpenLibraryKey(bookId) ?: return@coroutineScope null
+        val authorId = runCatching { api.work(workId).authorId }.getOrNull()
+            ?: return@coroutineScope null
+
+        // La ficha del autor y su obra no dependen la una de la otra, solo del identificador que
+        // acaba de salir de la obra. En serie eran tres esperas seguidas de dos a tres segundos
+        // cada una; en paralelo, dos.
+        val authorCall = async { runCatching { api.author(authorId) }.getOrNull() }
+        val worksCall = async { runCatching { api.authorWorks(authorId) }.getOrNull() }
+        val author = authorCall.await() ?: return@coroutineScope null
+        val works = worksCall.await()
 
         val others = works?.entries.orEmpty().mapNotNull { entry ->
             val id = entry.key?.let(::openLibraryKeyToId) ?: return@mapNotNull null
@@ -139,9 +148,11 @@ class BookRepository(
             )
         }
 
-        return AuthorInfo(
+        val name = author.name ?: return@coroutineScope null
+
+        AuthorInfo(
             id = authorId,
-            name = author.name ?: return null,
+            name = name,
             years = listOfNotNull(author.birthDate, author.deathDate)
                 .takeIf { it.isNotEmpty() }?.joinToString(" – "),
             photoUrl = OpenLibraryApi.authorPhotoUrl(author.photos?.firstOrNull()),

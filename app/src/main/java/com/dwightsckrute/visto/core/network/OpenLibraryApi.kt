@@ -2,6 +2,7 @@ package com.dwightsckrute.visto.core.network
 
 import com.google.gson.annotations.SerializedName
 import okhttp3.Cache
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -54,7 +55,7 @@ interface OpenLibraryApi {
         private const val BASE = "https://openlibrary.org/"
         private const val SEARCH_FIELDS =
             "key,title,author_name,first_publish_year,cover_i,language,number_of_pages_median,subject"
-        private const val HTTP_CACHE_BYTES = 10L * 1024 * 1024
+        private const val HTTP_CACHE_BYTES = 20L * 1024 * 1024
 
         /** El retrato del autor, por su identificador de foto. */
         fun authorPhotoUrl(photoId: Long?, size: Char = 'M'): String? =
@@ -64,9 +65,45 @@ interface OpenLibraryApi {
         fun coverUrl(coverId: Long?, size: Char = 'L'): String? =
             coverId?.let { "https://covers.openlibrary.org/b/id/$it-$size.jpg" }
 
-        fun create(cacheDir: File?): OpenLibraryApi {
+        /**
+         * Cuánto vale una respuesta guardada.
+         *
+         * Open Library no manda ninguna cabecera de caché en sus endpoints JSON —comprobado
+         * contra el servidor: ni `Cache-Control`, ni `Expires`, ni `ETag`—, así que la caché de
+         * OkHttp no guardaba absolutamente nada y cada búsqueda, cada ficha y cada autor salían
+         * a la red. Con llamadas de entre dos y seis segundos, y tres seguidas para pintar un
+         * autor, eso era la lentitud entera.
+         *
+         * Ponerla nosotros es legítimo aquí porque sabemos lo que estamos guardando: un catálogo
+         * bibliográfico. El año en que se publicó un libro y quién lo escribió no cambian; una
+         * búsqueda repetida tampoco da resultados distintos de un rato para otro.
+         */
+        private const val CATALOGUE_MAX_AGE_SECONDS = 60 * 60 * 24
+        private const val SEARCH_MAX_AGE_SECONDS = 60 * 60
+
+        fun create(cacheDir: File?): OpenLibraryApi = build(BASE, cacheDir)
+
+        /** El mismo cliente contra otro servidor, para poder probar la caché de verdad. */
+        fun createForTesting(baseUrl: String, cacheDir: File?): OpenLibraryApi =
+            build(baseUrl, cacheDir)
+
+        private fun build(baseUrl: String, cacheDir: File?): OpenLibraryApi {
             val logging = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BASIC
+            }
+            // De red y no de aplicación: tiene que reescribir la respuesta antes de que OkHttp
+            // decida si la guarda, y esa decisión la toma con lo que llega del servidor.
+            val cacheHeaders = Interceptor { chain ->
+                val response = chain.proceed(chain.request())
+                val seconds = if (chain.request().url.encodedPath.endsWith("search.json")) {
+                    SEARCH_MAX_AGE_SECONDS
+                } else {
+                    CATALOGUE_MAX_AGE_SECONDS
+                }
+                response.newBuilder()
+                    .removeHeader("Pragma")
+                    .header("Cache-Control", "public, max-age=$seconds")
+                    .build()
             }
             val client = OkHttpClient.Builder()
                 .apply {
@@ -74,13 +111,14 @@ interface OpenLibraryApi {
                         cache(Cache(File(cacheDir, "openlibrary-http"), HTTP_CACHE_BYTES))
                     }
                 }
+                .addNetworkInterceptor(cacheHeaders)
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build()
 
             return Retrofit.Builder()
-                .baseUrl(BASE)
+                .baseUrl(baseUrl)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
