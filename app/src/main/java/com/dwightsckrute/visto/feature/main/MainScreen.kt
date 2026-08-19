@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.dwightsckrute.visto.feature.books.BooksHomeScreen
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.TooltipIconBtn
 import com.dwightsckrute.visto.core.ui.navigation.NavRoutes
@@ -134,6 +135,11 @@ fun MainScreen(
                         MainDestination.Series -> TvHomeScreen(
                             navController,
                             scrollBehavior,
+                            scrollBehaviorTopBar,
+                        )
+
+                        MainDestination.Books -> BooksHomeScreen(
+                            navController,
                             scrollBehaviorTopBar,
                         )
                     }

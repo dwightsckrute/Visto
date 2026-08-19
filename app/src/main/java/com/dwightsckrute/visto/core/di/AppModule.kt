@@ -17,6 +17,8 @@ import com.dwightsckrute.visto.data.repository.PersonRepository
 import com.dwightsckrute.visto.data.repository.SearchRepository
 import com.dwightsckrute.visto.data.repository.TrendingRepository
 import dagger.Module
+import com.dwightsckrute.visto.core.network.OpenLibraryApi
+import com.dwightsckrute.visto.data.repository.BookRepository
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -123,4 +125,17 @@ object AppModule {
         api: TmdbApi,
         dao: TrendingDao
     ): TrendingRepository = TrendingRepository(api, dao)
+
+    @Provides
+    @Singleton
+    fun provideOpenLibraryApi(
+        @ApplicationContext context: Context,
+    ): OpenLibraryApi = OpenLibraryApi.create(context.cacheDir)
+
+    @Provides
+    @Singleton
+    fun provideBookRepository(
+        api: OpenLibraryApi,
+        dao: WatchlistDao,
+    ): BookRepository = BookRepository(api, dao)
 }

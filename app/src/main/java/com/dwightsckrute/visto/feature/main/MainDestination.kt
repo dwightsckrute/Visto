@@ -26,6 +26,10 @@ enum class MainDestination(
     Series(
         selectedIcon = R.drawable.tv_filled_24px,
         unselectedIcon = R.drawable.tv_24px,
+    ),
+    Books(
+        selectedIcon = R.drawable.book_filled_24px,
+        unselectedIcon = R.drawable.book_24px,
     );
 
     val label: String
@@ -33,6 +37,7 @@ enum class MainDestination(
             Home -> localized("Inicio", "Home")
             Movies -> localized("Películas", "Movies")
             Series -> localized("Series", "TV shows")
+            Books -> localized("Libros", "Books")
         }
 
     companion object {
@@ -43,6 +48,7 @@ enum class MainDestination(
         fun fromPreference(value: String?): MainDestination = when (value) {
             "movies", "Películas" -> Movies
             "tv", "Series" -> Series
+            "books", "Libros" -> Books
             else -> Home
         }
     }
