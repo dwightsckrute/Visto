@@ -37,16 +37,29 @@ object NavTransitions {
     /** Hasta dónde se aleja la saliente. Solo lo justo para insinuar que queda detrás. */
     private const val EXIT_SCALE = 1.06f
 
-    /** Lo que tarda en marcharse la pantalla que se va, antes de que asome la siguiente. */
-    private const val FadeOutDuration = 200
+    /** Lo que tarda en marcharse la pantalla que se va. */
+    private const val FadeOutDuration = 220
 
-    /** Y lo que tarda en llegar la nueva, ya con la anterior fuera. */
-    private const val FadeInDuration = 250
+    /** Y lo que tarda en llegar la nueva. */
+    private const val FadeInDuration = 260
+
+    /**
+     * Cuándo empieza a asomar la entrante.
+     *
+     * Antes esperaba a que la saliente terminara del todo, para no ver dos pantallas medio
+     * transparentes a la vez. Grabando la apertura de una ficha se ve lo que costaba eso: la
+     * lista se iba, y quedaban unos cien milisegundos de pantalla vacía antes de que la ficha
+     * apareciera, porque componerla lleva su tiempo y el fundido de entrada ni había empezado.
+     *
+     * Solapadas no hay hueco, y no se ven turbias porque no comparten sitio: el escalado las
+     * separa en profundidad, una alejándose y la otra llegando.
+     */
+    private const val FadeInDelay = 90
 
     private fun scaleSpec() =
         tween<Float>(AppMotion.DurationLong, easing = AppMotion.EmphasizedDecelerate)
     private fun fadeOutSpec() = tween<Float>(FadeOutDuration)
-    private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeOutDuration)
+    private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeInDelay)
 
     fun enter(): EnterTransition =
         scaleIn(animationSpec = scaleSpec(), initialScale = ENTER_SCALE) + fadeIn(fadeInSpec())

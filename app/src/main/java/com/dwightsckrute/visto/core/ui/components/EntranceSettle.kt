@@ -27,21 +27,43 @@ import com.dwightsckrute.visto.core.ui.theme.AppMotion
 fun rememberEntranceSettle(ready: Boolean): Float {
     val readyOnEntry = remember { ready }
     val progress = remember { Animatable(if (readyOnEntry) 1f else 0f) }
+    val startedAt = remember { System.nanoTime() }
 
     LaunchedEffect(ready) {
-        if (ready && progress.value < 1f) {
-            progress.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(
-                    durationMillis = AppMotion.DurationMedium,
-                    easing = AppMotion.EmphasizedDecelerate,
-                ),
-            )
+        if (!ready || progress.value >= 1f) return@LaunchedEffect
+
+        // Si los datos llegaron enseguida, no hubo espera que disimular y esto sobra.
+        //
+        // Hace falta porque `ready` casi nunca es cierto en la primera composición aunque los
+        // datos estén en la base: se leen de un flujo que empieza en nulo y emite uno o dos
+        // frames después. Sin esta ventana, una ficha instantánea se animaba igual que una que
+        // tarda, y encima de la transición de navegación: grabando la apertura de un libro se
+        // veía el resultado, un hueco casi en blanco entre que la lista se va y la ficha llega.
+        val elapsedMs = (System.nanoTime() - startedAt) / 1_000_000
+        if (elapsedMs <= INSTANT_GRACE_MS) {
+            progress.snapTo(1f)
+            return@LaunchedEffect
         }
+
+        progress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(
+                durationMillis = AppMotion.DurationMedium,
+                easing = AppMotion.EmphasizedDecelerate,
+            ),
+        )
     }
 
     return progress.value
 }
+
+/**
+ * Lo que puede tardar el contenido en llegar sin que cuente como espera.
+ *
+ * Room responde en uno o dos frames; la red, en cientos de milisegundos. Este umbral separa las
+ * dos cosas, que es lo que el estado inicial nulo de un flujo impedía distinguir.
+ */
+private const val INSTANT_GRACE_MS = 120L
 
 /** Desde dónde crece el contenido. Poco: es un asentamiento, no una segunda transición. */
 private const val SETTLE_SCALE = 0.94f
