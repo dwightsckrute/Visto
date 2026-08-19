@@ -299,10 +299,11 @@ private fun HomeSection(
 /**
  * Columnas de las rejillas del inicio.
  *
- * Tres es lo que deja una carátula reconocible en un teléfono; con cuatro el título de debajo se
- * parte en tres líneas. Se enseñan dos filas: la pantalla resume, no lista.
+ * Cuatro y no tres: con tres, la caja de cada tarjeta pesaba más que la carátula que contiene, que
+ * es exactamente lo que hay que evitar en una pantalla hecha de carátulas. A cuatro la portada
+ * manda y caben ocho cosas sin desplazar.
  */
-private const val HOME_GRID_COLUMNS = 3
+private const val HOME_GRID_COLUMNS = 4
 
 @Composable
 private fun HomeMediaCard(
@@ -325,14 +326,15 @@ private fun HomeMediaCard(
                 scaleX = cardScale
                 scaleY = cardScale
             }
-            .width(136.dp)
-            .clip(RoundedCornerShape(20.dp))
+            // Sin ancho fijo: lo pone la rejilla, que reparte el que haya entre sus columnas.
+            // Con 136dp clavados, cuatro tarjetas no cabían y la fila se salía.
+            .clip(RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = LocalIndication.current,
                 onClick = onClick,
             ),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface,
@@ -342,10 +344,10 @@ private fun HomeMediaCard(
             PosterBox(
                 posterUrl = posterUrl(item.posterPath, "w342"),
                 apiPath = item.posterPath,
-                width = 136.dp,
-                height = 194.dp,
+                fillMaxWidth = true,
+                height = 124.dp,
                 cornerRadius = 0.dp,
-                progressIndicatorSize = 32.dp,
+                progressIndicatorSize = 24.dp,
             )
             // El hueco de la barra se reserva siempre. Mostrarla solo cuando hay progreso hacía
             // que unas tarjetas midieran 4 dp más que otras en la misma fila.
@@ -359,9 +361,11 @@ private fun HomeMediaCard(
             } else {
                 Spacer(Modifier.height(4.dp))
             }
+            // Menos caja alrededor: con doce puntos por lado, el marco pesaba más que la
+            // carátula que enmarca.
             Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(3.dp),
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 6.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 // minLines además de maxLines: sin reservar las líneas, un título de una línea
                 // dejaba la tarjeta más baja que la de al lado y la fila quedaba dentada.
@@ -369,7 +373,7 @@ private fun HomeMediaCard(
                 // sistema usa un tamaño de letra mayor.
                 Text(
                     item.title,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     minLines = 2,
                     maxLines = 2,
@@ -377,7 +381,7 @@ private fun HomeMediaCard(
                 )
                 Text(
                     if (showDate) formatActivityDate(item) else localized(item.subtitleEs, item.subtitleEn),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     minLines = 2,
                     maxLines = 2,

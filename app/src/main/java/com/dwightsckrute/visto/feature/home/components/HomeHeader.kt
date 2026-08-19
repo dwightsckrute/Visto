@@ -2,6 +2,8 @@ package com.dwightsckrute.visto.feature.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -100,29 +102,37 @@ data class HomeStat(
 )
 
 /**
- * Cifras de la biblioteca como píldoras tonales.
+ * Cifras de la biblioteca, todas a la vista.
  *
- * Antes iban en una cuadrícula dentro de una tarjeta con borde, y ese borde va justo en contra de
- * lo que dice `docs/DESIGN_SYSTEM.md`. Ahora cada cifra es su propia píldora y la fila se
- * desplaza, en lugar de comprimir cuatro columnas en pantallas estrechas o con letra grande.
+ * Iban en una fila desplazable, y desplazar para leer un resumen es contradictorio: el resumen
+ * existe para no tener que buscar. En dos columnas caben las cinco sin desplazar y sin comprimir
+ * nada, que era el motivo por el que se puso en horizontal.
+ *
+ * Cada cifra sigue siendo su propia píldora tonal. La versión anterior a la fila las metía en una
+ * tarjeta con borde, y el borde va contra lo que dice `docs/DESIGN_SYSTEM.md`.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeStatsRow(
     stats: List<HomeStat>,
     modifier: Modifier = Modifier,
 ) {
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = Spacing.lg),
+    FlowRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.lg),
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+        maxItemsInEachRow = 2,
     ) {
-        items(stats, key = { it.label }) { stat ->
+        stats.forEach { stat ->
             AppPill(
                 label = stat.label,
                 value = stat.value.toString(),
                 icon = stat.icon,
                 container = stat.container,
                 onContainer = stat.onContainer,
+                modifier = Modifier.weight(1f),
             )
         }
     }

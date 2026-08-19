@@ -7,7 +7,14 @@ import com.dwightsckrute.visto.core.ui.localization.AppLanguage
 // Estas son funciones normales, no composables, así que el idioma se resuelve con
 // AppLanguage.text en lugar de localized().
 
-fun WatchStatus.dialogMessage(isTv: Boolean = false): String {
+/**
+ * Lo que se pregunta antes de cambiar de estado.
+ *
+ * Tres vocabularios y no dos: una temporada se ve, una película se ve, y un libro se lee. Sin la
+ * tercera rama, confirmar el estado de un libro preguntaba por "esta película".
+ */
+fun WatchStatus.dialogMessage(isTv: Boolean = false, isBook: Boolean = false): String {
+    if (isBook) return bookDialogMessage()
     return when (this) {
         WatchStatus.WATCHING -> if (isTv) {
             AppLanguage.text(
@@ -85,3 +92,25 @@ val WatchStatus.buttonIcon: Int
         WatchStatus.FINISHED -> R.drawable.restart_alt_24px
         else -> R.drawable.play_arrow_24px
     }
+
+private fun WatchStatus.bookDialogMessage(): String = when (this) {
+    WatchStatus.WATCHING -> AppLanguage.text(
+        "¿Quieres marcar este libro como leído?",
+        "Mark this book as read?",
+    )
+
+    WatchStatus.INTERRUPTED -> AppLanguage.text(
+        "¿Quieres seguir leyendo este libro?",
+        "Carry on reading this book?",
+    )
+
+    WatchStatus.FINISHED -> AppLanguage.text(
+        "¿Quieres restablecer este libro y devolverlo a pendientes?",
+        "Reset this book and send it back to your to-read list?",
+    )
+
+    else -> AppLanguage.text(
+        "¿Quieres empezar a leer este libro?",
+        "Start reading this book?",
+    )
+}

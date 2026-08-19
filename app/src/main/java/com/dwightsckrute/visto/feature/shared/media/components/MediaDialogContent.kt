@@ -115,7 +115,7 @@ fun MediaConfirmationDialogContent(
     } else {
         localized("Eliminar $text", "Delete $text")
     }
-    val message = status?.dialogMessage(isTv)
+    val message = status?.dialogMessage(isTv = isTv, isBook = isBook)
         ?: localized(
             "¿Seguro que quieres eliminar esta $text? Esta acción no se puede deshacer.",
             "Delete this $text? This cannot be undone.",

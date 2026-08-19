@@ -11,6 +11,8 @@ import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
 import com.dwightsckrute.visto.feature.search.SearchItem
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.time.Instant
 
 /** El tipo con el que un libro vive en la misma tabla que las películas y las series. */
@@ -55,6 +57,20 @@ class BookRepository(
     private val googleBooks: GoogleBooksApi,
     private val dao: WatchlistDao,
 ) {
+
+    /**
+     * Los autores ya resueltos, mientras la aplicación viva.
+     *
+     * La caché de HTTP evita repetir la red, pero no el resto: tres respuestas que deserializar y
+     * una lista que construir en cada vuelta a la misma ficha. Guardado aquí, volver a un libro
+     * es instantáneo en vez de "un momento en blanco y luego aparece".
+     *
+     * Solo se guarda lo que salió bien. `authorOf` devuelve nulo tanto cuando Open Library no
+     * conoce al autor como cuando la red falló, y son cosas distintas: guardar el nulo dejaría un
+     * corte momentáneo convertido en un libro sin autor para siempre.
+     */
+    private val authorCache = mutableMapOf<Long, AuthorInfo>()
+    private val authorMutex = Mutex()
 
     /**
      * Busca libros.
@@ -121,7 +137,18 @@ class BookRepository(
      * añadir el libro: guardarlo habría pedido una columna nueva para algo que solo hace falta
      * cuando se abre la ficha.
      */
-    suspend fun authorOf(bookId: Long): AuthorInfo? = coroutineScope {
+    suspend fun authorOf(bookId: Long): AuthorInfo? {
+        // El candado evita que dos aperturas seguidas de la misma ficha lancen los dos juegos de
+        // peticiones a la vez, que es justo lo que pasa al volver atrás y entrar de nuevo.
+        authorMutex.withLock { authorCache[bookId] }?.let { return it }
+        val resolved = resolveAuthor(bookId)
+        if (resolved != null) {
+            authorMutex.withLock { authorCache[bookId] = resolved }
+        }
+        return resolved
+    }
+
+    private suspend fun resolveAuthor(bookId: Long): AuthorInfo? = coroutineScope {
         val workId = idToOpenLibraryKey(bookId) ?: return@coroutineScope null
         val authorId = runCatching { api.work(workId).authorId }.getOrNull()
             ?: return@coroutineScope null

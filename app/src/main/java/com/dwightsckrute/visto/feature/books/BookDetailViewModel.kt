@@ -28,11 +28,19 @@ class BookDetailViewModel @Inject constructor(
 
     private var loadedFor: Long? = null
 
+    /**
+     * Pide el autor, y vuelve a intentarlo si la vez anterior no salió.
+     *
+     * Antes se marcaba como cargado antes de saber si había salido bien, así que un corte de red
+     * al abrir la ficha dejaba al autor sin aparecer hasta cerrar la aplicación. Ahora solo cuenta
+     * como cargado lo que llegó.
+     */
     fun load(bookId: Long) {
-        if (loadedFor == bookId) return
-        loadedFor = bookId
+        if (loadedFor == bookId && _author.value != null) return
         viewModelScope.launch {
-            _author.value = runCatching { repository.authorOf(bookId) }.getOrNull()
+            val resolved = runCatching { repository.authorOf(bookId) }.getOrNull()
+            _author.value = resolved
+            if (resolved != null) loadedFor = bookId
         }
     }
 }
