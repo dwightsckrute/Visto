@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
 import com.dwightsckrute.visto.feature.shared.media.components.MovieWatchlistRow
 
@@ -53,7 +54,7 @@ fun MovieItems(
         if (pinnedItems.isNotEmpty()) {
             item {
                 Text(
-                    text = "Fijado",
+                    text = localized("Fijado", "Pinned"),
                     modifier = Modifier.padding(bottom = 5.dp, start = 3.dp),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary,
@@ -77,7 +78,7 @@ fun MovieItems(
 
                 item {
                     Text(
-                        text = "Otros",
+                        text = localized("Otros", "Others"),
                         modifier = Modifier.padding(bottom = 5.dp, start = 3.dp, top = 20.dp),
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.primary,

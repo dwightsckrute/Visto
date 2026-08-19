@@ -22,6 +22,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dwightsckrute.visto.feature.books.BookDetailScreen
 import com.dwightsckrute.visto.feature.calendar.CalendarScreen
 import com.dwightsckrute.visto.feature.main.MainScreen
 import com.dwightsckrute.visto.feature.movie.detail.MovieDetailPage
@@ -128,6 +129,15 @@ fun AppNavHost(
                     navController = navController,
                     seasonId = seasonId
                 )
+            }
+            composable(
+                route = "${NavRoutes.BOOK_DETAIL_SCREEN}/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments!!.getLong("id")
+                BookDetailScreen(id = id, navController = navController)
             }
             composable(
                 NavRoutes.LISTS_SCREEN

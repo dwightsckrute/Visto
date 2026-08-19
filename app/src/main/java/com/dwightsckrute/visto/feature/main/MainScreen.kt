@@ -140,6 +140,7 @@ fun MainScreen(
 
                         MainDestination.Books -> BooksHomeScreen(
                             navController,
+                            scrollBehavior,
                             scrollBehaviorTopBar,
                         )
                     }

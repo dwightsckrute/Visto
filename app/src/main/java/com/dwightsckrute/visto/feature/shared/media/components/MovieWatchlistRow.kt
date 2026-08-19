@@ -42,6 +42,7 @@ import com.dwightsckrute.visto.core.ui.components.listItemShape
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
 import com.dwightsckrute.visto.core.ui.components.media.PosterPlaceholder
 import com.dwightsckrute.visto.core.ui.navigation.NavRoutes
+import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
 import com.dwightsckrute.visto.feature.shared.media.ui.watchstatus.asStatusDates
@@ -84,7 +85,14 @@ fun MovieWatchlistRow(
             .alpha(if (isReady) 1f else 0f)
             .combinedClickable(
                 onClick = {
-                    navController.navigate(NavRoutes.movieDetail(item.id))
+                    // La misma fila sirve para películas y libros; solo cambia a dónde lleva.
+                    navController.navigate(
+                        if (item.mediaType == MEDIA_TYPE_BOOK) {
+                            NavRoutes.bookDetail(item.id)
+                        } else {
+                            NavRoutes.movieDetail(item.id)
+                        }
+                    )
                 },
                 onLongClick = {
                     onLongActionMovieRequest()

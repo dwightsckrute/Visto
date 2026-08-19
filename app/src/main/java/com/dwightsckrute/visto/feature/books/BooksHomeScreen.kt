@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,6 +46,7 @@ import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.theme.Spacing
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
 import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
+import com.dwightsckrute.visto.feature.movie.components.MovieItems
 import com.dwightsckrute.visto.feature.shared.WatchlistViewModel
 import kotlinx.coroutines.launch
 
@@ -63,6 +65,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BooksHomeScreen(
     navController: NavController,
+    scrollBehavior: FloatingToolbarScrollBehavior,
     scrollBehaviorTopBar: TopAppBarScrollBehavior,
 ) {
     val watchlistViewModel: WatchlistViewModel = hiltViewModel()
@@ -106,7 +109,17 @@ fun BooksHomeScreen(
                     )
                 }
             } else {
-                SavedBooks(shown)
+                // La misma lista que películas y series: mismas filas, mismas esquinas de grupo,
+                // misma sección de fijados. Escribir una propia era lo que hacía que los libros
+                // se vieran distintos sin motivo.
+                MovieItems(
+                    scrollBehavior = scrollBehavior,
+                    scrollBehaviorTopBar = scrollBehaviorTopBar,
+                    navController = navController,
+                    onLongActionMovieRequest = {},
+                    pinnedItems = shown.filter { it.isPinned },
+                    normalItems = shown.filterNot { it.isPinned },
+                )
             }
         }
     }
@@ -145,33 +158,6 @@ private enum class BookTab {
     }
 }
 
-@Composable
-private fun SavedBooks(books: List<WatchlistItemEntity>) {
-    LazyColumn(
-        contentPadding = PaddingValues(
-            start = Spacing.lg,
-            end = Spacing.lg,
-            bottom = Spacing.xxl,
-        ),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-    ) {
-        items(books, key = { it.id }) { book ->
-            BookRow(
-                title = book.title,
-                subtitle = book.releaseDate.orEmpty(),
-                coverUrl = book.posterPath,
-                trailing = {
-                    AppPill(
-                        label = book.status.readingLabel(),
-                        size = PillSize.Small,
-                    )
-                },
-                onClick = {},
-            )
-        }
-    }
-}
-
 /**
  * El estado, dicho en el idioma de los libros.
  *
@@ -180,65 +166,9 @@ private fun SavedBooks(books: List<WatchlistItemEntity>) {
  * resolverlo en `WatchStatus` y no fila a fila.
  */
 @Composable
-private fun WatchStatus.readingLabel(): String = when (this) {
+internal fun WatchStatus.readingLabel(): String = when (this) {
     WatchStatus.WATCHING -> localized("Leyendo", "Reading")
     WatchStatus.FINISHED -> localized("Leído", "Read")
     WatchStatus.INTERRUPTED -> localized("Aparcado", "Paused")
     else -> localized("Pendiente", "To read")
-}
-
-@Composable
-private fun BookRow(
-    title: String,
-    subtitle: String,
-    coverUrl: String?,
-    trailing: (@Composable () -> Unit)?,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
-        color = MaterialTheme.colorScheme.surfaceBright,
-    ) {
-        Row(
-            modifier = Modifier.padding(Spacing.sm),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PosterBox(
-                posterUrl = coverUrl,
-                // Open Library entrega la portada como URL completa, no como una ruta que haya
-                // que componer, así que el mismo valor sirve de comprobación y de origen.
-                apiPath = coverUrl,
-                width = 56.dp,
-                height = 84.dp,
-                cornerRadius = ShapeRadius.Medium,
-                placeholder = { PosterPlaceholder(size = 0.6f) },
-            )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(Spacing.xs),
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (subtitle.isNotBlank()) {
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            trailing?.invoke()
-        }
-    }
 }
