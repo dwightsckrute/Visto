@@ -43,6 +43,8 @@ import androidx.navigation.NavController
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.model.WatchStatus
 import com.dwightsckrute.visto.core.ui.components.AppPill
+import com.dwightsckrute.visto.core.ui.components.entranceSettle
+import com.dwightsckrute.visto.core.ui.components.rememberEntranceSettle
 import com.dwightsckrute.visto.core.ui.components.LargeTopBarScaffold
 import com.dwightsckrute.visto.core.ui.components.NavigateUpBtn
 import com.dwightsckrute.visto.core.ui.components.PillSize
@@ -85,6 +87,11 @@ fun BookDetailScreen(id: Long, navController: NavController) {
 
     LaunchedEffect(id) { detailViewModel.load(id) }
 
+    // El mismo asentamiento que la ficha de una película: con los datos ya en la base, el
+    // contenido aparecía de golpe en el primer frame mientras la transición de navegación seguía
+    // corriendo. Aquí no hay espera de red que lo disimule, así que se notaba más que en ninguna.
+    val settle = rememberEntranceSettle(book != null)
+
     LargeTopBarScaffold(
         title = book?.title.orEmpty(),
         navigationIcon = { NavigateUpBtn(navController) },
@@ -126,29 +133,9 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                 )
             }
         },
-        actions = {
-            book?.let { item ->
-                TooltipIconBtn(
-                    icon = R.drawable.favorite_24px,
-                    tooltipText = if (item.isFavorite) {
-                        localized("Quitar de favoritos", "Remove from favourites")
-                    } else {
-                        localized("Añadir a favoritos", "Add to favourites")
-                    },
-                    onClick = { viewModel.setFavorite(item.id, !item.isFavorite) },
-                )
-                // Borrar existe aquí porque no existía en ningún otro sitio: un libro añadido por
-                // error se quedaba en la biblioteca para siempre.
-                TooltipIconBtn(
-                    icon = R.drawable.delete_24px,
-                    tooltipText = localized("Quitar de la biblioteca", "Remove from library"),
-                    onClick = {
-                        viewModel.delete(item.id)
-                        navController.popBackStack()
-                    },
-                )
-            }
-        },
+        // Sin acciones aquí: favorito, compartir y eliminar viven en el menú de la barra
+        // flotante, y repetirlos arriba era ofrecer dos caminos al mismo sitio en la misma
+        // pantalla.
     ) { padding ->
         val item = book
         if (item == null) {
@@ -165,6 +152,7 @@ fun BookDetailScreen(id: Long, navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .entranceSettle(settle)
                 .nestedScroll(scrollBehavior),
             // Hueco para la barra flotante. Con solo `xxl` la última sección quedaba debajo de
             // ella y no había forma de sacarla: una ficha corta no da recorrido suficiente para

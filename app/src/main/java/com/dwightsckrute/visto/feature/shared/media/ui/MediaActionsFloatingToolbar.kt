@@ -25,6 +25,9 @@ import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.rotate
+import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -166,16 +169,28 @@ fun MediaActionsFloatingToolbar(
                         itemStatus = itemStatus
                     )
                     Box {
+                        // Los tres puntos giran un cuarto de vuelta al abrir el menú y lo
+                        // deshacen al cerrarlo. Es el mismo recurso que ya usa el chevrón de las
+                        // secciones plegables: el propio control dice si lo que hay debajo está
+                        // abierto, en vez de dejarlo a que te acuerdes de haberlo pulsado.
+                        val menuRotation by animateFloatAsState(
+                            targetValue = if (uiState.expanded) 90f else 0f,
+                            animationSpec = motionScheme.defaultSpatialSpec(),
+                            label = "toolbar-menu-rotation",
+                        )
                         FilledIconButton(
                             modifier = Modifier.size(48.dp),
-                            onClick = { uiState = uiState.copy(expanded = true) },
+                            onClick = {
+                                uiState = uiState.copy(expanded = !uiState.expanded)
+                            },
                             colors = IconButtonDefaults.iconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.onPrimaryContainer
                             ),
                         ) {
                             Symbol(
                                 R.drawable.more_vert_24px,
-                                color = MaterialTheme.colorScheme.primaryContainer
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                modifier = Modifier.rotate(menuRotation),
                             )
                         }
 
