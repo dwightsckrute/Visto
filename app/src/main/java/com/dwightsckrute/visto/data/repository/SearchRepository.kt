@@ -6,19 +6,31 @@ import com.dwightsckrute.visto.feature.search.SearchItem
 import com.dwightsckrute.visto.feature.search.SearchType
 
 class SearchRepository(
-    private val api: TmdbApi
+    private val api: TmdbApi,
+    private val bookRepository: BookRepository,
 ) {
     suspend fun search(
         query: String,
         type: SearchType = SearchType.MULTI
     ): List<SearchItem> {
 
+        // Los libros vienen de otro catálogo. Se resuelven antes de tocar TMDB, y en la búsqueda
+        // general se añaden a lo que devuelva TMDB en vez de sustituirlo: buscar "dune" tiene que
+        // seguir dando la película, con el libro al lado.
+        if (type == SearchType.BOOK) return bookRepository.searchAsItems(query)
+
         val resp = api.search(type.endpoint, query)
 
 
         if (!resp.isSuccessful) return emptyList()
 
-        return resp.body()?.results
+        val books = if (type == SearchType.MULTI) {
+            runCatching { bookRepository.searchAsItems(query) }.getOrDefault(emptyList())
+        } else {
+            emptyList()
+        }
+
+        val fromTmdb = resp.body()?.results
             ?.mapNotNull { r ->
 
                 val mediaType = r.media_type ?: when (type) {
@@ -77,6 +89,7 @@ class SearchRepository(
                     avg_rating = r.vote_average,
                 )
             } ?: emptyList()
+        return books + fromTmdb
     }
 
 

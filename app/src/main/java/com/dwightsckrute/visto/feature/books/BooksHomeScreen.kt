@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,13 +17,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,6 +35,7 @@ import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.model.WatchStatus
 import com.dwightsckrute.visto.core.ui.components.AppPill
 import com.dwightsckrute.visto.core.ui.components.EmptyContainerPlaceholder
+import com.dwightsckrute.visto.core.ui.components.MediaTabRow
 import com.dwightsckrute.visto.core.ui.components.PillSize
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
@@ -40,9 +44,9 @@ import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.theme.Spacing
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
-import com.dwightsckrute.visto.data.repository.BookResult
 import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
 import com.dwightsckrute.visto.feature.shared.WatchlistViewModel
+import kotlinx.coroutines.launch
 
 /**
  * Los libros.
@@ -67,101 +71,77 @@ fun BooksHomeScreen(
     val state by booksViewModel.uiState.collectAsState()
 
     val books = items.filter { it.mediaType == MEDIA_TYPE_BOOK }
+    val tabs = BookTab.entries
+    val pagerState = rememberPagerState { tabs.size }
+    val scope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        BookSearchField(
-            query = state.query,
-            onQueryChange = booksViewModel::onQueryChange,
-        )
-
-        when {
-            state.query.isNotBlank() -> BookSearchResults(
-                state = state,
-                savedIds = books.map { it.id }.toSet(),
-                onAdd = booksViewModel::add,
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        topBar = {
+            MediaTabRow(
+                titles = tabs.map { it.title },
+                pagerState = pagerState,
+                onTabClick = { index -> scope.launch { pagerState.animateScrollToPage(index) } },
             )
-
-            books.isEmpty() -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                EmptyContainerPlaceholder(
-                    icon = R.drawable.book_24px,
-                    text = localized("Aún no hay libros", "No books yet"),
-                    description = localized(
-                        "Busca arriba por título o autor para añadir el primero.",
-                        "Search above by title or author to add your first one.",
-                    ),
-                )
+        },
+    ) { innerPadding ->
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .padding(top = innerPadding.calculateTopPadding())
+                .fillMaxSize(),
+            verticalAlignment = Alignment.Top,
+        ) { page ->
+            val tab = tabs[page]
+            val shown = books.filter { tab.matches(it.status) }
+            if (shown.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    EmptyContainerPlaceholder(
+                        icon = R.drawable.book_24px,
+                        text = tab.emptyTitle(),
+                        description = localized(
+                            "Añade libros desde la búsqueda, junto a las películas y las series.",
+                            "Add books from search, alongside films and shows.",
+                        ),
+                    )
+                }
+            } else {
+                SavedBooks(shown)
             }
-
-            else -> SavedBooks(books)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BookSearchField(query: String, onQueryChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-        singleLine = true,
-        shape = RoundedCornerShape(ShapeRadius.ExtraLarge),
-        placeholder = { Text(localized("Buscar un libro", "Search for a book")) },
-        leadingIcon = { Symbol(R.drawable.search_24px, desc = null) },
-    )
-}
+/**
+ * Las tres pestañas, con el vocabulario de los libros.
+ *
+ * Los estados son los mismos que los de una película —la biblioteca es una sola tabla— y solo
+ * cambia cómo se dicen. El título va en una función y no en el constructor porque `localized` es
+ * @Composable: como constante se fijaría en español al cargar la clase.
+ */
+private enum class BookTab {
+    TO_READ, READING, READ;
 
-@Composable
-private fun BookSearchResults(
-    state: BooksUiState,
-    savedIds: Set<Long>,
-    onAdd: (BookResult) -> Unit,
-) {
-    if (state.searchFailed) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(
-                text = localized(
-                    "No se pudo consultar el catálogo",
-                    "Could not reach the catalogue",
-                ),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+    val title: String
+        @Composable get() = when (this) {
+            TO_READ -> localized("Pendientes", "To read")
+            READING -> localized("Leyendo", "Reading")
+            READ -> localized("Leídos", "Read")
         }
-        return
+
+    @Composable
+    fun emptyTitle(): String = when (this) {
+        TO_READ -> localized("Nada pendiente", "Nothing to read")
+        READING -> localized("No estás leyendo nada", "Not reading anything")
+        READ -> localized("Aún no has terminado ninguno", "Nothing finished yet")
     }
 
-    LazyColumn(
-        contentPadding = PaddingValues(
-            start = Spacing.lg,
-            end = Spacing.lg,
-            bottom = Spacing.xxl,
-        ),
-        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-    ) {
-        items(state.results, key = { it.id }) { book ->
-            BookRow(
-                title = book.title,
-                subtitle = listOfNotNull(
-                    book.authors.firstOrNull(),
-                    book.year?.toString(),
-                ).joinToString(" · "),
-                coverUrl = book.coverUrl,
-                // Ya guardado: se enseña igualmente para que no parezca que la búsqueda falla,
-                // pero sin ofrecer añadirlo otra vez.
-                trailing = if (book.id in savedIds) {
-                    { AppPill(label = localized("Guardado", "Saved"), size = PillSize.Small) }
-                } else {
-                    null
-                },
-                onClick = { if (book.id !in savedIds) onAdd(book) },
-            )
-        }
+    fun matches(status: WatchStatus): Boolean = when (this) {
+        TO_READ -> status == WatchStatus.WANT_TO_WATCH
+        // Un libro aparcado sigue siendo un libro empezado, y esconderlo en una cuarta pestaña
+        // por sí solo sería darle más peso del que tiene.
+        READING -> status == WatchStatus.WATCHING || status == WatchStatus.INTERRUPTED
+        READ -> status == WatchStatus.FINISHED
     }
 }
 

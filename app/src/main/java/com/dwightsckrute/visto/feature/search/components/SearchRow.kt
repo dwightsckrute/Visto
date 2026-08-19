@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.search.components
 
+import com.dwightsckrute.visto.core.utils.posterUrl
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -79,7 +81,7 @@ fun SearchRow(
     }
 
     val poster = item.posterPath?.let {
-        "https://image.tmdb.org/t/p/w154$it"
+        posterUrl(it)
     }
 
     val titleMaxLines = 2
@@ -183,17 +185,22 @@ private fun MediaTypeChip(mediaType: String?) {
         "person" -> MaterialTheme.colorScheme.secondaryContainer to
             MaterialTheme.colorScheme.onSecondaryContainer
 
+        "book" -> MaterialTheme.colorScheme.secondaryContainer to
+            MaterialTheme.colorScheme.onSecondaryContainer
+
         else -> MaterialTheme.colorScheme.primaryContainer to
             MaterialTheme.colorScheme.onPrimaryContainer
     }
     val icon = when (mediaType) {
         "tv" -> R.drawable.tv_24px
         "person" -> R.drawable.groups_2_24px
+        "book" -> R.drawable.book_24px
         else -> R.drawable.movie_24px
     }
     val label = when (mediaType) {
         "tv" -> localized("Serie", "TV show")
         "person" -> localized("Persona", "Person")
+        "book" -> localized("Libro", "Book")
         else -> localized("Película", "Movie")
     }
 

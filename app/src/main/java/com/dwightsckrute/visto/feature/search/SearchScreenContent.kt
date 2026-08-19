@@ -288,7 +288,9 @@ private fun VistoSearchField(
         SearchType.MOVIE -> localized("Título de la película…", "Movie title…")
         SearchType.TV -> localized("Título de la serie…", "TV show title…")
         SearchType.PERSON -> localized("Nombre de la persona…", "Person name…")
-        SearchType.MULTI -> localized("Película o serie…", "Movie or TV show…")
+        SearchType.BOOK -> localized("Título o autor…", "Title or author…")
+        // La búsqueda general incluye libros, así que lo dice.
+        SearchType.MULTI -> localized("Película, serie o libro…", "Movie, show or book…")
     }
 
     LaunchedEffect(active) {

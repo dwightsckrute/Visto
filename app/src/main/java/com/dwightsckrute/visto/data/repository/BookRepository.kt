@@ -5,6 +5,7 @@ import com.dwightsckrute.visto.core.network.OpenLibraryApi
 import com.dwightsckrute.visto.core.network.OpenLibraryDoc
 import com.dwightsckrute.visto.data.local.dao.WatchlistDao
 import com.dwightsckrute.visto.data.local.entity.WatchlistItemEntity
+import com.dwightsckrute.visto.feature.search.SearchItem
 import java.time.Instant
 
 /** El tipo con el que un libro vive en la misma tabla que las películas y las series. */
@@ -60,6 +61,26 @@ class BookRepository(
                 pages = doc.pages,
             )
         }
+    }
+
+    /**
+     * Los mismos resultados, con la forma que entiende la búsqueda general.
+     *
+     * Así un libro entra por el mismo camino que una película: misma lista, misma fila, misma
+     * acción de añadir. Lo que lo distingue es su `mediaType`, que la fila usa para etiquetarlo.
+     */
+    suspend fun searchAsItems(query: String): List<SearchItem> = search(query).map { book ->
+        SearchItem(
+            id = book.id,
+            mediaType = MEDIA_TYPE_BOOK,
+            title = book.title,
+            overview = null,
+            // La portada ya viene como URL completa; `posterUrl` la deja pasar tal cual.
+            posterPath = OpenLibraryApi.coverUrl(book.coverId, 'L'),
+            backdropPath = "",
+            releaseDate = listOfNotNull(book.authors.firstOrNull(), book.year?.toString())
+                .joinToString(" · "),
+        )
     }
 
     /**

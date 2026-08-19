@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.lists
 
+import com.dwightsckrute.visto.core.utils.posterUrl
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -128,7 +130,7 @@ private fun ListItemRow(
                             modifier = Modifier.offset(x = (-12).dp * itemIndex)
                         ) {
                             PosterBox(
-                                posterUrl = "https://image.tmdb.org/t/p/w154${item.posterPath}",
+                                posterUrl = posterUrl(item.posterPath),
                                 apiPath = item.posterPath,
                                 width = 40.dp,
                                 height = 40.dp,

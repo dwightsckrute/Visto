@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.lists.listEntry.components
 
+import com.dwightsckrute.visto.core.utils.posterUrl
+
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,7 +61,7 @@ fun ListEntrySelectableMediaItem(
     val selected = selectedMovies.contains(item)
 
     val poster = item.posterPath?.let {
-        "https://image.tmdb.org/t/p/w154$it"
+        posterUrl(it)
     }
 
     val shape = listItemShape(

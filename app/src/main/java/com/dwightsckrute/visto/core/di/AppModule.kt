@@ -94,9 +94,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSearchRepository(
-        api: TmdbApi
+        api: TmdbApi,
+        bookRepository: BookRepository,
     ): SearchRepository =
-        SearchRepository(api)
+        SearchRepository(api, bookRepository)
 
     @Provides
     @Singleton

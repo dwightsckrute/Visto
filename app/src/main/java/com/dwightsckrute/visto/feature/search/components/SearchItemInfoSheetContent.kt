@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.search.components
 
+import com.dwightsckrute.visto.core.utils.posterUrl
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,7 +53,7 @@ fun SearchItemInfoSheetContent(
 ) {
 
     val poster = item.posterPath?.let {
-        "https://image.tmdb.org/t/p/w154$it"
+        posterUrl(it)
     }
 
     val genreList = item.genreIds?.let { getMovieGenreNames(it) }
