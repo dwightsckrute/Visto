@@ -24,6 +24,7 @@ import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -85,7 +86,11 @@ fun BooksHomeScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val currentItem = movieHomeViewModel.uiState.value.actionSheetItem
 
-    val books = items.filter { it.mediaType == MEDIA_TYPE_BOOK }
+    // Memorizado, como hace la pantalla de películas con su estado. Filtrar en cada recomposición
+    // devolvía listas nuevas cada vez, y con listas nuevas la lista de abajo rehace su contenido:
+    // durante un desplazamiento eso interrumpe la conexión de scroll que mueve la barra flotante,
+    // que es lo que la dejaba parpadeando a medio camino en vez de acabar de esconderse.
+    val books = remember(items) { items.filter { it.mediaType == MEDIA_TYPE_BOOK } }
     val tabs = BookTab.entries
     val pagerState = rememberPagerState { tabs.size }
     val scope = rememberCoroutineScope()
@@ -108,7 +113,9 @@ fun BooksHomeScreen(
             verticalAlignment = Alignment.Top,
         ) { page ->
             val tab = tabs[page]
-            val shown = books.filter { tab.matches(it.status) }
+            val shown = remember(books, tab) { books.filter { tab.matches(it.status) } }
+            val pinned = remember(shown) { shown.filter { it.isPinned } }
+            val normal = remember(shown) { shown.filterNot { it.isPinned } }
             if (shown.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     EmptyContainerPlaceholder(
@@ -129,8 +136,8 @@ fun BooksHomeScreen(
                     scrollBehaviorTopBar = scrollBehaviorTopBar,
                     navController = navController,
                     onLongActionMovieRequest = { movieHomeViewModel.showBottomSheet(it) },
-                    pinnedItems = shown.filter { it.isPinned },
-                    normalItems = shown.filterNot { it.isPinned },
+                    pinnedItems = pinned,
+                    normalItems = normal,
                 )
             }
         }

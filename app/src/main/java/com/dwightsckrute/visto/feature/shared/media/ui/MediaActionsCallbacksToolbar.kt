@@ -9,6 +9,13 @@ data class FloatingToolbarMediaActionsParams(
     val interruptWatching: () -> Unit,
     val delete: () -> Unit,
     val togglePin: () -> Unit,
+    /**
+     * Marcar o desmarcar como favorito.
+     *
+     * Opcional porque no todas las pantallas que usan esta barra tienen a mano el estado; las que
+     * no lo pasen simplemente no ofrecen la opción, en vez de ofrecer una que no hace nada.
+     */
+    val toggleFavorite: (() -> Unit)? = null,
     val share: () -> Unit,
     /**
      * Marca como vista saltándose "en curso", registrando el día indicado.

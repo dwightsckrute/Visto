@@ -75,6 +75,7 @@ fun MediaActionsFloatingToolbar(
     itemStatus: WatchStatus,
     actions: FloatingToolbarMediaActionsParams,
     isPinned: Boolean = false,
+    isFavorite: Boolean = false,
     isTv: Boolean = false,
     isBook: Boolean = false,
 ) {
@@ -82,6 +83,11 @@ fun MediaActionsFloatingToolbar(
     val systemInsets = WindowInsets.systemBars.asPaddingValues()
     val menuItemContentColor = MaterialTheme.colorScheme.onTertiaryContainer
     val menuItemContentTextStyle = MaterialTheme.typography.labelLarge
+    val favoriteConfirmation = if (!isFavorite) {
+        localized("Añadido a favoritos", "Added to favourites")
+    } else {
+        localized("Quitado de favoritos", "Removed from favourites")
+    }
     val pinConfirmation = if (!isPinned) localized("Contenido fijado", "Content pinned")
     else localized("Contenido desfijado", "Content unpinned")
     var uiState by remember { mutableStateOf(UiState()) }
@@ -105,6 +111,18 @@ fun MediaActionsFloatingToolbar(
                 actions.togglePin()
                 SnackbarManager.show(pinConfirmation)
             }),
+        MenuItemOptionList(
+            if (isFavorite) {
+                localized("Quitar de favoritos", "Remove from favourites")
+            } else {
+                localized("Añadir a favoritos", "Add to favourites")
+            },
+            R.drawable.favorite_24px,
+            {
+                actions.toggleFavorite?.invoke()
+                SnackbarManager.show(favoriteConfirmation)
+            },
+        ),
         MenuItemOptionList(
             localized("Compartir", "Share"),
             R.drawable.share_24px,

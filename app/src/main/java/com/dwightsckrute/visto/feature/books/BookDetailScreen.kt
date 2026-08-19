@@ -28,6 +28,8 @@ import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.DatePickerSheet
 import com.dwightsckrute.visto.core.utils.formatDate
 import java.time.Instant
+import androidx.compose.ui.platform.LocalContext
+import com.dwightsckrute.visto.core.utils.shareMedia
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -76,6 +78,7 @@ fun BookDetailScreen(id: Long, navController: NavController) {
     )
     val viewModel: WatchlistViewModel = hiltViewModel()
     val detailViewModel: BookDetailViewModel = hiltViewModel()
+    val context = LocalContext.current
     val flow = remember(id) { viewModel.item(id) }
     val book by flow.collectAsStateWithLifecycle()
     val author by detailViewModel.author.collectAsStateWithLifecycle()
@@ -102,14 +105,23 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                             navController.popBackStack()
                         },
                         togglePin = { viewModel.setPinned(item.id, !item.isPinned) },
-                        // Un libro no tiene página en TMDB que compartir; se comparte su título.
-                        share = {},
+                        toggleFavorite = { viewModel.setFavorite(item.id, !item.isFavorite) },
+                        share = {
+                            shareMedia(
+                                context = context,
+                                title = item.title,
+                                tmdbId = item.id,
+                                isTv = false,
+                                isBook = true,
+                            )
+                        },
                         markWatchedOn = { readAt ->
                             viewModel.finish(item.id)
                             viewModel.updateFinishedDate(item.id, readAt)
                         },
                     ),
                     isPinned = item.isPinned,
+                    isFavorite = item.isFavorite,
                     isBook = true,
                 )
             }

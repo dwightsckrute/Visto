@@ -97,13 +97,17 @@ fun MovieDetailsScaffold(
                     interruptWatching = { watchlistViewModel.interrupt(id) },
                     delete = { viewModel.showConfirmationDialog() },
                     togglePin = { watchlistViewModel.setPinned(id, !isMoviePinned) },
+                    toggleFavorite = {
+                        watchlistViewModel.setFavorite(id, watchlistItem?.isFavorite != true)
+                    },
                     share = { shareMedia(context, movieItem.title, id, isTv = false) },
                     markWatchedOn = { watchedAt ->
                         watchlistViewModel.finish(id)
                         watchlistViewModel.updateFinishedDate(id, watchedAt)
                     },
                 ),
-                isMoviePinned
+                isPinned = isMoviePinned,
+                isFavorite = watchlistItem?.isFavorite == true,
             )
         },
 
