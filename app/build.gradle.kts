@@ -63,7 +63,10 @@ android {
         }
         release {
             signingConfig = signingConfigs.findByName("release")
-            isMinifyEnabled = false
+            // R8 activado. Estaba apagado, así que la release se publicaba sin optimizar ni
+            // recortar: mismo bytecode que la de pruebas, solo firmado.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -112,6 +115,9 @@ dependencies {
     implementation(libs.androidx.animation.core)
     implementation(libs.core.splashscreen)
     implementation(libs.androidx.work.runtime)
+    // Instala el perfil de arranque que Compose trae empaquetado, que sin esto no se aplica.
+    implementation(libs.androidx.profileinstaller)
+
     testImplementation(libs.junit)
     testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.androidx.junit)

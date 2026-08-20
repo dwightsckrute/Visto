@@ -1,21 +1,29 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# R8 en release. Sin esto la build de release iba sin optimizar, que es la mitad de la
+# diferencia de fluidez frente a una app compilada de verdad.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# --- Modelos que Gson rellena por reflexión -------------------------------------------------
+# Gson busca los campos por nombre, así que renombrarlos rompe la deserialización en silencio:
+# no falla, simplemente llegan nulos. Retrofit y Gson traen sus propias reglas desde hace
+# versiones; estas cubren lo nuestro, que es lo que ellas no pueden saber.
+-keepclassmembers class com.dwightsckrute.visto.data.** {
+    <fields>;
+    <init>(...);
+}
+-keepclassmembers class com.dwightsckrute.visto.core.network.** {
+    <fields>;
+    <init>(...);
+}
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations, AnnotationDefault
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# --- Enumeraciones que viajan a la base de datos --------------------------------------------
+# Room guarda su nombre como texto; renombrarlas dejaría la biblioteca ilegible.
+-keepclassmembers enum com.dwightsckrute.visto.** {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+    <fields>;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# --- Kotlin ---------------------------------------------------------------------------------
+# Los metadatos hacen falta para la reflexión de kotlinx y para los tipos genéricos de Gson.
+-keep class kotlin.Metadata { *; }
