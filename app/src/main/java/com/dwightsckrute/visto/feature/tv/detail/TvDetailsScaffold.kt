@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.dwightsckrute.visto.core.ui.components.sheetRecede
 import com.dwightsckrute.visto.core.ui.components.LoadingScreenPlaceholder
 import com.dwightsckrute.visto.core.ui.components.entranceSettle
 import com.dwightsckrute.visto.core.ui.components.rememberEntranceSettle
@@ -87,7 +88,9 @@ fun TvDetailsScaffold(
     }
 
     Scaffold(
-        modifier = Modifier.entranceSettle(settle),
+        modifier = Modifier
+            .entranceSettle(settle)
+            .sheetRecede(viewModel.uiState.value.isWatchProviderSheetOpen),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         bottomBar = {
             MediaActionsFloatingToolbar(

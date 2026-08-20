@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.dwightsckrute.visto.core.ui.components.sheetRecede
 import androidx.navigation.NavController
 import com.dwightsckrute.visto.core.ui.components.NavigateUpBtn
 import com.dwightsckrute.visto.core.ui.localization.localized
@@ -21,6 +23,8 @@ fun SearchScreenScaffold(
     onSearchTypeChange: (SearchType) -> Unit,
     watchlistViewModel: WatchlistViewModel,
 ) {
+    // Cuando sube la tarjeta del resultado, la pantalla de detrás se retira.
+    val sheetOpen = viewModel.uiState.value.isSheetOpen
     val title = when (searchType) {
         SearchType.MOVIE -> localized("Buscar películas", "Search movies")
         SearchType.TV -> localized("Buscar series", "Search TV shows")
@@ -30,6 +34,7 @@ fun SearchScreenScaffold(
     }
 
     Scaffold(
+        modifier = Modifier.sheetRecede(sheetOpen),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             TopAppBar(
