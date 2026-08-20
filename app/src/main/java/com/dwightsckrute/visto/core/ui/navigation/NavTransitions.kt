@@ -3,111 +3,52 @@ package com.dwightsckrute.visto.core.ui.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.ui.unit.IntOffset
 import com.dwightsckrute.visto.core.ui.theme.AppMotion
 
 /**
- * Transiciones entre pantallas: el eje Z de Material.
+ * Transiciones entre pantallas: un empuje lateral.
  *
- * Abrir y volver son el mismo movimiento en sentidos opuestos. Al abrir, la pantalla saliente se
- * aleja creciendo y la entrante llega desde algo más lejos; al volver, exactamente al revés. Es la
- * misma forma que Android da al gesto atrás predictivo, y esa es la razón de haberla elegido:
- * cuando el gesto y la animación coinciden, entrar y salir de una ficha se siente como un único
- * movimiento en vez de como dos efectos distintos.
+ * La ficha entra por la derecha y lo que había se va por la izquierda, como pasar de página.
  *
- * Antes esto era un desplazamiento lateral. El lateral cuenta "otra pantalla al lado", que no es
- * lo que pasa aquí: al tocar una carátula se entra *dentro* de ella. El eje Z cuenta esa jerarquía.
+ * Esto ya estuvo así y se cambió por el eje Z de Material, con el argumento de que al tocar una
+ * carátula se entra *dentro* de ella y el lateral cuenta "otra pantalla al lado". El argumento
+ * sigue siendo cierto sobre el papel, y aun así ninguna de las variantes de profundidad —crecer,
+ * encogerse, fundir encadenado, fundir solapado, la carátula viajando de la lista a la ficha—
+ * llegó a sentirse bien en la mano. Elegido a la vista de todas ellas, así que vuelve.
  *
- * Los fundidos no se solapan a propósito. Si las dos pantallas se atenúan a la vez se ven las dos
- * medio transparentes durante medio segundo y el resultado es turbio; encadenados —primero se va
- * una, luego llega la otra— el cambio se lee limpio aunque dure lo mismo.
- *
- * Ese encadenado tiene además un efecto práctico. Grabando la pantalla se veía que entre que la
- * lista desaparecía y la ficha tenía datos que dibujar quedaba un hueco en negro de unos cinco
- * frames. La pantalla que se va tarda ahora lo suficiente en irse como para tapar ese hueco.
+ * Y hay algo que el lateral hace mejor: **en ningún momento hay dos pantallas medio
+ * transparentes**. De ahí venía el aspecto turbio, y no se arregla con la curva ni con la
+ * duración, porque el problema es que se ven las dos a la vez. Aquí cada píxel pertenece a una
+ * pantalla o a la otra.
  */
 object NavTransitions {
 
     /**
-     * Hasta dónde se encoge la pantalla que se queda detrás.
+     * Cuánto se desplaza la pantalla que se va, en fracción de ancho.
      *
-     * Es la pieza que da el gesto: al abrir una ficha, lo que había **retrocede encogiéndose**,
-     * como hace el launcher al abrir una aplicación. Antes crecía —el eje Z de Material propone
-     * que la saliente se acerque y se desvanezca—, y aunque sobre el papel es igual de correcto,
-     * en la mano cuenta otra cosa: que te la echan encima en lugar de que se aparta.
-     *
-     * Poco recorrido a propósito. Encogerla más la separa del borde y aparece el fondo, que
-     * delata que son dos pantallas superpuestas en vez de una que cede el sitio a otra.
+     * Un tercio, no la pantalla entera. Con las dos recorriendo lo mismo el par se mueve como una
+     * tira rígida; moviéndose menos la de detrás, la de delante parece pasar *por encima*, y eso
+     * es lo que dice cuál manda y a cuál se vuelve. Es el mismo recurso que el paralaje.
      */
-    private const val BEHIND_SCALE = 0.93f
+    private const val BEHIND_TRAVEL = 3
 
-    /**
-     * Desde dónde llega la que entra.
-     *
-     * Ligeramente por delante y no por detrás, para que el par se lea como una sola profundidad:
-     * una se va hacia el fondo mientras la otra viene hacia ti. Con las dos entrando desde lejos
-     * habría un momento en que ninguna ocupa la pantalla.
-     */
-    private const val ARRIVING_SCALE = 1.04f
+    private fun spec() =
+        tween<IntOffset>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)
 
-    /**
-     * Lo que tarda en marcharse la pantalla que se va, y en llegar la nueva.
-     *
-     * Cortos a propósito. Mientras las dos son visibles hay dos interfaces superpuestas a media
-     * opacidad, y ese solape es de donde sale el aspecto turbio; alargarlo no suaviza nada, solo
-     * da más tiempo a que se vea. Lo que separa las dos pantallas no es el fundido sino el
-     * escalado, que las pone a distinta profundidad.
-     */
-    private const val FadeOutDuration = 150
-
-    private const val FadeInDuration = 200
-
-    /**
-     * Cuándo empieza a asomar la entrante.
-     *
-     * Antes esperaba a que la saliente terminara del todo, para no ver dos pantallas medio
-     * transparentes a la vez. Grabando la apertura de una ficha se ve lo que costaba eso: la
-     * lista se iba, y quedaban unos cien milisegundos de pantalla vacía antes de que la ficha
-     * apareciera, porque componerla lleva su tiempo y el fundido de entrada ni había empezado.
-     *
-     * Solapadas no hay hueco, y no se ven turbias porque no comparten sitio: el escalado las
-     * separa en profundidad, una alejándose y la otra llegando.
-     */
-    private const val FadeInDelay = 50
-
-    /**
-     * El escalado, que es lo que marca la duración de todo el cambio.
-     *
-     * Bajó de 450 a 350 ms. Los 450 salían de suponer que una pantalla que se sustituye necesita
-     * tiempo para leerse, y no es así cuando ya sabes qué has tocado: sabiendo a dónde vas, ese
-     * tiempo de más no se percibe como holgura sino como espera.
-     */
-    private fun scaleSpec() =
-        tween<Float>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)
-    private fun fadeOutSpec() = tween<Float>(FadeOutDuration)
-    private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeInDelay)
-
-    /** Entrar: la ficha llega desde delante mientras lo anterior se encoge hacia el fondo. */
+    /** Entrar: la ficha llega desde la derecha y empuja lo anterior hacia la izquierda. */
     fun enter(): EnterTransition =
-        scaleIn(animationSpec = scaleSpec(), initialScale = ARRIVING_SCALE) + fadeIn(fadeInSpec())
+        slideInHorizontally(animationSpec = spec()) { width -> width }
 
     fun exit(): ExitTransition =
-        scaleOut(animationSpec = scaleSpec(), targetScale = BEHIND_SCALE) + fadeOut(fadeOutSpec())
+        slideOutHorizontally(animationSpec = spec()) { width -> -width / BEHIND_TRAVEL }
 
-    /**
-     * Volver: exactamente al revés.
-     *
-     * Importa más de lo que parece porque Navigation reproduce estas dos curvas siguiendo el dedo
-     * en el gesto atrás predictivo. Con la ficha encogiéndose mientras arrastras y la lista
-     * creciendo desde detrás, el gesto enseña a dónde vas mientras lo haces, que es lo que el
-     * sistema hace con las aplicaciones.
-     */
+    /** Volver: el espejo exacto, que es también lo que reproduce el gesto atrás bajo el dedo. */
     fun popEnter(): EnterTransition =
-        scaleIn(animationSpec = scaleSpec(), initialScale = BEHIND_SCALE) + fadeIn(fadeInSpec())
+        slideInHorizontally(animationSpec = spec()) { width -> -width / BEHIND_TRAVEL }
 
     fun popExit(): ExitTransition =
-        scaleOut(animationSpec = scaleSpec(), targetScale = ARRIVING_SCALE) + fadeOut(fadeOutSpec())
+        slideOutHorizontally(animationSpec = spec()) { width -> width }
 }
