@@ -63,10 +63,17 @@ android {
         }
         release {
             signingConfig = signingConfigs.findByName("release")
-            // R8 activado. Estaba apagado, así que la release se publicaba sin optimizar ni
-            // recortar: mismo bytecode que la de pruebas, solo firmado.
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // R8 desactivado, y no por descuido.
+            //
+            // Encenderlo redujo el APK de 20 MB a 5,1 MB, y rompió la aplicación: al navegar
+            // entre secciones petaba con ClassCastException dentro de las factorías generadas de
+            // Hilt. R8 estaba reescribiendo tipos del grafo de inyección que solo se resuelven en
+            // tiempo de ejecución. Comprobado en el dispositivo, no deducido.
+            //
+            // Volver a intentarlo requiere las reglas de Dagger/Hilt y probar cada pantalla
+            // instalando la release, no basta con que compile. Hasta entonces esto se queda
+            // apagado: una aplicación que arranca pesando más es mejor que una que se cierra.
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
