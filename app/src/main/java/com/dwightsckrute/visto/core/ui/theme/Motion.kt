@@ -18,14 +18,6 @@ object AppMotion {
     const val DurationMedium = 350
 
     /**
-     * Cambios de pantalla completa.
-     *
-     * Más larga que las demás a propósito: una pantalla entera que se sustituye necesita tiempo
-     * para leerse. Con 200 ms el cambio era correcto en el papel y brusco en la mano.
-     */
-    const val DurationLong = 450
-
-    /**
      * Emphasized decelerate: arranca rápido y frena largo. Es la curva de Material para lo que
      * entra en pantalla.
      *

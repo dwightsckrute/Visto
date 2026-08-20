@@ -90,7 +90,7 @@ fun TvDetailsScaffold(
     Scaffold(
         modifier = Modifier
             .entranceSettle(settle)
-            .sheetRecede(viewModel.uiState.value.isWatchProviderSheetOpen),
+            .sheetRecede(sheetState),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         bottomBar = {
             MediaActionsFloatingToolbar(

@@ -24,6 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Surface
+import com.dwightsckrute.visto.core.utils.SharedPosterSize
+import com.dwightsckrute.visto.core.ui.navigation.sharedPoster
+import com.dwightsckrute.visto.core.ui.navigation.posterSharedKey
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.DatePickerSheet
 import com.dwightsckrute.visto.core.utils.formatDate
@@ -171,12 +174,13 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                     horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
                 ) {
                     PosterBox(
-                        posterUrl = posterUrl(item.posterPath, "w342"),
+                        posterUrl = posterUrl(item.posterPath, SharedPosterSize),
                         apiPath = item.posterPath,
                         width = 120.dp,
                         height = 180.dp,
                         cornerRadius = ShapeRadius.Large,
                         placeholder = { PosterPlaceholder(size = 0.6f) },
+                        modifier = Modifier.sharedPoster(posterSharedKey(item.id)),
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                         Text(

@@ -1,5 +1,8 @@
 package com.dwightsckrute.visto.feature.shared.media.components
 
+import com.dwightsckrute.visto.core.utils.SharedPosterSize
+import com.dwightsckrute.visto.core.ui.navigation.sharedPoster
+import com.dwightsckrute.visto.core.ui.navigation.posterSharedKey
 import com.dwightsckrute.visto.core.utils.posterUrl
 
 import androidx.compose.foundation.Image
@@ -70,7 +73,7 @@ fun MovieWatchlistRow(
 
 
     val poster = item.posterPath?.let {
-        posterUrl(it)
+        posterUrl(it, SharedPosterSize)
     }
 
     val status = item.status.toWatchListItemStatusUiPill(item.asStatusDates())
@@ -122,7 +125,9 @@ fun MovieWatchlistRow(
                     width = 80.dp,
                     height = 120.dp,
                     progressIndicatorSize = 40.dp,
-                    cornerRadius = ShapeRadius.None
+                    cornerRadius = ShapeRadius.None,
+                    // El origen: esta imagen es la que crece hasta la ficha.
+                    modifier = Modifier.sharedPoster(posterSharedKey(item.id))
                 )
             }
             Column(

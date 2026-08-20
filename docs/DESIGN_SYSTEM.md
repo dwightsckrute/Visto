@@ -169,7 +169,7 @@ El tema ya proporciona `MotionScheme.expressive()`. Usar primero `MaterialTheme.
 - **Espacial por defecto:** selección, indicador, cambio de tamaño o contenedor.
 - **Espacial lento:** transición de pantalla o hero cuando la continuidad lo justifica.
 
-Cuando una transición necesite un `tween` explícito, usar `AppMotion` (`core/ui/theme/Motion.kt`) en lugar de escribir una duración nueva por pantalla. Hoy define `DurationShort` (200 ms) y `DurationMedium` (350 ms); añadir otra solo con un consumidor real.
+Cuando una transición necesite un `tween` explícito, usar `AppMotion` (`core/ui/theme/Motion.kt`) en lugar de escribir una duración nueva por pantalla. Hoy define `DurationShort` (200 ms) y `DurationMedium` (350 ms), que es la de los cambios de pantalla; añadir otra solo con un consumidor real.
 
 Reglas:
 
@@ -184,7 +184,13 @@ Reglas:
 
 ### Continuidad carátula → detalle
 
-Shared elements son una fase posterior. Navigation Compose 2.9.7 cumple el mínimo oficial; antes de activarlos hay que diseñar keys únicas (`mediaType + id + seasonId`), overlays, clipping, predictive back y fallback sin movimiento. No se debe introducir la transición en todas las listas a la vez.
+Activa. Abrir una película, una temporada o un libro no es un fundido entre dos pantallas: la carátula que se toca crece hasta su sitio en la ficha, y el resto entra a su alrededor.
+
+- Los dos ámbitos (`SharedTransitionScope`, `AnimatedVisibilityScope`) llegan por CompositionLocal desde `core/ui/navigation/SharedPoster.kt`; el `NavHost` los publica y `animatedComposable` evita repetirlo por destino.
+- La clave la da `posterSharedKey(id)` y **nunca** se escribe a mano: el origen y el destino tienen que coincidir, y el identificador es el mismo con el que la fila navega (`seasonId` para temporadas).
+- Los dos extremos piden `SharedPosterSize`. Con tamaños distintos son dos entradas de caché y la carátula enseña un cargador en mitad del vuelo.
+- Sin ámbitos —una vista previa, un test— el modificador no hace nada y queda el fundido. No falla.
+- Solo lo lleva quien navega. La fila de una serie se despliega en vez de abrir, así que su carátula no viaja: la que viaja es la de la temporada.
 
 ## Edge-to-edge e insets
 

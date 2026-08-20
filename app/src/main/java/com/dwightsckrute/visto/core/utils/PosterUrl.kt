@@ -11,6 +11,19 @@ package com.dwightsckrute.visto.core.utils
  * Distinguir por el propio valor y no por el tipo de medio es lo que permite arreglarlo sin tocar
  * los veinticinco: quien ya trae esquema es una URL y se deja pasar.
  */
+/**
+ * El tamaño que piden la fila de una lista y la ficha a la que lleva.
+ *
+ * Tiene que ser el mismo en los dos extremos, y por eso está aquí y no escrito a mano en cada
+ * uno. Cuando la fila pedía `w154` y la ficha `w500` eran dos imágenes distintas para el ojo de
+ * la caché: al abrir, la carátula que crece desde la lista se encontraba con que su destino aún
+ * no estaba descargado y enseñaba un cargador en mitad del movimiento.
+ *
+ * `w342` es casi exacto para los 120 puntos de la ficha y sobra un poco para los 80 de la fila,
+ * que es el lado correcto por el que equivocarse: la lista deja la imagen caliente para la ficha.
+ */
+const val SharedPosterSize = "w342"
+
 fun posterUrl(path: String?, size: String = "w154"): String? = when {
     path.isNullOrBlank() -> null
     path.startsWith("http") -> openLibrarySized(path, size)

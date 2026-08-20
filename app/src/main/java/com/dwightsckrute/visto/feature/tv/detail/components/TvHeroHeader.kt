@@ -32,6 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.dwightsckrute.visto.core.utils.posterUrl
+import com.dwightsckrute.visto.core.utils.SharedPosterSize
+import com.dwightsckrute.visto.core.ui.navigation.sharedPoster
+import com.dwightsckrute.visto.core.ui.navigation.posterSharedKey
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.AppPill
 import com.dwightsckrute.visto.core.ui.components.PillSize
@@ -103,12 +107,13 @@ fun TvHeroHeader(
         ) {
 
             PosterBox(
-                posterUrl = "https://image.tmdb.org/t/p/w500${seasonItem.posterPath}",
+                posterUrl = posterUrl(seasonItem.posterPath, SharedPosterSize),
                 apiPath = seasonItem.posterPath,
                 width = 120.dp,
                 height = 180.dp,
                 cornerRadius = ShapeRadius.Large,
-                progressIndicatorSize = 40.dp
+                progressIndicatorSize = 40.dp,
+                modifier = Modifier.sharedPoster(posterSharedKey(seasonItem.seasonId))
             )
 
             Spacer(modifier = Modifier.width(16.dp))

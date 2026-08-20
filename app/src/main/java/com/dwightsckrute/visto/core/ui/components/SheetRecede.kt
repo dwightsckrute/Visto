@@ -1,40 +1,43 @@
 package com.dwightsckrute.visto.core.ui.components
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
 /**
- * El contenido cede el sitio cuando sube una hoja.
+ * El contenido cede el sitio mientras sube una hoja, y lo recupera mientras baja.
  *
  * Una hoja inferior vive en su propia ventana por encima de la pantalla, así que sin esto lo que
  * hay detrás se queda exactamente igual, atenuado por el velo y nada más: la hoja parece pegada
- * sobre una captura.
+ * sobre una captura. Encogiendo lo de detrás, la hoja pasa a estar *delante de algo*, igual que
+ * hace el sistema al abrir una aplicación desde el launcher y que esta aplicación al abrir una
+ * ficha.
  *
- * Encogiendo lo de detrás un poco, la hoja pasa a estar *delante de algo*. La pantalla se retira
- * para dejarla pasar, que es lo que hace el sistema al abrir una aplicación desde el launcher y lo
- * que ya hace esta aplicación al abrir una ficha: un mismo gesto contado en dos sitios.
+ * Lo que importa aquí es de dónde sale el movimiento. Animar contra un booleano —«la hoja está
+ * abierta»— daba dos animaciones en paralelo con la misma duración por casualidad: cada una con
+ * su curva, y en cuanto una tardaba algo distinto de la otra se veía la pantalla acabar de
+ * encogerse con la hoja ya quieta, o volver a su sitio cuando la hoja ya se había ido.
  *
- * Poco recorrido, por la misma razón que en la navegación: encoger más levanta la pantalla de sus
- * bordes y el hueco delata el truco en vez de sugerir profundidad.
+ * Así que el encogido no se anima: se **lee de la hoja**. `requireOffset()` es dónde está su
+ * borde superior ahora mismo, y la escala se deriva de cuánta pantalla tapa. Ni sincronía que
+ * mantener ni curva que igualar, porque hay un único movimiento; y arrastrando la hoja con el
+ * dedo la pantalla de detrás sigue al dedo, que es lo que delata que están conectadas.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Modifier.sheetRecede(active: Boolean): Modifier {
-    val progress by animateFloatAsState(
-        targetValue = if (active) 1f else 0f,
-        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
-        label = "sheet-recede",
-    )
-
-    // Quieto no se toca nada. Una capa gráfica y un rectángulo a pantalla completa por sección son
-    // gratis de escribir y no de dibujar, y aquí solo hacen falta mientras algo se mueve.
-    if (progress == 0f) return this
+fun Modifier.sheetRecede(sheetState: SheetState): Modifier {
+    // Ni la capa gráfica ni el rectángulo de fondo existen mientras no hay hoja de por medio.
+    // `isVisible` sigue siendo cierto durante toda la bajada y `targetValue` lo es desde el
+    // primer frame de la subida, así que entre los dos cubren el trayecto completo.
+    val engaged = sheetState.isVisible || sheetState.targetValue != SheetValue.Hidden
+    if (!engaged) return this
 
     // El hueco que deja la pantalla al encogerse. Sin esto asomaría el fondo de la ventana del
     // sistema, que es claro siempre y en modo oscuro se vería como un marco blanco.
@@ -43,26 +46,36 @@ fun Modifier.sheetRecede(active: Boolean): Modifier {
     return this
         .background(backdrop)
         .graphicsLayer {
-            // Sin recortar: el muelle rebasa el objetivo por los dos lados, y ese rebase es
-            // justo lo que hace que al cerrarse la pantalla vuelva con vida en vez de detenerse
-            // en seco. Pasarse de 1f un 0,2% no se ve como recorte, se ve como que respira.
+            // Antes de la primera medida de la hoja esto lanza: no hay posición todavía porque
+            // aún no se ha colocado. Ese frame no hay nada que encoger.
+            val offset = runCatching { sheetState.requireOffset() }.getOrNull()
+            val height = size.height
+
+            val progress =
+                if (offset == null || height <= 0f) 0f
+                else (((height - offset) / height) / FULL_RECEDE_COVERAGE).coerceIn(0f, 1f)
+
             val scale = 1f - (1f - RECEDE_SCALE) * progress
             scaleX = scale
             scaleY = scale
 
             // El redondeo acompaña al encogido para que lo que se retira se lea como una tarjeta
             // y no como la misma pantalla mal encajada.
-            //
-            // Este sí va recortado, y no por gusto: al volver el muelle deja el progreso unas
-            // milésimas por debajo de cero, y un radio negativo no es un radio pequeño sino una
-            // excepción — `RoundedCornerShape` lanza y se lleva la aplicación por delante. El
-            // rebase se queda donde no molesta, en la escala.
-            shape = RoundedCornerShape((MAX_CORNER * progress.coerceIn(0f, 1f)).dp)
+            shape = RoundedCornerShape((MAX_CORNER * progress).dp)
             clip = true
         }
 }
 
 private const val RECEDE_SCALE = 0.955f
+
+/**
+ * Cuánta pantalla tiene que tapar la hoja para que el encogido llegue a su tope.
+ *
+ * Media pantalla, que es lo que ocupan estas tarjetas cuando se asientan. Una hoja más baja
+ * empuja menos, que es lo razonable: el fondo retrocede en proporción a lo que se le pone
+ * delante, no a que exista algo delante.
+ */
+private const val FULL_RECEDE_COVERAGE = 0.5f
 
 /** Redondeo de la pantalla retirada en su punto más encogido. */
 private const val MAX_CORNER = 28f

@@ -53,11 +53,17 @@ object NavTransitions {
      */
     private const val ARRIVING_SCALE = 1.04f
 
-    /** Lo que tarda en marcharse la pantalla que se va. */
-    private const val FadeOutDuration = 220
+    /**
+     * Lo que tarda en marcharse la pantalla que se va, y en llegar la nueva.
+     *
+     * Cortos, y pueden serlo desde que la carátula viaja de la lista a la ficha. Antes el fundido
+     * *era* la transición y tenía que durar lo suficiente para no leerse como un corte; ahora
+     * solo acompaña, porque lo que sigue el ojo es la imagen que crece. Un fundido que acompaña
+     * y se alarga es exactamente la parte turbia.
+     */
+    private const val FadeOutDuration = 150
 
-    /** Y lo que tarda en llegar la nueva. */
-    private const val FadeInDuration = 260
+    private const val FadeInDuration = 200
 
     /**
      * Cuándo empieza a asomar la entrante.
@@ -70,10 +76,18 @@ object NavTransitions {
      * Solapadas no hay hueco, y no se ven turbias porque no comparten sitio: el escalado las
      * separa en profundidad, una alejándose y la otra llegando.
      */
-    private const val FadeInDelay = 90
+    private const val FadeInDelay = 50
 
+    /**
+     * El escalado, que es lo que marca la duración de todo el cambio.
+     *
+     * Bajó de 450 a 350 ms. Los 450 se eligieron cuando la transición era un fundido entre dos
+     * pantallas completas y hacía falta tiempo para leer el relevo. Con la carátula haciendo de
+     * hilo no hay nada que descifrar —ya sabes qué has tocado y a dónde va— y ese mismo tiempo
+     * pasa a sentirse como espera.
+     */
     private fun scaleSpec() =
-        tween<Float>(AppMotion.DurationLong, easing = AppMotion.EmphasizedDecelerate)
+        tween<Float>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)
     private fun fadeOutSpec() = tween<Float>(FadeOutDuration)
     private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeInDelay)
 
