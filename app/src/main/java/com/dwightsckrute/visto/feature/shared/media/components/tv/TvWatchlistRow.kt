@@ -34,10 +34,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.dwightsckrute.visto.core.utils.posterUrl
-import com.dwightsckrute.visto.core.utils.SharedPosterSize
-import com.dwightsckrute.visto.core.ui.navigation.sharedPoster
-import com.dwightsckrute.visto.core.ui.navigation.posterSharedKey
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.prefs.LocalAppPrefs
 import com.dwightsckrute.visto.core.model.WatchStatus
@@ -107,7 +103,7 @@ fun TvWatchlistRow(
             ) {
 
                 PosterBox(
-                    posterUrl = posterUrl(item.posterPath, SharedPosterSize),
+                    posterUrl = "https://image.tmdb.org/t/p/w154${item.posterPath}",
                     apiPath = item.posterPath,
                     cornerRadius = ShapeRadius.None,
                     progressIndicatorSize = 40.dp

@@ -17,11 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -62,10 +57,8 @@ fun AppNavHost(
                         .calculateBottomPadding()
                 )
         )
-        SharedTransitionLayout {
-            CompositionLocalProvider(LocalSharedTransitionScope provides this) {
-                NavHost(
-                    navController = navController,
+        NavHost(
+            navController = navController,
             startDestination = NavRoutes.MAIN,
 //            startDestination = NavRoutes.personScreen(287),
             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer),
@@ -74,22 +67,22 @@ fun AppNavHost(
             popEnterTransition = { NavTransitions.popEnter() },
             popExitTransition = { NavTransitions.popExit() }
         ) {
-            animatedComposable(
+            composable(
                 NavRoutes.MAIN
             ) {
                 MainScreen(navController)
             }
-            animatedComposable(
+            composable(
                 NavRoutes.SETTINGS
             ) {
                 SettingsScreen(navController)
             }
-            animatedComposable(
+            composable(
                 NavRoutes.CALENDAR
             ) {
                 CalendarScreen(navController)
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.MOVIE_DETAIL_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType }
@@ -98,7 +91,7 @@ fun AppNavHost(
                 val id = backStackEntry.arguments!!.getLong("id")
                 MovieDetailPage(id = id, navController)
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.SEARCH}?searchType={searchType}",
                 arguments = listOf(
                     navArgument("searchType") {
@@ -118,7 +111,7 @@ fun AppNavHost(
                     searchType = searchType
                 )
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.TV_DETAIL_SCREEN}/{id}/{seasonNumber}/{seasonId}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType },
@@ -137,7 +130,7 @@ fun AppNavHost(
                     seasonId = seasonId
                 )
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.BOOK_DETAIL_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType }
@@ -146,12 +139,12 @@ fun AppNavHost(
                 val id = backStackEntry.arguments!!.getLong("id")
                 BookDetailScreen(id = id, navController = navController)
             }
-            animatedComposable(
+            composable(
                 NavRoutes.LISTS_SCREEN
             ) {
                 MovieListsScreen(navController)
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.LISTS_ENTRY_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") {
@@ -164,7 +157,7 @@ fun AppNavHost(
                 ListEntryScreen(id, navController)
 
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.LISTS_VIEW_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType }
@@ -174,7 +167,7 @@ fun AppNavHost(
                 ViewListScreen(navController, id)
 
             }
-            animatedComposable(
+            composable(
                 route = "${NavRoutes.PERSON_SCREEN}/{id}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType }
@@ -183,26 +176,7 @@ fun AppNavHost(
                 val id = backStackEntry.arguments!!.getLong("id")
                 PersonScreen(id = id, navController)
             }
-            }
-        }
         }
     }
 
-}
-
-/**
- * `composable` con el ámbito de animación puesto a disposición del subárbol.
- *
- * `NavHost` no ofrece ningún sitio donde envolver todos sus destinos a la vez, y el ámbito solo
- * existe dentro de la lambda de cada uno. Esto evita repetir el proveedor en cada destino, que
- * son otros tantos sitios donde olvidarlo.
- */
-private fun NavGraphBuilder.animatedComposable(
-    route: String,
-    arguments: List<NamedNavArgument> = emptyList(),
-    content: @Composable (NavBackStackEntry) -> Unit,
-) = composable(route, arguments) { entry ->
-    CompositionLocalProvider(LocalNavAnimatedScope provides this) {
-        content(entry)
-    }
 }

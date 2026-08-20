@@ -56,10 +56,10 @@ object NavTransitions {
     /**
      * Lo que tarda en marcharse la pantalla que se va, y en llegar la nueva.
      *
-     * Cortos, y pueden serlo desde que la carátula viaja de la lista a la ficha. Antes el fundido
-     * *era* la transición y tenía que durar lo suficiente para no leerse como un corte; ahora
-     * solo acompaña, porque lo que sigue el ojo es la imagen que crece. Un fundido que acompaña
-     * y se alarga es exactamente la parte turbia.
+     * Cortos a propósito. Mientras las dos son visibles hay dos interfaces superpuestas a media
+     * opacidad, y ese solape es de donde sale el aspecto turbio; alargarlo no suaviza nada, solo
+     * da más tiempo a que se vea. Lo que separa las dos pantallas no es el fundido sino el
+     * escalado, que las pone a distinta profundidad.
      */
     private const val FadeOutDuration = 150
 
@@ -81,10 +81,9 @@ object NavTransitions {
     /**
      * El escalado, que es lo que marca la duración de todo el cambio.
      *
-     * Bajó de 450 a 350 ms. Los 450 se eligieron cuando la transición era un fundido entre dos
-     * pantallas completas y hacía falta tiempo para leer el relevo. Con la carátula haciendo de
-     * hilo no hay nada que descifrar —ya sabes qué has tocado y a dónde va— y ese mismo tiempo
-     * pasa a sentirse como espera.
+     * Bajó de 450 a 350 ms. Los 450 salían de suponer que una pantalla que se sustituye necesita
+     * tiempo para leerse, y no es así cuando ya sabes qué has tocado: sabiendo a dónde vas, ese
+     * tiempo de más no se percibe como holgura sino como espera.
      */
     private fun scaleSpec() =
         tween<Float>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)

@@ -25,10 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.dwightsckrute.visto.core.utils.posterUrl
-import com.dwightsckrute.visto.core.utils.SharedPosterSize
-import com.dwightsckrute.visto.core.ui.navigation.sharedPoster
-import com.dwightsckrute.visto.core.ui.navigation.posterSharedKey
 import com.dwightsckrute.visto.core.model.WatchStatus
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
 import com.dwightsckrute.visto.core.ui.navigation.NavRoutes
@@ -87,14 +83,12 @@ fun TvWatchlistSeasonRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 PosterBox(
-                    posterUrl = posterUrl(season.posterPath, SharedPosterSize),
+                    posterUrl = "https://image.tmdb.org/t/p/w154${season.posterPath}",
                     apiPath = season.posterPath,
                     cornerRadius = ShapeRadius.None,
                     height = 100.dp,
                     width = 65.dp,
-                    progressIndicatorSize = 40.dp,
-                    // Esta carátula es la que crece hasta la ficha de la temporada.
-                    modifier = Modifier.sharedPoster(posterSharedKey(season.seasonId))
+                    progressIndicatorSize = 40.dp
                 )
                 Column(
                     modifier = Modifier
