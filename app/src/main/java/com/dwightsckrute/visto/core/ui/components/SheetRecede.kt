@@ -43,12 +43,21 @@ fun Modifier.sheetRecede(active: Boolean): Modifier {
     return this
         .background(backdrop)
         .graphicsLayer {
+            // Sin recortar: el muelle rebasa el objetivo por los dos lados, y ese rebase es
+            // justo lo que hace que al cerrarse la pantalla vuelva con vida en vez de detenerse
+            // en seco. Pasarse de 1f un 0,2% no se ve como recorte, se ve como que respira.
             val scale = 1f - (1f - RECEDE_SCALE) * progress
             scaleX = scale
             scaleY = scale
-            // El redondeo entra con el encogido para que lo que se retira se lea como una tarjeta
+
+            // El redondeo acompaña al encogido para que lo que se retira se lea como una tarjeta
             // y no como la misma pantalla mal encajada.
-            shape = RoundedCornerShape((MAX_CORNER * progress).dp)
+            //
+            // Este sí va recortado, y no por gusto: al volver el muelle deja el progreso unas
+            // milésimas por debajo de cero, y un radio negativo no es un radio pequeño sino una
+            // excepción — `RoundedCornerShape` lanza y se lleva la aplicación por delante. El
+            // rebase se queda donde no molesta, en la escala.
+            shape = RoundedCornerShape((MAX_CORNER * progress.coerceIn(0f, 1f)).dp)
             clip = true
         }
 }

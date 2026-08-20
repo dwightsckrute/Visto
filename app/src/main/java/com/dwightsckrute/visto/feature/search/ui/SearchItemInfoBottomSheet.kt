@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.dwightsckrute.visto.data.repository.MEDIA_TYPE_BOOK
 import com.dwightsckrute.visto.core.ui.components.ActionBottomSheet
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.DatePickerSheet
@@ -64,7 +65,16 @@ fun SearchItemInfoBottomSheet(
     // localized() es @Composable: los textos de los avisos se resuelven aquí, no dentro de las
     // lambdas de confirmación.
     val addedMessage = localized("Añadido a pendientes", "Added to watchlist")
-    val watchedMessage = localized("Marcada como vista", "Marked as watched")
+
+    // Un libro no se ve, se lee. La hoja de resultados se escribió cuando solo había películas y
+    // series, así que decía "vista" de todo lo que cayera dentro; ahora también caen libros.
+    val isBook = item?.mediaType == MEDIA_TYPE_BOOK
+    val watchedMessage =
+        if (isBook) localized("Marcado como leído", "Marked as read")
+        else localized("Marcada como vista", "Marked as watched")
+    val markWatchedLabel =
+        if (isBook) localized("Marcar como leído…", "Mark as read…")
+        else localized("Marcar como vista…", "Mark as watched…")
 
     if (show && item != null)
         ActionBottomSheet(
@@ -115,7 +125,7 @@ fun SearchItemInfoBottomSheet(
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        text = localized("Marcar como vista…", "Mark as watched…"),
+                        text = markWatchedLabel,
                         modifier = Modifier.padding(start = Spacing.sm),
                     )
                 }
