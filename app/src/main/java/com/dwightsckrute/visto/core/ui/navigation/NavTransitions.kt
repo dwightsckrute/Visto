@@ -31,11 +31,27 @@ import com.dwightsckrute.visto.core.ui.theme.AppMotion
  */
 object NavTransitions {
 
-    /** Desde dónde llega la pantalla entrante al abrir. Lejos, pero no tanto como para saltar. */
-    private const val ENTER_SCALE = 0.90f
+    /**
+     * Hasta dónde se encoge la pantalla que se queda detrás.
+     *
+     * Es la pieza que da el gesto: al abrir una ficha, lo que había **retrocede encogiéndose**,
+     * como hace el launcher al abrir una aplicación. Antes crecía —el eje Z de Material propone
+     * que la saliente se acerque y se desvanezca—, y aunque sobre el papel es igual de correcto,
+     * en la mano cuenta otra cosa: que te la echan encima en lugar de que se aparta.
+     *
+     * Poco recorrido a propósito. Encogerla más la separa del borde y aparece el fondo, que
+     * delata que son dos pantallas superpuestas en vez de una que cede el sitio a otra.
+     */
+    private const val BEHIND_SCALE = 0.93f
 
-    /** Hasta dónde se aleja la saliente. Solo lo justo para insinuar que queda detrás. */
-    private const val EXIT_SCALE = 1.06f
+    /**
+     * Desde dónde llega la que entra.
+     *
+     * Ligeramente por delante y no por detrás, para que el par se lea como una sola profundidad:
+     * una se va hacia el fondo mientras la otra viene hacia ti. Con las dos entrando desde lejos
+     * habría un momento en que ninguna ocupa la pantalla.
+     */
+    private const val ARRIVING_SCALE = 1.04f
 
     /** Lo que tarda en marcharse la pantalla que se va. */
     private const val FadeOutDuration = 220
@@ -61,15 +77,24 @@ object NavTransitions {
     private fun fadeOutSpec() = tween<Float>(FadeOutDuration)
     private fun fadeInSpec() = tween<Float>(FadeInDuration, delayMillis = FadeInDelay)
 
+    /** Entrar: la ficha llega desde delante mientras lo anterior se encoge hacia el fondo. */
     fun enter(): EnterTransition =
-        scaleIn(animationSpec = scaleSpec(), initialScale = ENTER_SCALE) + fadeIn(fadeInSpec())
+        scaleIn(animationSpec = scaleSpec(), initialScale = ARRIVING_SCALE) + fadeIn(fadeInSpec())
 
     fun exit(): ExitTransition =
-        scaleOut(animationSpec = scaleSpec(), targetScale = EXIT_SCALE) + fadeOut(fadeOutSpec())
+        scaleOut(animationSpec = scaleSpec(), targetScale = BEHIND_SCALE) + fadeOut(fadeOutSpec())
 
+    /**
+     * Volver: exactamente al revés.
+     *
+     * Importa más de lo que parece porque Navigation reproduce estas dos curvas siguiendo el dedo
+     * en el gesto atrás predictivo. Con la ficha encogiéndose mientras arrastras y la lista
+     * creciendo desde detrás, el gesto enseña a dónde vas mientras lo haces, que es lo que el
+     * sistema hace con las aplicaciones.
+     */
     fun popEnter(): EnterTransition =
-        scaleIn(animationSpec = scaleSpec(), initialScale = EXIT_SCALE) + fadeIn(fadeInSpec())
+        scaleIn(animationSpec = scaleSpec(), initialScale = BEHIND_SCALE) + fadeIn(fadeInSpec())
 
     fun popExit(): ExitTransition =
-        scaleOut(animationSpec = scaleSpec(), targetScale = ENTER_SCALE) + fadeOut(fadeOutSpec())
+        scaleOut(animationSpec = scaleSpec(), targetScale = ARRIVING_SCALE) + fadeOut(fadeOutSpec())
 }
