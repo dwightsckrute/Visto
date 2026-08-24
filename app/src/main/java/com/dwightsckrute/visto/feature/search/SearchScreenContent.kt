@@ -121,7 +121,14 @@ fun SearchScreenContent(
             .imePadding()
             .semantics { isTraversalGroup = true },
     ) {
-        val searchAreaHeight = 84.dp
+        // El filtro cabe dentro del área de búsqueda cuando está activa.
+        //
+        // Estaba con los resultados, con el argumento de que solo importa cuando hay algo que
+        // filtrar. No es así: elegir "libros" *antes* de escribir es lo que evita preguntar a
+        // TMDB y a Open Library por algo que no se quiere, así que el filtro tiene que estar
+        // disponible cuando aún no has escrito nada. Y ahí es cuando más ayuda.
+        val filterHeight = 52.dp
+        val searchAreaHeight = if (searchActive) 84.dp + filterHeight else 84.dp
         val searchOffsetState = animateDpAsState(
             targetValue = if (searchActive) 0.dp
             else (maxHeight - searchAreaHeight).coerceAtLeast(0.dp),
@@ -213,15 +220,6 @@ fun SearchScreenContent(
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    // El filtro va con los resultados y no junto al campo: el campo se desplaza
-                    // con una animación de posición y meterle una fila más obligaba a recalcular
-                    // toda esa geometría para algo que solo importa cuando hay algo que filtrar.
-                    item {
-                        SearchTypeFilter(
-                            selected = searchType,
-                            onSelect = onSearchTypeChange,
-                        )
-                    }
                     item {
                         Text(
                             text = localized(
@@ -261,12 +259,28 @@ fun SearchScreenContent(
                 // es una recomposición por frame durante todo el recorrido.
                 .offset { IntOffset(x = 0, y = searchOffsetState.value.roundToPx()) },
         ) {
-            VistoSearchField(
-                viewModel = viewModel,
-                searchType = searchType,
-                active = searchActive,
-                onActivate = { searchActive = true },
-            )
+            Column {
+                VistoSearchField(
+                    viewModel = viewModel,
+                    searchType = searchType,
+                    active = searchActive,
+                    onActivate = { searchActive = true },
+                )
+
+                // Solo con la búsqueda abierta: en reposo el campo está abajo del todo, sobre la
+                // barra flotante, y una fila de filtros ahí no filtra nada todavía.
+                AnimatedVisibility(
+                    visible = searchActive,
+                    enter = fadeIn(motionScheme.defaultEffectsSpec()),
+                    exit = fadeOut(motionScheme.fastEffectsSpec()),
+                ) {
+                    SearchTypeFilter(
+                        selected = searchType,
+                        onSelect = onSearchTypeChange,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+            }
         }
     }
 }
@@ -512,6 +526,7 @@ private fun SearchMessage(
 private fun SearchTypeFilter(
     selected: SearchType,
     onSelect: (SearchType) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val options = listOf(
         SearchType.MULTI to localized("Todo", "All"),
@@ -521,7 +536,7 @@ private fun SearchTypeFilter(
     )
 
     FlowRow(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),

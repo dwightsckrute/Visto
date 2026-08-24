@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_main_background">#4C57A9</color>
+    <!--
+        Verde profundo, el mismo terreno que la aplicación por dentro. El índigo de antes no venía
+        de ningún sitio: era el color del icono heredado.
+
+        Es además lo que se ve por el hueco del check, porque la marca es espacio negativo y deja
+        pasar la capa de fondo.
+    -->
+    <color name="ic_launcher_main_background">#23331C</color>
 </resources>

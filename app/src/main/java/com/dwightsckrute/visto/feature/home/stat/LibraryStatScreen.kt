@@ -1,5 +1,10 @@
 package com.dwightsckrute.visto.feature.home.stat
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +75,7 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
                 seasonsByShow[item.id].orEmpty().isNotEmpty()
         }
     }
-    val isEmpty = films.isEmpty() && tv.isEmpty() && books.isEmpty()
+    val nothingSaved = films.isEmpty() && tv.isEmpty() && books.isEmpty()
 
     // Con cabecera por tipo, y solo de los que hay.
     //
@@ -89,14 +94,21 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
         books.takeIf { it.isNotEmpty() }
             ?.let { localized("Libros", "Books") to it },
     )
-    val labelled = sections.size > 1
+    // Qué tipos se están mirando. Arranca en todos, que es lo que dice la cifra que abrió la
+    // pantalla; el filtro está para estrechar, no para tener que elegir antes de ver nada.
+    var filter by rememberSaveable { mutableStateOf(StatFilter.ALL) }
+
+    val visible = sections.filter { (_, rows) -> filter.matches(rows.first()) }
+
+    // La cabecera de sección sobra si el filtro ya ha dejado un solo tipo: lo diría dos veces.
+    val labelled = visible.size > 1
 
 
     LargeTopBarScaffold(
         title = kind.title(),
         navigationIcon = { NavigateUpBtn(navController) },
     ) { padding ->
-        if (isEmpty) {
+        if (nothingSaved) {
             EmptyContainerPlaceholder(
                 icon = R.drawable.bookmark_24px,
                 text = localized("Nada por aquí todavía", "Nothing here yet"),
@@ -118,7 +130,17 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
 
-            sections.forEach { (heading, rows) ->
+            if (sections.size > 1) {
+                item(key = "filter") {
+                    StatTypeFilter(
+                        selected = filter,
+                        available = sections.map { it.second.first() },
+                        onSelect = { filter = it },
+                    )
+                }
+            }
+
+            visible.forEach { (heading, rows) ->
                 if (labelled) {
                     item(key = "heading-$heading") {
                         Text(
@@ -126,7 +148,7 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(
-                                top = if (heading == sections.first().first) 0.dp else 20.dp,
+                                top = if (heading == visible.first().first) 0.dp else 20.dp,
                                 bottom = 6.dp,
                                 start = 4.dp,
                             ),
@@ -157,6 +179,72 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
                     }
                 }
             }
+            if (visible.isEmpty()) {
+                item(key = "vacio") {
+                    Text(
+                        text = localized(
+                            "Nada de ese tipo en esta lista",
+                            "Nothing of that kind in this list",
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 24.dp, start = 4.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Los tipos que se pueden mirar por separado dentro de una lista. */
+enum class StatFilter {
+    ALL,
+    FILMS,
+    SERIES,
+    BOOKS;
+
+    fun matches(item: WatchlistItemEntity): Boolean = when (this) {
+        ALL -> true
+        FILMS -> item.mediaType == "movie"
+        SERIES -> item.mediaType == "tv"
+        BOOKS -> item.mediaType == MEDIA_TYPE_BOOK
+    }
+}
+
+/**
+ * Los tipos que hay en esta lista, para elegir cuál mirar.
+ *
+ * `available` son ejemplares de lo que realmente hay: ofrecer "Libros" en una lista sin ninguno
+ * es ofrecer una pantalla vacía.
+ */
+@Composable
+private fun StatTypeFilter(
+    selected: StatFilter,
+    available: List<WatchlistItemEntity>,
+    onSelect: (StatFilter) -> Unit,
+) {
+    val options = listOfNotNull(
+        StatFilter.ALL to localized("Todo", "All"),
+        (StatFilter.FILMS to localized("Películas", "Films"))
+            .takeIf { available.any { item -> StatFilter.FILMS.matches(item) } },
+        (StatFilter.SERIES to localized("Series", "Series"))
+            .takeIf { available.any { item -> StatFilter.SERIES.matches(item) } },
+        (StatFilter.BOOKS to localized("Libros", "Books"))
+            .takeIf { available.any { item -> StatFilter.BOOKS.matches(item) } },
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        options.forEach { (type, label) ->
+            FilterChip(
+                selected = type == selected,
+                onClick = { onSelect(type) },
+                label = { Text(label) },
+            )
         }
     }
 }
