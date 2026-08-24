@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +51,7 @@ fun AppPill(
     onContainer: Color = MaterialTheme.colorScheme.onSecondaryContainer,
     size: PillSize = PillSize.Large,
     contentDescription: String? = null,
+    onClick: (() -> Unit)? = null,
 ) {
     val metrics = size.metrics()
 
@@ -55,11 +59,25 @@ fun AppPill(
         shape = RoundedCornerShape(metrics.radius),
         color = container,
         contentColor = onContainer,
+        // Sin `onClick` la píldora es exactamente lo que era: una etiqueta. Sólo las que llevan
+        // a algún sitio reciben ondas y el rol de botón, para no prometer un destino que no
+        // existe.
+        onClick = onClick ?: {},
+        enabled = onClick != null,
         // La cifra y su etiqueta se anuncian como una sola frase; leerlas por separado no dice
         // nada ("38", "Guardado").
+        //
+        // `clearAndSetSemantics` borra también lo que declaran los nodos de dentro, y el gesto
+        // de pulsar de `Surface` es uno de ellos: sin volver a declararlo aquí, una píldora que
+        // lleva a algún sitio se anunciaría como texto y quedaría fuera del alcance de quien
+        // navega con TalkBack.
         modifier = modifier.clearAndSetSemantics {
             this.contentDescription = contentDescription
                 ?: listOfNotNull(value, label).joinToString(" ")
+            if (onClick != null) {
+                this.role = Role.Button
+                onClick { onClick(); true }
+            }
         },
     ) {
         Row(

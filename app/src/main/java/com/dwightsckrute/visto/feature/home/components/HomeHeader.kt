@@ -99,6 +99,7 @@ data class HomeStat(
     val icon: Int,
     val container: Color,
     val onContainer: Color,
+    val onClick: (() -> Unit)? = null,
 )
 
 /**
@@ -132,6 +133,7 @@ fun HomeStatsRow(
                 icon = stat.icon,
                 container = stat.container,
                 onContainer = stat.onContainer,
+                onClick = stat.onClick,
                 modifier = Modifier.weight(1f),
             )
         }

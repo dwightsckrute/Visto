@@ -22,6 +22,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.dwightsckrute.visto.feature.home.stat.LibraryStatScreen
+import com.dwightsckrute.visto.feature.home.stat.LibraryStat
 import com.dwightsckrute.visto.feature.books.BookDetailScreen
 import com.dwightsckrute.visto.feature.calendar.CalendarScreen
 import com.dwightsckrute.visto.feature.main.MainScreen
@@ -166,6 +168,15 @@ fun AppNavHost(
                 val id = backStackEntry.arguments!!.getLong("id")
                 ViewListScreen(navController, id)
 
+            }
+            composable(
+                route = "${NavRoutes.LIBRARY_STAT_SCREEN}/{kind}",
+                arguments = listOf(
+                    navArgument("kind") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val kind = backStackEntry.arguments!!.getString("kind")!!
+                LibraryStatScreen(navController, LibraryStat.valueOf(kind))
             }
             composable(
                 route = "${NavRoutes.PERSON_SCREEN}/{id}",

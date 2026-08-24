@@ -38,13 +38,18 @@ fun Modifier.sheetRecede(sheetState: SheetState): Modifier {
     val engaged = sheetState.isVisible || sheetState.targetValue != SheetValue.Hidden
     if (!engaged) return this
 
-    // El hueco que deja la pantalla al encogerse. Sin esto asomaría el fondo de la ventana del
-    // sistema, que es claro siempre y en modo oscuro se vería como un marco blanco.
+    // El hueco que deja la pantalla al encogerse, del mismo color que la pantalla.
     //
-    // Oscuro y no un tono cercano al de la pantalla: con `surfaceContainerLowest` el hueco casi
-    // no se distinguía del contenido, así que lo único que se notaba del encogido eran las
-    // esquinas redondeadas, y eso no se lee como profundidad sino como pantalla recortada.
-    val backdrop = MaterialTheme.colorScheme.scrim
+    // Aquí ha habido dos intentos peores. Con un tono ligeramente distinto, lo único que se
+    // notaba del encogido eran las esquinas; y con `scrim`, que es negro puro, salía un marco
+    // negro alrededor. Los dos parten del mismo error: pensar que el retroceso necesita que se
+    // vea el hueco.
+    //
+    // No lo necesita. El contenido encogiéndose ya se ve —los textos y las carátulas se meten
+    // hacia dentro—, y un hueco de otro color no añade profundidad, añade un borde. El fondo
+    // solo está aquí para que no asome el de la ventana del sistema, que es claro siempre y en
+    // modo oscuro se vería blanco.
+    val backdrop = MaterialTheme.colorScheme.surfaceContainer
 
     return this
         .background(backdrop)

@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.dwightsckrute.visto.feature.home.stat.LibraryStat
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.PosterBox
@@ -97,6 +98,9 @@ fun HomeScreen(
                 stats = listOf(
                     HomeStat(
                         label = localized("Guardado", "Saved"),
+                        onClick = {
+                            navController.navigate(NavRoutes.libraryStat(LibraryStat.SAVED))
+                        },
                         value = state.libraryCount,
                         icon = R.drawable.bookmark_24px,
                         container = MaterialTheme.colorScheme.primaryContainer,
@@ -104,6 +108,9 @@ fun HomeScreen(
                     ),
                     HomeStat(
                         label = localized("En curso", "Watching"),
+                        onClick = {
+                            navController.navigate(NavRoutes.libraryStat(LibraryStat.IN_PROGRESS))
+                        },
                         value = state.inProgressCount,
                         icon = R.drawable.play_arrow_24px,
                         container = MaterialTheme.colorScheme.tertiaryContainer,
@@ -111,6 +118,9 @@ fun HomeScreen(
                     ),
                     HomeStat(
                         label = localized("Visto", "Watched"),
+                        onClick = {
+                            navController.navigate(NavRoutes.libraryStat(LibraryStat.FINISHED))
+                        },
                         value = state.finishedCount,
                         icon = R.drawable.check_24px,
                         container = MaterialTheme.colorScheme.secondaryContainer,
@@ -118,6 +128,9 @@ fun HomeScreen(
                     ),
                     HomeStat(
                         label = localized("Libros", "Books"),
+                        onClick = {
+                            navController.navigate(NavRoutes.libraryStat(LibraryStat.BOOKS))
+                        },
                         value = state.bookCount,
                         icon = R.drawable.book_24px,
                         container = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -125,6 +138,9 @@ fun HomeScreen(
                     ),
                     HomeStat(
                         label = localized("Favoritos", "Favourites"),
+                        onClick = {
+                            navController.navigate(NavRoutes.libraryStat(LibraryStat.FAVOURITES))
+                        },
                         value = state.favoriteCount,
                         icon = R.drawable.favorite_24px,
                         container = MaterialTheme.colorScheme.surfaceContainerHighest,

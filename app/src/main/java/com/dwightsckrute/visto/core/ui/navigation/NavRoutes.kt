@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.core.ui.navigation
 
+import com.dwightsckrute.visto.feature.home.stat.LibraryStat
+
 import com.dwightsckrute.visto.feature.search.SearchType
 
 object NavRoutes {
@@ -20,6 +22,8 @@ object NavRoutes {
     const val BOOK_DETAIL_SCREEN = "book_detail"
 
     const val PERSON_SCREEN = "person_screen"
+
+    const val LIBRARY_STAT_SCREEN = "library_stat"
 
     fun bookDetail(id: Long): String {
         return "$BOOK_DETAIL_SCREEN/$id"
@@ -44,6 +48,8 @@ object NavRoutes {
     fun listEntryScreen(id: Long): String {
         return "$LISTS_ENTRY_SCREEN/$id"
     }
+
+    fun libraryStat(kind: LibraryStat): String = "$LIBRARY_STAT_SCREEN/${kind.name}"
 
     fun personScreen(id: Long): String {
         return "$PERSON_SCREEN/$id"
