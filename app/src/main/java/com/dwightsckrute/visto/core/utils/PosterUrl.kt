@@ -21,19 +21,40 @@ fun posterUrl(path: String?, size: String = "w154"): String? = when {
  * Baja la portada de Open Library al tamaño que se va a dibujar.
  *
  * Sus portadas se guardan como `-L`, que es lo que quiere una ficha y un despilfarro para una
- * fila de 56 puntos: una lista de veinte libros descargaba veinte imágenes grandes para
- * enseñarlas en miniatura, y eso era la lentitud al abrir la sección. `S` y `M` pesan una
- * fracción y llegan antes.
+ * fila: una lista de veinte libros descargaba veinte imágenes grandes para enseñarlas en
+ * miniatura, y eso era la lentitud al abrir la sección.
+ *
+ * Lo que hay que saber para elegir bien es cuánto mide cada letra de verdad, porque no se parecen
+ * a lo que sugiere su nombre. Medido sobre una portada cualquiera:
+ *
+ * ```
+ *   S    38 x 58     2 KB
+ *   M   180 x 275   24 KB
+ *   L   326 x 500   71 KB
+ * ```
+ *
+ * `S` no es una miniatura: es un icono. Aquí se pedía para las filas de 80 puntos —unos 240
+ * píxeles en pantalla— y se dibujaba ampliada seis veces, que es exactamente el aspecto pastoso
+ * que tienen las portadas en la lista de libros.
+ *
+ * De ahí que los cortes sean esos números y no otros redondos: se compara lo que se pide con lo
+ * que cada letra entrega. Pedir 154 y recibir 38 no es "aproximadamente lo que querías".
  *
  * Solo toca las de Open Library, y solo si acaban como ella las nombra; cualquier otra URL pasa
  * intacta.
  */
 private fun openLibrarySized(url: String, size: String): String {
     if (!url.contains("covers.openlibrary.org")) return url
-    val wanted = when {
-        size.removePrefix("w").toIntOrNull()?.let { it <= 200 } == true -> "S"
-        size.removePrefix("w").toIntOrNull()?.let { it <= 400 } == true -> "M"
+    val wanted = when (size.removePrefix("w").toIntOrNull() ?: 0) {
+        in 1..OPEN_LIBRARY_SMALL_WIDTH -> "S"
+        in 1..OPEN_LIBRARY_MEDIUM_WIDTH -> "M"
         else -> "L"
     }
     return Regex("-[SML]\\.jpg$").replace(url, "-$wanted.jpg")
 }
+
+/** Ancho real en píxeles de la portada `-S` de Open Library. */
+private const val OPEN_LIBRARY_SMALL_WIDTH = 38
+
+/** Ancho real en píxeles de la portada `-M`. */
+private const val OPEN_LIBRARY_MEDIUM_WIDTH = 180

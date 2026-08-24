@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.IntSize.Companion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.Insets
+import com.dwightsckrute.visto.core.utils.posterUrl
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.Gap
 import com.dwightsckrute.visto.core.ui.components.Symbol
@@ -233,7 +234,10 @@ private fun AddedMovieChips(selectedItems: List<WatchlistItemEntity>) {
                             .fillMaxWidth(fraction = 0.462f)
                     ) {
                         PosterBox(
-                            posterUrl = "https://image.tmdb.org/t/p/w342${item.posterPath}",
+                            // Por `posterUrl` y no a mano: en una lista cabe un libro, y su
+                            // portada ya viene con servidor propio. Concatenada al prefijo de
+                            // TMDB daba una URL imposible y la ficha salía en blanco.
+                            posterUrl = posterUrl(item.posterPath, "w92"),
                             apiPath = item.posterPath,
                             cornerRadius = ShapeRadius.Full,
                             width = 30.dp,
