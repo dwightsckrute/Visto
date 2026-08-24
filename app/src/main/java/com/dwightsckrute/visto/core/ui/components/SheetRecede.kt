@@ -1,7 +1,6 @@
 package com.dwightsckrute.visto.core.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
@@ -41,7 +40,11 @@ fun Modifier.sheetRecede(sheetState: SheetState): Modifier {
 
     // El hueco que deja la pantalla al encogerse. Sin esto asomaría el fondo de la ventana del
     // sistema, que es claro siempre y en modo oscuro se vería como un marco blanco.
-    val backdrop = MaterialTheme.colorScheme.surfaceContainerLowest
+    //
+    // Oscuro y no un tono cercano al de la pantalla: con `surfaceContainerLowest` el hueco casi
+    // no se distinguía del contenido, así que lo único que se notaba del encogido eran las
+    // esquinas redondeadas, y eso no se lee como profundidad sino como pantalla recortada.
+    val backdrop = MaterialTheme.colorScheme.scrim
 
     return this
         .background(backdrop)
@@ -58,11 +61,6 @@ fun Modifier.sheetRecede(sheetState: SheetState): Modifier {
             val scale = 1f - (1f - RECEDE_SCALE) * progress
             scaleX = scale
             scaleY = scale
-
-            // El redondeo acompaña al encogido para que lo que se retira se lea como una tarjeta
-            // y no como la misma pantalla mal encajada.
-            shape = RoundedCornerShape((MAX_CORNER * progress).dp)
-            clip = true
         }
 }
 
@@ -76,6 +74,3 @@ private const val RECEDE_SCALE = 0.955f
  * delante, no a que exista algo delante.
  */
 private const val FULL_RECEDE_COVERAGE = 0.5f
-
-/** Redondeo de la pantalla retirada en su punto más encogido. */
-private const val MAX_CORNER = 28f

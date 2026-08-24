@@ -46,9 +46,14 @@ object NavTransitions {
      *
      * Un muelle sí. Y ya lo usaba todo lo demás de la aplicación: la navegación era lo único que
      * se movía con reglas propias, que es justo lo que se nota aunque no se sepa nombrar.
+     *
+     * El **lento** de los tres, no el normal. El esquema trae tres velocidades justamente porque
+     * cuanto mayor es la superficie que se mueve, más despacio tiene que ir para no leerse como
+     * un salto: el muelle normal está pensado para un control, no para la pantalla entera, y a
+     * tamaño completo llega y se planta de golpe.
      */
     private fun spec(scheme: MotionScheme): FiniteAnimationSpec<IntOffset> =
-        scheme.defaultSpatialSpec()
+        scheme.slowSpatialSpec()
 
     /** Entrar: la ficha llega desde la derecha y empuja lo anterior hacia la izquierda. */
     fun enter(scheme: MotionScheme): EnterTransition =
