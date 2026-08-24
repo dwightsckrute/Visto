@@ -132,7 +132,21 @@ fun ActionBottomSheet(
                                 hide()
                             },
                             enabled = !isConfirmDisabled,
-                            shapes = ButtonDefaults.shapes(),
+                            // Sin cambio de forma al pulsar, y no por gusto.
+                            //
+                            // Un botón de Material 3 Expressive se achata mientras lo tienes
+                            // pulsado y recupera su forma al soltar. Si entre medias deja de
+                            // estar habilitado, el aviso de "soltado" no llega nunca y la forma
+                            // se queda achatada: el botón se ve cuadrado hasta que algo lo
+                            // recompone.
+                            //
+                            // Aquí pasa justo eso al añadir una serie: `isConfirmDisabled`
+                            // depende de que hayan llegado sus temporadas, que se piden por red,
+                            // así que puede cambiar mientras tienes el dedo encima. Con una
+                            // película no hay nada que esperar y por eso no ocurría siempre.
+                            //
+                            // Mismas dos formas: la animación no tiene a dónde quedarse.
+                            shapes = steadyButtonShapes(),
                             modifier = Modifier
                                 .weight(if (confirmBtnMaxWidth) 1.6f else 1f)
                                 .heightIn(min = 48.dp),

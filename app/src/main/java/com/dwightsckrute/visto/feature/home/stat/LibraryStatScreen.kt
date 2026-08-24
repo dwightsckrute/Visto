@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.home.stat
 
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,8 +49,11 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
 
     // Memorizado como en las demás listas: filtrar en cada recomposición entrega una List nueva
     // cada vez, y las filas se redibujan enteras aunque no haya cambiado nada.
-    val movies = remember(items, kind) {
-        items.filter { it.mediaType != "tv" && kind.matches(it) }
+    val films = remember(items, kind) {
+        items.filter { it.mediaType == "movie" && kind.matches(it) }
+    }
+    val books = remember(items, kind) {
+        items.filter { it.mediaType == MEDIA_TYPE_BOOK && kind.matches(it) }
     }
 
     // Una serie no tiene estado: lo tienen sus temporadas, que es también como se cuentan arriba.
@@ -65,7 +70,27 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
                 seasonsByShow[item.id].orEmpty().isNotEmpty()
         }
     }
-    val isEmpty = movies.isEmpty() && tv.isEmpty()
+    val isEmpty = films.isEmpty() && tv.isEmpty() && books.isEmpty()
+
+    // Con cabecera por tipo, y solo de los que hay.
+    //
+    // Sin ella la lista mezclaba películas, series y libros sin decirlo: una fila de
+    // serie se distingue por el chevrón que despliega temporadas, y una de libro por la
+    // forma de la portada, que son señales que hay que saber leer. El título de la
+    // sección lo dice y ya está.
+    //
+    // Y solo si hay más de un tipo: una cabecera "Películas" sobre una lista que solo
+    // tiene películas no informa de nada, es ruido con aspecto de estructura.
+    val sections = listOfNotNull(
+        films.takeIf { it.isNotEmpty() }
+            ?.let { localized("Películas", "Films") to it },
+        tv.takeIf { it.isNotEmpty() }
+            ?.let { localized("Series", "Series") to it },
+        books.takeIf { it.isNotEmpty() }
+            ?.let { localized("Libros", "Books") to it },
+    )
+    val labelled = sections.size > 1
+
 
     LargeTopBarScaffold(
         title = kind.title(),
@@ -92,27 +117,45 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
             // redondeos pegados se leen como tarjetas montadas una encima de otra.
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            itemsIndexed(movies, key = { _, item -> item.id }) { index, item ->
-                MovieWatchlistRow(
-                    item,
-                    index,
-                    movies,
-                    navController,
-                    onLongActionMovieRequest = {},
-                )
-            }
 
-            itemsIndexed(tv, key = { _, item -> item.id }) { index, item ->
-                val showSeasons = seasonsByShow[item.id].orEmpty()
-                TvWatchlistRow(
-                    item,
-                    index,
-                    tv,
-                    navController,
-                    onLongActionTvSeasonRequest = { _, _ -> },
-                    seasons = showSeasons,
-                    allSeasons = showSeasons,
-                )
+            sections.forEach { (heading, rows) ->
+                if (labelled) {
+                    item(key = "heading-$heading") {
+                        Text(
+                            text = heading,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(
+                                top = if (heading == sections.first().first) 0.dp else 20.dp,
+                                bottom = 6.dp,
+                                start = 4.dp,
+                            ),
+                        )
+                    }
+                }
+
+                itemsIndexed(rows, key = { _, item -> item.id }) { index, item ->
+                    if (item.mediaType == "tv") {
+                        val showSeasons = seasonsByShow[item.id].orEmpty()
+                        TvWatchlistRow(
+                            item,
+                            index,
+                            rows,
+                            navController,
+                            onLongActionTvSeasonRequest = { _, _ -> },
+                            seasons = showSeasons,
+                            allSeasons = showSeasons,
+                        )
+                    } else {
+                        MovieWatchlistRow(
+                            item,
+                            index,
+                            rows,
+                            navController,
+                            onLongActionMovieRequest = {},
+                        )
+                    }
+                }
             }
         }
     }

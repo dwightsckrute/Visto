@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.core.ui.components.media
 
+import com.dwightsckrute.visto.core.ui.components.steadyButtonShapes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -125,7 +126,7 @@ fun RateMediaDialogContent(
                 onCancel()
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-            shapes = ButtonDefaults.shapes()
+            shapes = steadyButtonShapes()
         ) {
             Text(
                 localized("Cancelar", "Cancel"),
@@ -144,7 +145,7 @@ fun RateMediaDialogContent(
                 onCancel()
                 onConfirm(rating.toDouble())
             },
-            shapes = ButtonDefaults.shapes()
+            shapes = steadyButtonShapes()
         ) {
             Text(
                 when {

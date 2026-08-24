@@ -78,7 +78,7 @@ fun DialogBasic(
                             onClick = {
                                 onDismiss()
                             },
-                            shapes = ButtonDefaults.shapes()
+                            shapes = steadyButtonShapes()
                         ) {
                             Text(dismissText, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
                         }
@@ -89,7 +89,7 @@ fun DialogBasic(
                                 onConfirm()
                                 onDismiss()
                             },
-                            shapes = ButtonDefaults.shapes()
+                            shapes = steadyButtonShapes()
                         ) {
                             Text(confirmText, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
                         }

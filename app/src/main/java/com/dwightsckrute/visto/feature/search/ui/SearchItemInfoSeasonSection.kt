@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.dwightsckrute.visto.core.ui.components.steadyButtonShapes
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.network.TvSeasonDto
 import com.dwightsckrute.visto.core.ui.components.ActionBottomSheet
@@ -95,7 +96,9 @@ fun SearchItemInfoSeasonSection(
             modifier = Modifier
                 .heightIn(size)
                 .fillMaxWidth(),
-            shapes = ButtonDefaults.shapes(),
+            // Igual que en la hoja: su `enabled` puede cambiar con el dedo encima —elegir una
+            // temporada lo habilita— y entonces la forma pulsada se queda pegada.
+            shapes = steadyButtonShapes(),
             enabled = addAllSeasons || selectedSeason != -1,
             onClick = { isSheetOpen = true },
             contentPadding = ButtonDefaults.contentPaddingFor(size)

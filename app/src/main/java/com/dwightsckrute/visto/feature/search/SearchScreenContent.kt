@@ -1,5 +1,9 @@
 package com.dwightsckrute.visto.feature.search
 
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -100,6 +104,7 @@ fun SearchScreenContent(
     val scope = rememberCoroutineScope()
     val searchMotion = motionScheme.defaultSpatialSpec<androidx.compose.ui.unit.Dp>()
     var searchActive by rememberSaveable { mutableStateOf(viewModel.query.isNotBlank()) }
+    val keyboard = LocalSoftwareKeyboardController.current
     val state = when {
         viewModel.query.isBlank() -> SearchContentState.START
         viewModel.loading -> SearchContentState.LOADING
@@ -185,7 +190,26 @@ fun SearchScreenContent(
                 )
 
                 SearchContentState.RESULTS -> LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    // Al empezar a desplazar los resultados el teclado se va.
+                    //
+                    // Ya has escrito: a partir de ahí el teclado tapa media lista y estorba en
+                    // todo lo que queda por hacer. Retirarlo al primer arrastre es lo que hace
+                    // cualquier buscador, y evita el paso de ir a cerrarlo a mano cada vez.
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .nestedScroll(
+                            remember(keyboard) {
+                                object : NestedScrollConnection {
+                                    override fun onPreScroll(
+                                        available: Offset,
+                                        source: NestedScrollSource,
+                                    ): Offset {
+                                        if (available.y != 0f) keyboard?.hide()
+                                        return Offset.Zero
+                                    }
+                                }
+                            }
+                        ),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
@@ -311,8 +335,18 @@ private fun VistoSearchField(
         SearchType.MULTI -> localized("Película, serie o libro…", "Movie, show or book…")
     }
 
+    // El teclado sube solo la primera vez que se activa la búsqueda, no cada vez que la pantalla
+    // se vuelve a componer.
+    //
+    // Volver de una ficha recompone esto con `active` ya en cierto, así que el teclado subía otra
+    // vez sin que nadie lo pidiera: mirabas un resultado, volvías a la lista, y te encontrabas el
+    // teclado tapando media pantalla y la lista dando un salto. `rememberSaveable` para que
+    // sobreviva también a girar el móvil.
+    var keyboardShown by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(active) {
-        if (active) {
+        if (active && !keyboardShown) {
+            keyboardShown = true
             delay(90)
             focusRequester.requestFocus()
             keyboard?.show()
