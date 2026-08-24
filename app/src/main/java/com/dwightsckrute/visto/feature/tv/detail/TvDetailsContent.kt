@@ -122,7 +122,12 @@ fun TvDetailsContent(
                         onUpdateRating = { newRating ->
                             watchlistViewModel.setSeasonUserRating(season.seasonId, newRating)
                             SnackbarManager.show(AppLanguage.text("Valoración actualizada", "Rating updated"))
-                        }
+                        },
+                        onToggleFavorite = watchlistItem?.let { current ->
+                            {
+                                watchlistViewModel.setFavorite(current.id, !current.isFavorite)
+                            }
+                        },
                     )
 
 

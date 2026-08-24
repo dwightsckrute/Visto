@@ -53,7 +53,8 @@ fun TvHeroHeader(
     isFinished: Boolean,
     seasonItem: SeasonEntity,
     userRating: Double? = 0.0,
-    onUpdateRating: (Double) -> Unit
+    onUpdateRating: (Double) -> Unit,
+    onToggleFavorite: (() -> Unit)? = null,
 ) {
 
     val genre = tv.genres
@@ -78,7 +79,9 @@ fun TvHeroHeader(
             userRating,
             onUpdateRating = onUpdateRating,
             isTv = true,
-            seasonUserRating = seasonItem.seasonUserRating
+            seasonUserRating = seasonItem.seasonUserRating,
+            isFavorite = watchlistItem?.isFavorite == true,
+            onToggleFavorite = onToggleFavorite,
         )
 
         Box(

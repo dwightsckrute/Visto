@@ -1,0 +1,15 @@
+<!--
+    El corazón vacío, pareja del relleno.
+
+    Mismo símbolo de Material y mismo lienzo de 960 que `favorite_24px`, para que alternar entre
+    los dos no mueva ni un píxel: lo único que cambia al marcar un favorito debe ser el relleno.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M480,813Q466,813 451.5,808Q437,803 426,792L357,729Q251,632 165.5,536.5Q80,441 80,326Q80,232 143,169Q206,106 300,106Q353,106 400,128.5Q447,151 480,190Q513,151 560,128.5Q607,106 660,106Q754,106 817,169Q880,232 880,326Q880,441 794.5,536.5Q709,632 603,729L534,792Q523,803 508.5,808Q494,813 480,813ZM443,254Q414,213 385.5,194.5Q357,176 300,176Q235,176 197.5,213.5Q160,251 160,326Q160,368 190,417Q220,466 265,517.5Q310,569 363,619.5Q416,670 480,728Q544,670 597,619.5Q650,569 695,517.5Q740,466 770,417Q800,368 800,326Q800,251 762.5,213.5Q725,176 660,176Q603,176 574.5,194.5Q546,213 517,254Q510,264 500,268.5Q490,273 480,273Q470,273 460,268.5Q450,264 443,254Z"/>
+</vector>

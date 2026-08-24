@@ -33,6 +33,7 @@ import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.components.DialogBasic
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.localization.localized
+import com.dwightsckrute.visto.core.ui.snackbar.SnackbarManager
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -43,9 +44,17 @@ fun MediaDetailsScreenHeader(
     seasonUserRating: Double? = 0.0,
     onUpdateRating: (Double) -> Unit,
     isTv: Boolean = false,
+    isFavorite: Boolean = false,
+    onToggleFavorite: (() -> Unit)? = null,
 ) {
     val schemeColor = MaterialTheme.colorScheme
     var showRatingDialog by remember { mutableStateOf(false) }
+
+    val favoriteConfirmation = if (!isFavorite) {
+        localized("Añadido a favoritos", "Added to favourites")
+    } else {
+        localized("Quitado de favoritos", "Removed from favourites")
+    }
 
     TopAppBar(
         modifier = Modifier.zIndex(2f),
@@ -65,6 +74,37 @@ fun MediaDetailsScreenHeader(
         title = {
         },
         actions = {
+            // El corazón, arriba a la derecha y en todas las secciones.
+            //
+            // Estaba dentro del menú de la cápsula flotante, junto a fijar, compartir y eliminar,
+            // y ahí no pinta nada: marcar un favorito no es administrar el elemento, es una
+            // reacción, y se hace mientras miras la ficha. Dos toques y un menú desplegado para
+            // decir "me gusta" es más ceremonia de la que merece.
+            //
+            // Además el estado se ve de un vistazo: relleno o vacío, sin abrir nada.
+            if (onToggleFavorite != null) {
+                FilledIconButton(
+                    onClick = {
+                        onToggleFavorite()
+                        SnackbarManager.show(favoriteConfirmation)
+                    },
+                    shapes = IconButtonDefaults.shapes(),
+                    colors = if (isFavorite) {
+                        IconButtonDefaults.filledIconButtonColors(
+                            containerColor = schemeColor.primary,
+                        )
+                    } else {
+                        IconButtonDefaults.filledIconButtonColors()
+                    },
+                ) {
+                    Symbol(
+                        if (isFavorite) R.drawable.favorite_24px else R.drawable.favorite_border_24px,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+            }
+
             if (isFinished) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically

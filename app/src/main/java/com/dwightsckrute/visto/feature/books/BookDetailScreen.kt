@@ -24,6 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Surface
+import androidx.compose.material3.IconButton
+import com.dwightsckrute.visto.core.ui.snackbar.SnackbarManager
+import com.dwightsckrute.visto.core.ui.components.ExpandableText
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.components.media.DatePickerSheet
 import com.dwightsckrute.visto.core.utils.formatDate
@@ -95,6 +98,28 @@ fun BookDetailScreen(id: Long, navController: NavController) {
     LargeTopBarScaffold(
         title = book?.title.orEmpty(),
         navigationIcon = { NavigateUpBtn(navController) },
+        actions = {
+            book?.let { item ->
+                val favoriteConfirmation = if (!item.isFavorite) {
+                    localized("Añadido a favoritos", "Added to favourites")
+                } else {
+                    localized("Quitado de favoritos", "Removed from favourites")
+                }
+                IconButton(
+                    onClick = {
+                        viewModel.setFavorite(item.id, !item.isFavorite)
+                        SnackbarManager.show(favoriteConfirmation)
+                    },
+                ) {
+                    Symbol(
+                        if (item.isFavorite) R.drawable.favorite_24px
+                        else R.drawable.favorite_border_24px,
+                        color = if (item.isFavorite) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        },
         // La misma barra flotante que una película o una temporada. Tres botones arriba decían
         // lo mismo, pero eran lo único de la aplicación que decía el estado de esa forma.
         bottomBar = {
@@ -112,7 +137,6 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                             navController.popBackStack()
                         },
                         togglePin = { viewModel.setPinned(item.id, !item.isPinned) },
-                        toggleFavorite = { viewModel.setFavorite(item.id, !item.isFavorite) },
                         share = {
                             shareMedia(
                                 context = context,
@@ -128,7 +152,6 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                         },
                     ),
                     isPinned = item.isPinned,
-                    isFavorite = item.isFavorite,
                     isBook = true,
                 )
             }
@@ -178,12 +201,9 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                         cornerRadius = ShapeRadius.Large,
                         placeholder = { PosterPlaceholder(size = 0.6f) },
                     )
+                    // Sin el título: lo dice la barra de arriba, que además lo mantiene a la
+                    // vista al desplazarse. Repetido aquí salía dos veces seguidas.
                     Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                        Text(
-                            text = item.title,
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
                         // El autor se guardó donde iría la fecha de estreno, porque es lo que se
                         // lee junto al título en cualquier lista de libros.
                         item.releaseDate?.takeIf { it.isNotBlank() }?.let { author ->
@@ -253,12 +273,9 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                             }
                         }
                         info.bio?.takeIf { it.isNotBlank() }?.let { bio ->
-                            Text(
+                            ExpandableText(
                                 text = bio,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 6,
-                                overflow = TextOverflow.Ellipsis,
+                                collapsedMaxLines = 6,
                                 modifier = Modifier.padding(horizontal = Spacing.lg),
                             )
                         }

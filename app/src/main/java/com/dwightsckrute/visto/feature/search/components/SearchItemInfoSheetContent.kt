@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.feature.search.components
 
+import com.dwightsckrute.visto.core.ui.components.ExpandableText
 import com.dwightsckrute.visto.core.utils.posterUrl
 
 import androidx.compose.foundation.Image
@@ -148,13 +149,7 @@ fun SearchItemInfoSheetContent(
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.W700
             )
-            Text(
-                it,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 15,
-                overflow = TextOverflow.Ellipsis
-            )
+            ExpandableText(text = it, collapsedMaxLines = 15)
             Spacer(Modifier.height(12.dp))
 
         }

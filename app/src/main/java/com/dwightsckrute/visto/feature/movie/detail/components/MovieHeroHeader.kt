@@ -46,7 +46,8 @@ fun MovieHeroHeader(
     navController: NavController,
     isFinished: Boolean,
     userRating: Double? = 0.0,
-    onUpdateRating: (Double) -> Unit
+    onUpdateRating: (Double) -> Unit,
+    onToggleFavorite: (() -> Unit)? = null,
 ) {
 
 
@@ -65,7 +66,9 @@ fun MovieHeroHeader(
             navController,
             isFinished,
             userRating,
-            onUpdateRating = onUpdateRating
+            onUpdateRating = onUpdateRating,
+            isFavorite = watchlistItem?.isFavorite == true,
+            onToggleFavorite = onToggleFavorite,
         )
 
         Box(

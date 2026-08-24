@@ -78,20 +78,41 @@ fun WatchStatus.confirmAction(
     }
 }
 
-val WatchStatus.actionLabel: String
-    get() = when (this) {
-        WatchStatus.WATCHING -> AppLanguage.text("Marcar como terminada", "Mark as finished")
-        WatchStatus.INTERRUPTED -> AppLanguage.text("Continuar viendo", "Carry on watching")
-        WatchStatus.FINISHED -> AppLanguage.text("Restablecer", "Reset")
-        else -> AppLanguage.text("Marcar como en curso", "Mark as watching")
+/**
+ * Lo que dice el botón grande de la cápsula flotante.
+ *
+ * El mismo tercer vocabulario que los diálogos, que aquí faltaba: la cápsula de un libro ofrecía
+ * "marcar como terminada" y "continuar viendo". El diálogo que salía después sí hablaba de leer,
+ * así que el botón y su confirmación decían cosas distintas del mismo gesto.
+ */
+fun WatchStatus.actionLabel(isBook: Boolean = false): String = when (this) {
+    WatchStatus.WATCHING -> if (isBook) {
+        AppLanguage.text("Marcar como leído", "Mark as read")
+    } else {
+        AppLanguage.text("Marcar como terminada", "Mark as finished")
     }
 
-val WatchStatus.buttonIcon: Int
-    get() = when (this) {
-        WatchStatus.WATCHING -> R.drawable.check_24px
-        WatchStatus.FINISHED -> R.drawable.restart_alt_24px
-        else -> R.drawable.play_arrow_24px
+    WatchStatus.INTERRUPTED -> if (isBook) {
+        AppLanguage.text("Continuar leyendo", "Carry on reading")
+    } else {
+        AppLanguage.text("Continuar viendo", "Carry on watching")
     }
+
+    WatchStatus.FINISHED -> AppLanguage.text("Restablecer", "Reset")
+
+    else -> if (isBook) {
+        AppLanguage.text("Empezar a leer", "Start reading")
+    } else {
+        AppLanguage.text("Marcar como en curso", "Mark as watching")
+    }
+}
+
+fun WatchStatus.buttonIcon(isBook: Boolean = false): Int = when (this) {
+    WatchStatus.WATCHING -> R.drawable.check_24px
+    WatchStatus.FINISHED -> R.drawable.restart_alt_24px
+    // Un libro no se reproduce.
+    else -> if (isBook) R.drawable.book_24px else R.drawable.play_arrow_24px
+}
 
 private fun WatchStatus.bookDialogMessage(): String = when (this) {
     WatchStatus.WATCHING -> AppLanguage.text(

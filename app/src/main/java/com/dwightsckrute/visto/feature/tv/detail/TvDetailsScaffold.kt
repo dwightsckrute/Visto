@@ -111,9 +111,6 @@ fun TvDetailsScaffold(
                         }
                     },
                     share = { shareMedia(context, tvItem.name, id, isTv = true) },
-                    toggleFavorite = {
-                        watchlistViewModel.setFavorite(id, watchlistItem?.isFavorite != true)
-                    },
                     // Aquí la unidad es la temporada, no la serie: se marcan sus episodios
                     // como vistos y se fecha la temporada, igual que hace "terminar".
                     markWatchedOn = { watchedAt ->
@@ -122,7 +119,6 @@ fun TvDetailsScaffold(
                     },
                 ),
                 isPinned = isSeriesPinned,
-                isFavorite = watchlistItem?.isFavorite == true,
                 isTv = true
             )
         },

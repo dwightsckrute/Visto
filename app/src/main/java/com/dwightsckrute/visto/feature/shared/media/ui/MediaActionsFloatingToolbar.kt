@@ -78,7 +78,6 @@ fun MediaActionsFloatingToolbar(
     itemStatus: WatchStatus,
     actions: FloatingToolbarMediaActionsParams,
     isPinned: Boolean = false,
-    isFavorite: Boolean = false,
     isTv: Boolean = false,
     isBook: Boolean = false,
 ) {
@@ -86,18 +85,14 @@ fun MediaActionsFloatingToolbar(
     val systemInsets = WindowInsets.systemBars.asPaddingValues()
     val menuItemContentColor = MaterialTheme.colorScheme.onTertiaryContainer
     val menuItemContentTextStyle = MaterialTheme.typography.labelLarge
-    val favoriteConfirmation = if (!isFavorite) {
-        localized("Añadido a favoritos", "Added to favourites")
-    } else {
-        localized("Quitado de favoritos", "Removed from favourites")
-    }
     val pinConfirmation = if (!isPinned) localized("Contenido fijado", "Content pinned")
     else localized("Contenido desfijado", "Content unpinned")
     var uiState by remember { mutableStateOf(UiState()) }
 
     val menuItemOptionList = listOf(
         MenuItemOptionList(
-            localized("Marcar como vista…", "Mark as watched…"),
+            if (isBook) localized("Marcar como leído…", "Mark as read…")
+            else localized("Marcar como vista…", "Mark as watched…"),
             R.drawable.check_24px,
             { uiState = uiState.copy(showWatchedDatePicker = true) },
             isMarkWatchedOption = true,
@@ -114,18 +109,6 @@ fun MediaActionsFloatingToolbar(
                 actions.togglePin()
                 SnackbarManager.show(pinConfirmation)
             }),
-        MenuItemOptionList(
-            if (isFavorite) {
-                localized("Quitar de favoritos", "Remove from favourites")
-            } else {
-                localized("Añadir a favoritos", "Add to favourites")
-            },
-            R.drawable.favorite_24px,
-            {
-                actions.toggleFavorite?.invoke()
-                SnackbarManager.show(favoriteConfirmation)
-            },
-        ),
         MenuItemOptionList(
             localized("Compartir", "Share"),
             R.drawable.share_24px,
@@ -166,6 +149,7 @@ fun MediaActionsFloatingToolbar(
                                 uiState = uiState.copy(showDialog = true)
                             }
                         },
+                        isBook = isBook,
                         itemStatus = itemStatus
                     )
                     Box {
@@ -280,7 +264,11 @@ private const val MARK_WATCHED_SHEET_ID = 0L
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun StatusMainActionBtn(onClick: () -> Unit, itemStatus: WatchStatus) {
+private fun StatusMainActionBtn(
+    onClick: () -> Unit,
+    itemStatus: WatchStatus,
+    isBook: Boolean = false,
+) {
     Button(
         modifier = Modifier
             .height(48.dp),
@@ -294,7 +282,7 @@ private fun StatusMainActionBtn(onClick: () -> Unit, itemStatus: WatchStatus) {
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
     ) {
         Symbol(
-            itemStatus.buttonIcon,
+            itemStatus.buttonIcon(isBook),
             color = MaterialTheme.colorScheme.onSurface,
             // El mismo icono de 20dp que lleva la barra de navegación: con los 24 por defecto,
             // la acción pesaba más que el destino activo estando las dos en el mismo borde.
@@ -302,7 +290,7 @@ private fun StatusMainActionBtn(onClick: () -> Unit, itemStatus: WatchStatus) {
         )
         Spacer(Modifier.width(ButtonDefaults.iconSpacingFor(48.dp)))
         Text(
-            itemStatus.actionLabel,
+            itemStatus.actionLabel(isBook),
             style = floatingBarLabel,
         )
     }

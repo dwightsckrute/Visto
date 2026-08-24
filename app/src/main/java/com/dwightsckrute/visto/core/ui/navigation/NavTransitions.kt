@@ -2,11 +2,11 @@ package com.dwightsckrute.visto.core.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material3.MotionScheme
 import androidx.compose.ui.unit.IntOffset
-import com.dwightsckrute.visto.core.ui.theme.AppMotion
 
 /**
  * Transiciones entre pantallas: un empuje lateral.
@@ -35,20 +35,32 @@ object NavTransitions {
      */
     private const val BEHIND_TRAVEL = 3
 
-    private fun spec() =
-        tween<IntOffset>(AppMotion.DurationMedium, easing = AppMotion.EmphasizedDecelerate)
+    /**
+     * El muelle del tema, no una curva propia.
+     *
+     * Antes esto era un `tween` de 350 ms con una curva desacelerada: arranca rápido y frena
+     * largo, así que el final se arrastraba y el conjunto se sentía pesado. Peor todavía, un
+     * `tween` no se puede interrumpir bien —si tocas otra vez o empiezas el gesto atrás a mitad,
+     * vuelve a empezar desde cero en vez de continuar desde donde iba y a la velocidad que
+     * llevaba.
+     *
+     * Un muelle sí. Y ya lo usaba todo lo demás de la aplicación: la navegación era lo único que
+     * se movía con reglas propias, que es justo lo que se nota aunque no se sepa nombrar.
+     */
+    private fun spec(scheme: MotionScheme): FiniteAnimationSpec<IntOffset> =
+        scheme.defaultSpatialSpec()
 
     /** Entrar: la ficha llega desde la derecha y empuja lo anterior hacia la izquierda. */
-    fun enter(): EnterTransition =
-        slideInHorizontally(animationSpec = spec()) { width -> width }
+    fun enter(scheme: MotionScheme): EnterTransition =
+        slideInHorizontally(animationSpec = spec(scheme)) { width -> width }
 
-    fun exit(): ExitTransition =
-        slideOutHorizontally(animationSpec = spec()) { width -> -width / BEHIND_TRAVEL }
+    fun exit(scheme: MotionScheme): ExitTransition =
+        slideOutHorizontally(animationSpec = spec(scheme)) { width -> -width / BEHIND_TRAVEL }
 
     /** Volver: el espejo exacto, que es también lo que reproduce el gesto atrás bajo el dedo. */
-    fun popEnter(): EnterTransition =
-        slideInHorizontally(animationSpec = spec()) { width -> -width / BEHIND_TRAVEL }
+    fun popEnter(scheme: MotionScheme): EnterTransition =
+        slideInHorizontally(animationSpec = spec(scheme)) { width -> -width / BEHIND_TRAVEL }
 
-    fun popExit(): ExitTransition =
-        slideOutHorizontally(animationSpec = spec()) { width -> width }
+    fun popExit(scheme: MotionScheme): ExitTransition =
+        slideOutHorizontally(animationSpec = spec(scheme)) { width -> width }
 }

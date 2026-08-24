@@ -105,7 +105,13 @@ fun MovieDetailsContent(
                         onUpdateRating = { newRating ->
                             watchlistViewModel.setUserRating(watchlistItem.id, newRating)
                             SnackbarManager.show(AppLanguage.text("Valoración actualizada", "Rating updated"))
-                        }
+                        },
+                        onToggleFavorite = {
+                            watchlistViewModel.setFavorite(
+                                watchlistItem.id,
+                                !watchlistItem.isFavorite,
+                            )
+                        },
                     )
                     MediaStatusSection(
                         status = watchlistItem.status,

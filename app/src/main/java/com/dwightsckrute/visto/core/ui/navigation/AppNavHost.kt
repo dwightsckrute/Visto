@@ -62,10 +62,10 @@ fun AppNavHost(
             startDestination = NavRoutes.MAIN,
 //            startDestination = NavRoutes.personScreen(287),
             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer),
-            enterTransition = { NavTransitions.enter() },
-            exitTransition = { NavTransitions.exit() },
-            popEnterTransition = { NavTransitions.popEnter() },
-            popExitTransition = { NavTransitions.popExit() }
+            enterTransition = { NavTransitions.enter(motionScheme) },
+            exitTransition = { NavTransitions.exit(motionScheme) },
+            popEnterTransition = { NavTransitions.popEnter(motionScheme) },
+            popExitTransition = { NavTransitions.popExit(motionScheme) }
         ) {
             composable(
                 NavRoutes.MAIN

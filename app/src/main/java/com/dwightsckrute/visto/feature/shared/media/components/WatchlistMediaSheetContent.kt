@@ -47,7 +47,7 @@ fun WatchlistMediaSheetContent(
             if (mediaOptions) {
                 SettingTile.ActionTile(
                     leading = { SettingsTileIcon(R.drawable.play_arrow_24px) },
-                    title = status.actionLabel,
+                    title = status.actionLabel(),
                     onClick = {
                         onWatchStatus(status)
                         onDismiss()
