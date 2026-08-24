@@ -24,6 +24,13 @@ data class TvDetailsUiState(
     val showNoteDialog: Boolean = false,
     val note: String = "",
     val showRatingDialog: Boolean = false,
+    /**
+     * Si al confirmar la valoración hay que dar por terminada la temporada, o si ya lo está.
+     *
+     * Marcar con fecha ya la deja terminada y fechada, y terminar escribe siempre la hora
+     * actual: volver a llamarlo desde el diálogo borraría la fecha recién elegida.
+     */
+    val ratingOnly: Boolean = false,
     val showConfirmationDialog: Boolean = false,
     val isWatchProviderSheetOpen: Boolean = false,
     val currentWatchProviders: CountryWatchProviders? = null

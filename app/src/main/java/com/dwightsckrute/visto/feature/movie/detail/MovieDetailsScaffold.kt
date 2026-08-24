@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.dwightsckrute.visto.core.model.WatchStatus
-import com.dwightsckrute.visto.core.ui.components.sheetRecede
 import com.dwightsckrute.visto.core.ui.components.LoadingScreenPlaceholder
 import com.dwightsckrute.visto.core.ui.components.entranceSettle
 import com.dwightsckrute.visto.core.ui.components.rememberEntranceSettle
@@ -85,9 +84,7 @@ fun MovieDetailsScaffold(
     }
 
     Scaffold(
-        modifier = Modifier
-            .entranceSettle(settle)
-            .sheetRecede(sheetState),
+        modifier = Modifier.entranceSettle(settle),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         bottomBar = {
             MediaActionsFloatingToolbar(
@@ -104,6 +101,10 @@ fun MovieDetailsScaffold(
                     markWatchedOn = { watchedAt ->
                         watchlistViewModel.finish(id)
                         watchlistViewModel.updateFinishedDate(id, watchedAt)
+                        // Terminar por el botón preguntaba la nota y terminar con fecha no, y es
+                        // el mismo gesto: dar algo por visto. `ratingOnly` porque ya está
+                        // terminado y fechado.
+                        viewModel.showRatingDialog(ratingOnly = true)
                     },
                 ),
                 isPinned = isMoviePinned,

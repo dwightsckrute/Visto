@@ -70,8 +70,8 @@ class MovieDetailsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(note = note)
     }
 
-    fun showRatingDialog() {
-        _uiState.value = _uiState.value.copy(showRatingDialog = true)
+    fun showRatingDialog(ratingOnly: Boolean = false) {
+        _uiState.value = _uiState.value.copy(showRatingDialog = true, ratingOnly = ratingOnly)
     }
 
     fun hideRatingDialog() {

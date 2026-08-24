@@ -47,7 +47,9 @@ fun TvDetailsRatingDialog(
             viewModel::hideRatingDialog,
             onConfirm = { rating ->
                 watchlistViewModel.setSeasonUserRating(seasonIt.seasonId, rating)
-                watchlistViewModel.finishSeason(seasonIt.seasonId, seasonIt.episodeCount)
+                if (!uiState.ratingOnly) {
+                    watchlistViewModel.finishSeason(seasonIt.seasonId, seasonIt.episodeCount)
+                }
             }
         )
     }

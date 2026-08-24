@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.feature.home.stat
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -86,6 +87,10 @@ fun LibraryStatScreen(navController: NavController, kind: LibraryStat) {
                 top = padding.calculateTopPadding(),
                 bottom = 24.dp,
             ),
+            // La misma separación que el resto de listas de la aplicación. Sin ella las filas se
+            // tocan, y como cada una redondea sus esquinas según su sitio en la lista, dos
+            // redondeos pegados se leen como tarjetas montadas una encima de otra.
+            verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
             itemsIndexed(movies, key = { _, item -> item.id }) { index, item ->
                 MovieWatchlistRow(

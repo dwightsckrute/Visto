@@ -23,6 +23,14 @@ data class MovieDetailsUiState(
     val showNoteDialog: Boolean = false,
     val note: String = "",
     val showRatingDialog: Boolean = false,
+    /**
+     * Si al confirmar la valoración hay que dar por terminado, o si ya lo está.
+     *
+     * Marcar con fecha ya deja el elemento terminado y fechado, y `markFinished` escribe siempre
+     * la hora actual: volver a llamarlo desde el diálogo borraría la fecha que se acaba de
+     * elegir y la sustituiría por hoy.
+     */
+    val ratingOnly: Boolean = false,
     val showConfirmationDialog: Boolean = false,
     val isWatchProviderSheetOpen: Boolean = false,
     val currentWatchProviders: CountryWatchProviders? = null

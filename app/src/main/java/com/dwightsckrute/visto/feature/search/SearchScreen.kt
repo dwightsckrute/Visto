@@ -42,7 +42,6 @@ fun SearchScreen(
             if (viewModel.query.isNotBlank()) viewModel.search(type)
         },
         watchlistViewModel = watchlistViewModel,
-        sheetState = sheetState,
     )
 
     SearchItemInfoBottomSheet(

@@ -7,9 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.material3.SheetState
 import androidx.compose.ui.Modifier
-import com.dwightsckrute.visto.core.ui.components.sheetRecede
 import androidx.navigation.NavController
 import com.dwightsckrute.visto.core.ui.components.NavigateUpBtn
 import com.dwightsckrute.visto.core.ui.localization.localized
@@ -23,7 +21,6 @@ fun SearchScreenScaffold(
     searchType: SearchType,
     onSearchTypeChange: (SearchType) -> Unit,
     watchlistViewModel: WatchlistViewModel,
-    sheetState: SheetState,
 ) {
     val title = when (searchType) {
         SearchType.MOVIE -> localized("Buscar películas", "Search movies")
@@ -34,7 +31,6 @@ fun SearchScreenScaffold(
     }
 
     Scaffold(
-        modifier = Modifier.sheetRecede(sheetState),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             TopAppBar(

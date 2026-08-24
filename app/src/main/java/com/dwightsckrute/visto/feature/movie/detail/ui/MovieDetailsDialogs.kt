@@ -47,7 +47,7 @@ fun MovieDetailsRatingDialog(
             viewModel::hideRatingDialog,
             onConfirm = { rating ->
                 watchlistViewModel.setUserRating(item.id, rating)
-                watchlistViewModel.finish(item.id)
+                if (!uiState.ratingOnly) watchlistViewModel.finish(item.id)
             }
         )
     }

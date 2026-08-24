@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.dwightsckrute.visto.core.ui.components.sheetRecede
 import com.dwightsckrute.visto.core.ui.components.LoadingScreenPlaceholder
 import com.dwightsckrute.visto.core.ui.components.entranceSettle
 import com.dwightsckrute.visto.core.ui.components.rememberEntranceSettle
@@ -88,9 +87,7 @@ fun TvDetailsScaffold(
     }
 
     Scaffold(
-        modifier = Modifier
-            .entranceSettle(settle)
-            .sheetRecede(sheetState),
+        modifier = Modifier.entranceSettle(settle),
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         bottomBar = {
             MediaActionsFloatingToolbar(
@@ -116,6 +113,8 @@ fun TvDetailsScaffold(
                     markWatchedOn = { watchedAt ->
                         watchlistViewModel.finishSeason(season.seasonId, season.episodeCount)
                         watchlistViewModel.updateSeasonFinishedDate(season.seasonId, watchedAt)
+                        // El mismo gesto que el botón de terminar, así que la misma pregunta.
+                        viewModel.showRatingDialog(ratingOnly = true)
                     },
                 ),
                 isPinned = isSeriesPinned,
