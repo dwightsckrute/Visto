@@ -26,6 +26,9 @@ import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 @Composable
 fun PosterBox(
     posterUrl: String?,
+    /** Para saber si el catálogo dio una imagen antes de intentar cargarla. */
+    apiPath: String?,
+    modifier: Modifier = Modifier,
     width: Dp = 80.dp,
     height: Dp = 120.dp,
     fillMaxWidth: Boolean = false,
@@ -34,8 +37,6 @@ fun PosterBox(
     placeholder: @Composable () -> Unit = { PosterPlaceholder() },
     progressIndicatorSize: Dp = 24.dp,
     shape: Shape? = null,
-    modifier: Modifier = Modifier,
-    apiPath: String? // to check if the API provided a valid image before loading
 ) {
     Box(
         modifier = modifier.then(

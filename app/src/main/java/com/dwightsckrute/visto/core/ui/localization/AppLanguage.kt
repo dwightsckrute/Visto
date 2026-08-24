@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.core.ui.localization
 
+import androidx.core.content.edit
 import android.content.Context
 import android.content.res.Configuration
 import androidx.activity.ComponentActivity
@@ -41,9 +42,7 @@ object AppLanguage {
 
     fun update(context: Context, code: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putString(LANGUAGE_KEY, code)
-            .apply()
+            .edit { putString(LANGUAGE_KEY, code) }
         activeCode = code
     }
 

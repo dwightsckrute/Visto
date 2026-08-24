@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.core.ui.components.tiles
 
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,7 +37,9 @@ fun DialogSliderTile(
     itemBgColor: Color
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(initialValue) }
+    // `mutableFloatStateOf` y no `mutableStateOf`: el valor cambia en cada frame mientras se
+    // arrastra, y la versión genérica mete cada uno en una caja que hay que recoger después.
+    var sliderValue by remember { mutableFloatStateOf(initialValue) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),

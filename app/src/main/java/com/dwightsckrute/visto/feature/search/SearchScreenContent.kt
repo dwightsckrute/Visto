@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.feature.search
 
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -116,7 +117,7 @@ fun SearchScreenContent(
             .semantics { isTraversalGroup = true },
     ) {
         val searchAreaHeight = 84.dp
-        val searchOffset by animateDpAsState(
+        val searchOffsetState = animateDpAsState(
             targetValue = if (searchActive) 0.dp
             else (maxHeight - searchAreaHeight).coerceAtLeast(0.dp),
             animationSpec = searchMotion,
@@ -231,7 +232,10 @@ fun SearchScreenContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .offset(y = searchOffset),
+                // La sobrecarga con lambda: leído aquí dentro, el valor cambia sin recomponer
+                // este Box, solo lo recoloca. Es una animación por frame, así que la diferencia
+                // es una recomposición por frame durante todo el recorrido.
+                .offset { IntOffset(x = 0, y = searchOffsetState.value.roundToPx()) },
         ) {
             VistoSearchField(
                 viewModel = viewModel,

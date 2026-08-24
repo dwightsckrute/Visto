@@ -27,7 +27,7 @@ val tmdbApiKey: String = localProps.getProperty("TMDB_API_KEY")
 
 android {
     namespace = "com.dwightsckrute.visto"
-    compileSdk = 36
+    compileSdk = 37
     android.buildFeatures.buildConfig = true
     defaultConfig {
         // A different application id lets Visto coexist with the
@@ -51,6 +51,15 @@ android {
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
             }
+        }
+    }
+
+    bundle {
+        // El idioma se cambia desde los ajustes de la propia aplicación, no desde el sistema.
+        // Con los splits por idioma activados, un bundle instalaría solo el del sistema y el
+        // selector se quedaría sin textos que poner.
+        language {
+            enableSplit = false
         }
     }
 
