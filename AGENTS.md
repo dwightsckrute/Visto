@@ -184,6 +184,8 @@ A code task is complete only when the relevant build/tests pass, or the remainin
 - The active development branch is `personal-es` unless the user explicitly chooses another branch.
 - Before a release, increment both `versionCode` (monotonically) and `versionName` in `app/build.gradle.kts`.
 - Release tags use `visto-X.Y.Z`. Pushing such a tag triggers `.github/workflows/release.yml`, which runs `test lint assembleRelease` and publishes the signed APK plus SHA-256 checksum.
+- `beta` is the branch where 2.0 is being cooked; `personal-es` stays the stable line. Tag it `visto-X.Y-beta.N` — any tag containing `beta` is published as a pre-release, so it never takes over "Latest" or the repository front page, and the phone keeps offering the stable APK to anyone who lands there.
+- Bump `versionCode` for every beta too, not only for stable ones. Two builds sharing a code do not replace each other on the device: the install is simply refused, and the reason given is not obvious.
 - Do not reuse, move, or delete a published release tag. Create a new patch version for a release correction.
 - Never force-push or rewrite published history unless the user explicitly requests it and understands the consequences.
 - A locally signed release must use the same permanent certificate as previous Visto releases; otherwise Android will reject it as an update.
