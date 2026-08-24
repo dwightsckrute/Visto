@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Restaurar caché de Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -66,10 +66,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           APK: ${{ steps.package.outputs.apk }}
         run: |
+          # Una etiqueta con "beta" sale marcada como prelanzamiento, así que no desplaza a la
+          # versión estable en la portada del repositorio ni en "Latest".
+          case "$GITHUB_REF_NAME" in
+            *beta*) prerelease="--prerelease" ;;
+            *)      prerelease="" ;;
+          esac
+
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" "$APK" "${APK}.sha256" --clobber
           else
             gh release create "$GITHUB_REF_NAME" "$APK" "${APK}.sha256" \
               --title "Visto ${GITHUB_REF_NAME#visto-}" \
-              --generate-notes
+              --generate-notes $prerelease
           fi
