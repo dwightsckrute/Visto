@@ -43,14 +43,27 @@ fun WatchlistItemEntity.asStatusDates(): WatchStatusDates {
 }
 
 
+/**
+ * La etiqueta con el estado y su fecha, tal como sale en una fila.
+ *
+ * `isBook` porque en femenino de película —"empezada", "terminada"— un libro chirría, y la fila
+ * es compartida: la misma pinta las películas, las series y los libros.
+ */
 @Composable
-fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListItemStatusUiPill {
+fun WatchStatus.toWatchListItemStatusUiPill(
+    item: WatchStatusDates,
+    isBook: Boolean = false,
+): WatchListItemStatusUiPill {
     val statusColor = LocalStatusColors.current
 
     return when (this) {
         WatchStatus.WATCHING -> {
             WatchListItemStatusUiPill(
-                statusLabel = AppLanguage.text("Empezada • ${item.startedDate?.formatDate()}", "Started • ${item.startedDate?.formatDate()}"),
+                statusLabel = if (isBook) {
+                    AppLanguage.text("Empezado • ${item.startedDate?.formatDate()}", "Started • ${item.startedDate?.formatDate()}")
+                } else {
+                    AppLanguage.text("Empezada • ${item.startedDate?.formatDate()}", "Started • ${item.startedDate?.formatDate()}")
+                },
                 containerColor = statusColor.warning.bg,
                 contentColor = statusColor.warning.on
             )
@@ -58,7 +71,11 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         WatchStatus.FINISHED -> {
             WatchListItemStatusUiPill(
-                statusLabel = AppLanguage.text("Terminada • ${item.finishedDate?.formatDate()}", "Finished • ${item.finishedDate?.formatDate()}"),
+                statusLabel = if (isBook) {
+                    AppLanguage.text("Leído • ${item.finishedDate?.formatDate()}", "Read • ${item.finishedDate?.formatDate()}")
+                } else {
+                    AppLanguage.text("Terminada • ${item.finishedDate?.formatDate()}", "Finished • ${item.finishedDate?.formatDate()}")
+                },
                 containerColor = statusColor.success.bg,
                 contentColor = statusColor.success.on
             )
@@ -66,7 +83,11 @@ fun WatchStatus.toWatchListItemStatusUiPill(item: WatchStatusDates): WatchListIt
 
         WatchStatus.INTERRUPTED -> {
             WatchListItemStatusUiPill(
-                statusLabel = AppLanguage.text("Interrumpida • ${item.interruptedDate?.formatDate()}", "Paused • ${item.interruptedDate?.formatDate()}"),
+                statusLabel = if (isBook) {
+                    AppLanguage.text("Interrumpido • ${item.interruptedDate?.formatDate()}", "Paused • ${item.interruptedDate?.formatDate()}")
+                } else {
+                    AppLanguage.text("Interrumpida • ${item.interruptedDate?.formatDate()}", "Paused • ${item.interruptedDate?.formatDate()}")
+                },
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer
             )

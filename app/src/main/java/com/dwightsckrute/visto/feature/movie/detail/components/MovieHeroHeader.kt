@@ -1,5 +1,8 @@
 package com.dwightsckrute.visto.feature.movie.detail.components
 
+import com.dwightsckrute.visto.core.utils.posterUrl
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,8 +56,25 @@ fun MovieHeroHeader(
 
     Box(modifier = Modifier.fillMaxWidth()) {
 
+        // El fondo, que es lo que hacía que abrir una película se sintiera peor que abrir un
+        // libro aunque la transición sea la misma.
+        //
+        // Se pedía a 1280 px y la lista nunca lo había pedido, así que al entrar en la ficha el
+        // tercio superior estaba vacío hasta que llegaba de la red y entonces aparecía de golpe.
+        // Eso es el tirón: no la curva de la navegación, sino una imagen grande que aterriza
+        // cuando la navegación ya ha terminado. Un libro no lo tiene —su portada es pequeña y ya
+        // está en caché de la lista—, y por eso su apertura se siente limpia.
+        //
+        // Dos cambios y ninguno toca la animación: `w780` en lugar de `w1280`, que a 340 puntos
+        // de alto no se distingue y llega en una fracción del tiempo; y la carátula de la lista
+        // —que sí está en caché— como relleno mientras tanto, así que el hueco nunca está vacío
+        // y lo que se ve es un fundido de una imagen a otra en vez de una apareciendo sobre nada.
         AsyncImage(
-            model = backdropUrl(movie),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(backdropUrl(movie))
+                .crossfade(BACKDROP_FADE_MS)
+                .placeholderMemoryCacheKey(posterUrl(watchlistItem?.posterPath))
+                .build(),
             contentDescription = movie.title,
             modifier = Modifier
                 .fillMaxWidth()
@@ -164,10 +184,16 @@ private fun formatRuntime(minutes: Int?): String {
 private fun backdropUrl(movie: MovieBundle): String? =
     when {
         movie.backdrop_path != null ->
-            "https://image.tmdb.org/t/p/w1280${movie.backdrop_path}"
+            "https://image.tmdb.org/t/p/$BACKDROP_SIZE${movie.backdrop_path}"
 
         movie.images.backdrops.isNotEmpty() ->
-            "https://image.tmdb.org/t/p/w1280${movie.images.backdrops.first().file_path}"
+            "https://image.tmdb.org/t/p/$BACKDROP_SIZE${movie.images.backdrops.first().file_path}"
 
         else -> null
     }
+
+/** El ancho del fondo de una ficha. A 340 puntos de alto, `w1280` era pagar por lo que no se ve. */
+private const val BACKDROP_SIZE = "w780"
+
+/** Lo que tarda el fondo real en sustituir a la carátula que hace de relleno. */
+private const val BACKDROP_FADE_MS = 220

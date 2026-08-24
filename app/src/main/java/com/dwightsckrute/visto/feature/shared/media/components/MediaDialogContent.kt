@@ -61,6 +61,7 @@ fun MediaRatingDialogContent(
     originalRating: Float = 0f,
     isTv: Boolean = false,
     isBook: Boolean = false,
+    alreadyFinished: Boolean = false,
 ) {
     DialogBasic(
         show = show,
@@ -77,6 +78,8 @@ fun MediaRatingDialogContent(
         content = {
             RateMediaDialogContent(
                 updateRating = isUpdateRating,
+                isBook = isBook,
+                alreadyFinished = alreadyFinished,
                 originalRating = originalRating,
                 onCancel = {
                     onDismiss()

@@ -48,7 +48,8 @@ fun MovieDetailsRatingDialog(
             onConfirm = { rating ->
                 watchlistViewModel.setUserRating(item.id, rating)
                 if (!uiState.ratingOnly) watchlistViewModel.finish(item.id)
-            }
+            },
+            alreadyFinished = uiState.ratingOnly
         )
     }
 }

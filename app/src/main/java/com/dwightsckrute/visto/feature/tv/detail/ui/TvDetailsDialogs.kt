@@ -50,7 +50,8 @@ fun TvDetailsRatingDialog(
                 if (!uiState.ratingOnly) {
                     watchlistViewModel.finishSeason(seasonIt.seasonId, seasonIt.episodeCount)
                 }
-            }
+            },
+            alreadyFinished = uiState.ratingOnly
         )
     }
 }

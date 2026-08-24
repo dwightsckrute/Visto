@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.core.ui.components.media
 
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,7 +62,18 @@ fun PosterBox(
         contentAlignment = Alignment.Center
     ) {
         if (!apiPath.isNullOrBlank()) {
-            val painter = rememberAsyncImagePainter(model = posterUrl)
+            // La clave de caché se fija a la propia URL en lugar de dejar que Coil la derive.
+            //
+            // Es lo que permite que la ficha de una película use esta misma carátula —ya
+            // descargada por la lista— como relleno mientras baja su fondo grande: para pedirla
+            // por su clave hay que saber cuál es, y una clave derivada depende del tamaño con el
+            // que se dibujó y de la pantalla.
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(posterUrl)
+                    .memoryCacheKey(posterUrl)
+                    .build(),
+            )
 
             Image(
                 painter = painter,

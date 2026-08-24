@@ -73,7 +73,10 @@ fun MovieWatchlistRow(
         posterUrl(it)
     }
 
-    val status = item.status.toWatchListItemStatusUiPill(item.asStatusDates())
+    val status = item.status.toWatchListItemStatusUiPill(
+        item.asStatusDates(),
+        isBook = item.mediaType == MEDIA_TYPE_BOOK,
+    )
 
     val shape = listItemShape(isOnly, isFirst, isLast)
 

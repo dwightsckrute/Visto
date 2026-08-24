@@ -1,5 +1,8 @@
 package com.dwightsckrute.visto.feature.books
 
+import com.dwightsckrute.visto.feature.shared.media.components.MediaRatingDialogContent
+import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -95,11 +98,44 @@ fun BookDetailScreen(id: Long, navController: NavController) {
     // corriendo. Aquí no hay espera de red que lo disimule, así que se notaba más que en ninguna.
     val settle = rememberEntranceSettle(book != null)
 
+    // Un libro también se valora. Faltaba: era el único de los tres tipos que se terminaba sin
+    // que nadie preguntara qué tal estaba.
+    //
+    // `ratingOnly` distingue "terminar y valorar" de "solo valorar". Marcar con fecha ya deja el
+    // libro leído y fechado, y dar por terminado escribe siempre la hora actual: sin esta
+    // distinción, poner la nota después borraría la fecha recién elegida y la pondría hoy.
+    var showRating by remember { mutableStateOf(false) }
+    var ratingOnly by remember { mutableStateOf(false) }
+
     LargeTopBarScaffold(
         title = book?.title.orEmpty(),
         navigationIcon = { NavigateUpBtn(navController) },
         actions = {
             book?.let { item ->
+                // La nota puesta, si la hay, y tocarla la cambia. Mismo sitio que en una película
+                // —arriba a la derecha— aunque el andamio sea otro.
+                if (item.status == WatchStatus.FINISHED) {
+                    TextButton(
+                        onClick = {
+                            ratingOnly = true
+                            showRating = true
+                        },
+                    ) {
+                        Symbol(
+                            R.drawable.star_24px,
+                            size = 20.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.width(Spacing.xs))
+                        Text(
+                            text = item.userRating?.let { if (it == 10.0) "10" else it.toString() }
+                                ?: localized("Valorar", "Rate"),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+
                 val favoriteConfirmation = if (!item.isFavorite) {
                     localized("Añadido a favoritos", "Added to favourites")
                 } else {
@@ -130,7 +166,10 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                     actions = FloatingToolbarMediaActionsParams(
                         startWatching = { viewModel.start(item.id) },
                         resetWatching = { viewModel.reset(item.id) },
-                        finishWatching = { viewModel.finish(item.id) },
+                        finishWatching = {
+                            ratingOnly = false
+                            showRating = true
+                        },
                         interruptWatching = { viewModel.interrupt(item.id) },
                         delete = {
                             viewModel.delete(item.id)
@@ -149,6 +188,10 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                         markWatchedOn = { readAt ->
                             viewModel.finish(item.id)
                             viewModel.updateFinishedDate(item.id, readAt)
+                            // Terminar por el botón pregunta la nota; terminar con fecha es el
+                            // mismo gesto, así que también.
+                            ratingOnly = true
+                            showRating = true
                         },
                     ),
                     isPinned = item.isPinned,
@@ -345,6 +388,22 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                 }
             }
         }
+    }
+
+    // Fuera del andamio: un diálogo no pertenece al contenido desplazable.
+    book?.let { item ->
+        MediaRatingDialogContent(
+            show = showRating,
+            onDismiss = { showRating = false },
+            onConfirm = { rating ->
+                viewModel.setUserRating(item.id, rating)
+                if (!ratingOnly) viewModel.finish(item.id)
+            },
+            isUpdateRating = ratingOnly && item.userRating != null,
+            alreadyFinished = ratingOnly,
+            originalRating = item.userRating?.toFloat() ?: 0f,
+            isBook = true,
+        )
     }
 }
 

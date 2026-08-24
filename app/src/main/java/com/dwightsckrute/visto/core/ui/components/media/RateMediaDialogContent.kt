@@ -43,6 +43,9 @@ fun RateMediaDialogContent(
     onConfirm: (Double) -> Unit,
     onCancel: () -> Unit,
     updateRating: Boolean = false,
+    isBook: Boolean = false,
+    /** Si ya está terminado, el botón solo guarda la nota: no hay nada que dar por terminado. */
+    alreadyFinished: Boolean = false,
     originalRating: Float = 0f,
 ) {
 
@@ -144,8 +147,14 @@ fun RateMediaDialogContent(
             shapes = ButtonDefaults.shapes()
         ) {
             Text(
-                if (updateRating) localized("Actualizar", "Update")
-                else localized("Marcar terminada", "Mark as finished"),
+                when {
+                    updateRating -> localized("Actualizar", "Update")
+                    // Valorar algo que ya está terminado: ofrecer "marcar terminada" era
+                    // ofrecer lo que ya pasó, y encima no cabía en el botón.
+                    alreadyFinished -> localized("Guardar", "Save")
+                    isBook -> localized("Marcar leído", "Mark as read")
+                    else -> localized("Marcar terminada", "Mark as finished")
+                },
                 maxLines = 1,
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
