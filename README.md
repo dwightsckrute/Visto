@@ -1,28 +1,54 @@
 <div align="center">
-  <img src="app/src/main/res/drawable/app_icon.png" width="128" alt="Icono de Visto">
+  <img src="docs/visto-icon.png" width="128" alt="Icono de Visto">
   <h1>Visto</h1>
-  <p>Tu biblioteca personal de películas y series.</p>
+  <p>Tu biblioteca personal de películas, series y libros.</p>
   <p><a href="https://github.com/dwightsckrute/Visto/releases/latest">Descargar la última versión</a></p>
 </div>
 
-Visto es una aplicación Android en español e inglés para guardar películas y series, organizar listas y registrar el progreso de lo que ves. Nace como una versión personal de [WatchMaster](https://github.com/PranshulGG/WatchMaster) y mantiene el proyecto original como `upstream`.
+Visto es una aplicación Android en español e inglés para guardar películas, series y libros, organizar listas y registrar el progreso de lo que ves y lees. Nace como una versión personal de [WatchMaster](https://github.com/PranshulGG/WatchMaster) y mantiene el proyecto original como `upstream`.
 
 ## Características
 
-- Búsqueda de películas, series y personas mediante TMDB.
-- Búsqueda rápida con sugerencias automáticas, estados animados y teclado optimizado.
-- Listas de pendientes, en curso y terminadas.
-- Seguimiento de temporadas y episodios.
-- Inicio personal con estadísticas, contenido en curso y actividad reciente.
-- Valoraciones, notas, fechas y listas personalizadas.
-- Interfaz Jetpack Compose con Material 3 Expressive.
-- Selector de interfaz en español o inglés; las nuevas consultas de TMDB siguen el idioma elegido.
-- Resincronización segura de títulos y sinopsis guardados al cambiar el idioma.
-- Modo OLED con fondos negros puros en el tema oscuro.
-- Icono monocromático compatible con los iconos temáticos de Pixel Launcher.
+### Qué se puede guardar
+
+- **Películas y series** desde TMDB, con seguimiento por temporadas y episodios.
+- **Libros** desde Open Library, con sinopsis en español y datos del autor vía Google Books.
+- Estados de pendiente, en curso y terminado, con sus fechas.
+- Valoraciones, notas y fechas editables en los tres tipos.
+- Favoritos, elementos fijados y listas personalizadas.
+
+### Buscar
+
+- Búsqueda unificada de películas, series, libros y personas.
+- Filtro por tipo **antes** de escribir, para no preguntar a los catálogos por lo que no se busca.
+- Sugerencias automáticas y estados animados.
+
+### Ver lo guardado
+
+- Inicio con las cifras de la biblioteca, lo que tienes en curso y la actividad reciente.
+- Cada cifra abre la lista que hay detrás, con filtro por tipo.
+- Calendario de lo visto y lo leído, con episodios fechados por separado.
 - Proveedores de streaming disponibles en España.
+
+### La aplicación
+
+- Jetpack Compose y Material 3 Expressive de principio a fin.
+- Español o inglés, con resincronización segura de títulos y sinopsis al cambiar de idioma.
+- Modo OLED con negros puros en el tema oscuro.
+- Icono adaptativo con capa monocroma para los iconos temáticos del launcher.
 - Exportación e importación local en JSON.
 - Copias de seguridad automáticas diarias o semanales en un archivo elegido por el usuario.
+
+## Lo que falta
+
+Por orden de lo que más pesa:
+
+- **Reactivar R8.** Está apagado a propósito: encenderlo bajó el APK de 20 MB a 5,1 MB y rompió la aplicación con `ClassCastException` dentro de las factorías generadas de Hilt. Hacen falta las reglas de Dagger/Hilt y probar cada pantalla sobre una release instalada, no basta con que compile.
+- **Migrar material3 a la última alfa.** Entre la que se usa y la actual cambian firmas en varios controles. Ojo: material3 y el resto de Compose van emparejados, y subir Compose por delante compila y revienta en ejecución.
+- **Subir `targetSdk` a 37.** Cambia comportamiento en ejecución, así que quiere pruebas en un dispositivo real.
+- **Progreso por páginas en los libros**, que hoy solo tienen pendiente / leyendo / leído.
+- **El icono de la pantalla de arranque** es un PNG de 288 px que en pantallas de 3x se dibuja ampliado al triple.
+- Internamente los libros siguen usando `WatchStatus`; solo cambia lo que se lee en pantalla.
 
 ## Copias de seguridad automáticas
 
@@ -52,8 +78,8 @@ La copia v4 contiene la lista de seguimiento, las temporadas y las listas person
 
 ## Requisitos
 
-- Android Studio y Android SDK 36.
-- JDK 17.
+- Android Studio y Android SDK 37.
+- JDK 17 o posterior.
 - Android 7.0 o posterior (`minSdk 24`).
 - Una clave de API v3 de TMDB.
 
@@ -82,6 +108,12 @@ El APK se genera en `app/build/outputs/apk/debug/app-debug.apk`. Esta variante u
 ## Descargar e instalar actualizaciones
 
 Los APK firmados se publican en [GitHub Releases](https://github.com/dwightsckrute/Visto/releases). Descarga `Visto-x.y.z.apk` desde el móvil, ábrelo y confirma **Actualizar**. Android conservará la biblioteca siempre que el APK esté firmado con la misma clave.
+
+La rama `beta` es donde se cuece la próxima versión mayor; `personal-es` es la línea estable. Una etiqueta con `beta` se publica como prelanzamiento, así que no desplaza a la estable en «Latest».
+
+```bash
+git tag visto-2.0-beta.9 && git push origin visto-2.0-beta.9
+```
 
 El workflow `.github/workflows/release.yml` ejecuta pruebas y lint, crea el APK release y lo publica automáticamente al subir una etiqueta `visto-*`. Este prefijo evita colisiones con las etiquetas heredadas de WatchMaster:
 
@@ -134,6 +166,7 @@ Antes de publicar una actualización, incrementa `versionCode` y `versionName`, 
 - Retrofit y OkHttp
 - Hilt
 - TMDB API
+- Open Library y Google Books
 
 ## Origen, licencia y atribución
 
