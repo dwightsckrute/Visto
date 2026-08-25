@@ -2,8 +2,17 @@
 <resources>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#4D58AA</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_app_icon</item>
+        <!--
+             Era `#4D58AA`, el índigo del icono heredado del fork: al abrir la aplicación
+             asomaba un destello morado que no correspondía a nada de lo que venía después.
+             Referenciado y no escrito a mano, para que no pueda volver a divergir del icono.
+        -->
+        <item name="windowSplashScreenBackground">@color/ic_launcher_main_background</item>
+        <!--
+             El vector del icono en lugar del PNG de 288 px que había: ese se dibujaba ampliado
+             al triple en una pantalla de 3x, que es exactamente el borrón que se veía al abrir.
+        -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_visto_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.Visto</item>
     </style>
 

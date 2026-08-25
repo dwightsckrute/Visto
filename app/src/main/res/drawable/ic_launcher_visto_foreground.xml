@@ -2,17 +2,20 @@
 <!--
     Capa frontal del icono: una ficha con su marcapáginas.
 
-    El anterior era una marca de visto sobre una pantalla, y las dos piezas fallaban. La pantalla
-    dejaba fuera a los libros, que Visto también registra; y la marca de visto es lo que dibuja
-    media aplicación del mundo. Un marcapáginas dice lo mismo —esto lo tengo guardado, esto lo
-    estoy siguiendo— sin decir de qué soporte, que es justo el alcance de la aplicación.
+    Un marcapáginas dice "esto lo tengo guardado, esto lo estoy siguiendo" sin decir de qué
+    soporte, que es el alcance de Visto ahora que también hay libros. La marca de visto anterior
+    fallaba por dos lados: es lo que dibuja media aplicación del mundo, y era lo mismo que ya tenía
+    el icono heredado.
 
-    Blanco sobre casi negro y un solo acento de color. La geometría está generada, no dibujada a
-    ojo: la ficha es un rectángulo redondeado exacto y la cinta un polígono de cinco puntos, los
-    dos centrados en 54 y dentro de la zona segura de 66dp con las esquinas ya descontadas.
+    **La ficha va contorneada, no rellena.** Un cuerpo macizo ocupando toda la zona segura se
+    convierte en una mancha blanca en cuanto el launcher lo tiñe de un color plano —los iconos
+    temáticos, los que genera con IA—, y ahí se pierde todo lo que distingue a un icono de otro.
+    Un contorno conserva su silueta al teñirse, y de paso pesa menos a la vista.
 
-    La cinta arranca a ras del borde superior, donde el trazo aún es recto: unos puntos más a los
-    lados caería sobre la curva de la esquina y se vería despegada.
+    Esta capa no tiene fondo: el fondo es la capa de al lado del icono adaptativo, y por eso al
+    recortarla el launcher puede poner el suyo. La geometría está generada: dos rectángulos
+    redondeados concéntricos hacen el contorno y la cinta es un polígono de cinco puntos, todo
+    centrado en 54 y con las esquinas ya descontadas de la zona segura de 66dp.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -21,8 +24,9 @@
     android:viewportHeight="108">
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M42.00,26.00L66.00,26.00C72.63,26.00 78.00,31.37 78.00,38.00L78.00,70.00C78.00,76.63 72.63,82.00 66.00,82.00L42.00,82.00C35.37,82.00 30.00,76.63 30.00,70.00L30.00,38.00C30.00,31.37 35.37,26.00 42.00,26.00Z" />
+        android:fillType="evenOdd"
+        android:pathData="M47.00,33.00L61.00,33.00C67.08,33.00 72.00,37.92 72.00,44.00L72.00,68.00C72.00,74.08 67.08,79.00 61.00,79.00L47.00,79.00C40.92,79.00 36.00,74.08 36.00,68.00L36.00,44.00C36.00,37.92 40.92,33.00 47.00,33.00ZM47.00,38.50L61.00,38.50C64.04,38.50 66.50,40.96 66.50,44.00L66.50,68.00C66.50,71.04 64.04,73.50 61.00,73.50L47.00,73.50C43.96,73.50 41.50,71.04 41.50,68.00L41.50,44.00C41.50,40.96 43.96,38.50 47.00,38.50Z" />
     <path
         android:fillColor="#FF6E5E"
-        android:pathData="M45,26 L63,26 L63,60 L54,51.50 L45,60 Z" />
+        android:pathData="M49.5,38.5 L58.5,38.5 L58.5,61.0 L54.0,55.5 L49.5,61.0 Z" />
 </vector>

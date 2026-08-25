@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Capa monocroma: la misma ficha, con la cinta como hueco.
+    Capa monocroma: el mismo contorno con la cinta maciza dentro.
 
-    Aquí todo se aplana a un color, así que la cinta no puede ser una pieza encima —se fundiría
-    con la ficha y quedaría un rectángulo—. Recortada del cuerpo con `evenOdd`, la silueta sigue
-    contando lo mismo.
+    Todo se aplana a un color, así que lo que separa las piezas tiene que ser hueco y no color.
+    Con `evenOdd`: el contorno queda relleno, el interior de la ficha hueco, y la cinta —contada
+    tres veces— vuelve a rellenarse. Ver `ic_launcher_visto_foreground.xml`.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -14,5 +14,5 @@
     <path
         android:fillColor="#FFFFFFFF"
         android:fillType="evenOdd"
-        android:pathData="M42.00,26.00L66.00,26.00C72.63,26.00 78.00,31.37 78.00,38.00L78.00,70.00C78.00,76.63 72.63,82.00 66.00,82.00L42.00,82.00C35.37,82.00 30.00,76.63 30.00,70.00L30.00,38.00C30.00,31.37 35.37,26.00 42.00,26.00ZM45,26 L63,26 L63,60 L54,51.50 L45,60 Z" />
+        android:pathData="M47.00,33.00L61.00,33.00C67.08,33.00 72.00,37.92 72.00,44.00L72.00,68.00C72.00,74.08 67.08,79.00 61.00,79.00L47.00,79.00C40.92,79.00 36.00,74.08 36.00,68.00L36.00,44.00C36.00,37.92 40.92,33.00 47.00,33.00ZM47.00,38.50L61.00,38.50C64.04,38.50 66.50,40.96 66.50,44.00L66.50,68.00C66.50,71.04 64.04,73.50 61.00,73.50L47.00,73.50C43.96,73.50 41.50,71.04 41.50,68.00L41.50,44.00C41.50,40.96 43.96,38.50 47.00,38.50ZM49.5,38.5 L58.5,38.5 L58.5,61.0 L54.0,55.5 L49.5,61.0 Z" />
 </vector>
