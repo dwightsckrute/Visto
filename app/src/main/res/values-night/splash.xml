@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        El arranque en modo oscuro.
+
+        Sin esto, el fondo del arranque es el del icono —blanco— y abrir la aplicación de noche
+        empezaría con un destello blanco antes de una interfaz oscura. Es el mismo problema que
+        tenía el índigo heredado, solo que en el otro extremo.
+    -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#101010</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splash_dark</item>
+        <item name="postSplashScreenTheme">@style/Theme.Visto</item>
+    </style>
+
+</resources>

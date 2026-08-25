@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    La misma marca en claro, solo para la pantalla de arranque en modo oscuro.
+
+    El icono del launcher no cambia con el modo del sistema —los launchers lo cachean—, pero el
+    arranque sí, y una marca oscura sobre un fondo oscuro no se vería. Mantiene el acento de color:
+    es lo que identifica a la aplicación y no hay razón para perderlo justo al abrirla.
+
+    Ver `ic_launcher_visto_foreground.xml` para el porqué de la forma.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M47.00,33.00L61.00,33.00C67.08,33.00 72.00,37.92 72.00,44.00L72.00,68.00C72.00,74.08 67.08,79.00 61.00,79.00L47.00,79.00C40.92,79.00 36.00,74.08 36.00,68.00L36.00,44.00C36.00,37.92 40.92,33.00 47.00,33.00ZM47.00,38.50L61.00,38.50C64.04,38.50 66.50,40.96 66.50,44.00L66.50,68.00C66.50,71.04 64.04,73.50 61.00,73.50L47.00,73.50C43.96,73.50 41.50,71.04 41.50,68.00L41.50,44.00C41.50,40.96 43.96,38.50 47.00,38.50Z" />
+    <path
+        android:fillColor="#FF6E5E"
+        android:pathData="M49.5,38.5 L58.5,38.5 L58.5,61.0 L54.0,55.5 L49.5,61.0 Z" />
+</vector>

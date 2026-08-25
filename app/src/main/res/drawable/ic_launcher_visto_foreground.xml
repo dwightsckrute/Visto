@@ -7,6 +7,9 @@
     fallaba por dos lados: es lo que dibuja media aplicación del mundo, y era lo mismo que ya tenía
     el icono heredado.
 
+    Fondo claro y marca oscura, como los iconos actuales de Google: el peso lo lleva la marca, no
+    una plancha de color a pantalla completa.
+
     **La ficha va contorneada, no rellena.** Un cuerpo macizo ocupando toda la zona segura se
     convierte en una mancha blanca en cuanto el launcher lo tiñe de un color plano —los iconos
     temáticos, los que genera con IA—, y ahí se pierde todo lo que distingue a un icono de otro.
@@ -23,7 +26,7 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#FFFFFFFF"
+        android:fillColor="#FF111111"
         android:fillType="evenOdd"
         android:pathData="M47.00,33.00L61.00,33.00C67.08,33.00 72.00,37.92 72.00,44.00L72.00,68.00C72.00,74.08 67.08,79.00 61.00,79.00L47.00,79.00C40.92,79.00 36.00,74.08 36.00,68.00L36.00,44.00C36.00,37.92 40.92,33.00 47.00,33.00ZM47.00,38.50L61.00,38.50C64.04,38.50 66.50,40.96 66.50,44.00L66.50,68.00C66.50,71.04 64.04,73.50 61.00,73.50L47.00,73.50C43.96,73.50 41.50,71.04 41.50,68.00L41.50,44.00C41.50,40.96 43.96,38.50 47.00,38.50Z" />
     <path

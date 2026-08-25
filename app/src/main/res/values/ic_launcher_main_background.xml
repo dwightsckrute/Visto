@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Casi negro, no negro puro: deja que la ficha blanca sea lo más claro del icono sin que el
-         contraste llegue a vibrar. -->
-    <color name="ic_launcher_main_background">#0F0F0F</color>
+    <!--
+        Blanco. El negro casi lleno pesaba demasiado para un icono que va a estar entre otros
+        veinte: la marca es lo que tiene que distinguirse, no el rectángulo que la rodea.
+
+        Es también el fondo de la pantalla de arranque en modo claro; el oscuro tiene el suyo en
+        `values-night`.
+    -->
+    <color name="ic_launcher_main_background">#FFFFFF</color>
 </resources>
