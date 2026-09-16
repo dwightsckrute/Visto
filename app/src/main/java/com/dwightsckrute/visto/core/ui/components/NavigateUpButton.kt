@@ -15,18 +15,24 @@ import com.dwightsckrute.visto.core.ui.localization.localized
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NavigateUpBtn(navController: NavController) {
+    NavigateUpBtn(onNavigateUp = { navController.popBackStack() })
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun NavigateUpBtn(onNavigateUp: () -> Unit) {
     Tooltip(
-        "Volver",
+        localized("Volver", "Back"),
         preferredPosition = TooltipAnchorPosition.Below,
         spacing = 10.dp
     ) {
 
         IconButton(
-            onClick = { navController.popBackStack() }, shapes = IconButtonDefaults.shapes()
+            onClick = onNavigateUp, shapes = IconButtonDefaults.shapes()
         ) {
             Symbol(
                 R.drawable.arrow_back_24px,
-                desc = localized("icono de ajustes", "back"),
+                desc = localized("Volver", "Back"),
                 color = MaterialTheme.colorScheme.onSurface
             )
         }

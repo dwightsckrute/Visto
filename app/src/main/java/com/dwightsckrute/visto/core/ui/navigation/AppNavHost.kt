@@ -31,6 +31,7 @@ import com.dwightsckrute.visto.feature.movie.detail.MovieDetailPage
 import com.dwightsckrute.visto.feature.lists.MovieListsScreen
 import com.dwightsckrute.visto.feature.lists.listEntry.ListEntryScreen
 import com.dwightsckrute.visto.feature.lists.view.ViewListScreen
+import com.dwightsckrute.visto.feature.legal.LegalScreen
 import com.dwightsckrute.visto.feature.person.PersonScreen
 import com.dwightsckrute.visto.feature.search.SearchScreen
 import com.dwightsckrute.visto.feature.search.SearchType
@@ -78,6 +79,9 @@ fun AppNavHost(
                 NavRoutes.SETTINGS
             ) {
                 SettingsScreen(navController)
+            }
+            composable(NavRoutes.LEGAL) {
+                LegalScreen(onNavigateUp = { navController.popBackStack() })
             }
             composable(
                 NavRoutes.CALENDAR

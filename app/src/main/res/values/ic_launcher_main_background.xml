@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Shared deep green links Visto visually to Palmo while the centre mark stays product-specific. -->
-    <color name="ic_launcher_main_background">#0E5C55</color>
+    <!-- Warm coral requested for Visto; the white original WatchMaster mark stays unchanged. -->
+    <color name="ic_launcher_main_background">#FFAC8D</color>
 </resources>

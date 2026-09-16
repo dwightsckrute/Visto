@@ -29,7 +29,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dwightsckrute.visto.core.ui.theme.GoogleFlexBoldRounded
+import com.dwightsckrute.visto.core.ui.theme.BrandBold
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 import com.dwightsckrute.visto.core.ui.localization.localized
 import kotlin.math.roundToInt
@@ -75,7 +75,7 @@ fun RateMediaDialogContent(
         Column {
             Text(
                 displayRating, fontSize = 100.sp,
-                fontFamily = GoogleFlexBoldRounded,
+                fontFamily = BrandBold,
                 color = MaterialTheme.colorScheme.secondary
             )
             Box(
@@ -88,7 +88,7 @@ fun RateMediaDialogContent(
             Text(
                 "10",
                 fontSize = 34.sp,
-                fontFamily = GoogleFlexBoldRounded,
+                fontFamily = BrandBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 

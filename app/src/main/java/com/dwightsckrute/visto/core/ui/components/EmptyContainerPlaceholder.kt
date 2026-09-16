@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dwightsckrute.visto.core.ui.theme.GoogleFlexBoldRounded
+import com.dwightsckrute.visto.core.ui.theme.BrandBold
 
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -69,7 +69,7 @@ fun EmptyContainerPlaceholder(
             text,
             fontSize = titleSize,
             color = MaterialTheme.colorScheme.onSurface,
-            fontFamily = GoogleFlexBoldRounded,
+            fontFamily = BrandBold,
         )
         if (description != "") {
             Spacer(Modifier.height(spacingSmall))

@@ -32,7 +32,7 @@ import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.ui.theme.AppMotion
 import com.dwightsckrute.visto.core.ui.components.Symbol
 import com.dwightsckrute.visto.core.ui.localization.localized
-import com.dwightsckrute.visto.core.ui.theme.GoogleFlexBoldRounded
+import com.dwightsckrute.visto.core.ui.theme.BrandBold
 import com.dwightsckrute.visto.core.ui.theme.ShapeRadius
 
 /** El alto y el alpha del plegado, atados a la misma duración y la misma curva. */
@@ -101,7 +101,7 @@ fun MediaSectionCard(
                 Text(
                     title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontFamily = GoogleFlexBoldRounded,
+                    fontFamily = BrandBold,
                     color = MaterialTheme.colorScheme.secondary
                 )
 

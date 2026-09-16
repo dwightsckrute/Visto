@@ -37,6 +37,7 @@ import com.dwightsckrute.visto.core.network.GoogleBooksApiKey
 import com.dwightsckrute.visto.core.network.TmdbApiKey
 import com.dwightsckrute.visto.core.ui.localization.AppLanguage
 import com.dwightsckrute.visto.core.ui.localization.localized
+import com.dwightsckrute.visto.core.ui.navigation.NavRoutes
 import com.dwightsckrute.visto.core.ui.snackbar.SnackbarManager
 import com.dwightsckrute.visto.core.ui.theme.AppTextScale
 import com.dwightsckrute.visto.core.utils.PreferencesHelper
@@ -422,11 +423,24 @@ fun SettingsScreen(navController: NavController) {
                 )
             )
             SettingSection(
-                title = localized("Acerca de", "About"),
+                title = localized("Ayuda y legal", "Help and legal"),
                 tiles = listOf(
+                    SettingTile.ActionTile(
+                        leading = { SettingsTileIcon(R.drawable.info_24px) },
+                        title = localized("Privacidad, avisos y licencias", "Privacy, notices and licences"),
+                        description = localized(
+                            "Qué se guarda, qué servicios reciben datos y las licencias completas",
+                            "What is stored, which services receive data and the full licences",
+                        ),
+                        onClick = { navController.navigate(NavRoutes.LEGAL) },
+                    ),
                     SettingTile.TextTile(
                         title = "Visto ${BuildConfig.VERSION_NAME}",
-                        description = localized("Este producto utiliza la API de TMDB, pero TMDB no lo respalda ni certifica.", "This product uses the TMDB API but is not endorsed or certified by TMDB.")
+                        description = localized(
+                            "Bifurcación personal de WatchMaster · GNU GPL v3",
+                            "Personal WatchMaster fork · GNU GPL v3",
+                        ),
+                        leading = { SettingsTileIcon(R.drawable.info_24px) },
                     )
                 )
             )

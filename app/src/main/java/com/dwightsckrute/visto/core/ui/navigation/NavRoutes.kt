@@ -7,6 +7,7 @@ import com.dwightsckrute.visto.feature.search.SearchType
 object NavRoutes {
     const val MAIN = "main"
     const val SETTINGS = "settings"
+    const val LEGAL = "legal"
     const val SEARCH = "search"
 
     const val LISTS_SCREEN = "lists_screen"

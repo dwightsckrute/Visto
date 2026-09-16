@@ -5,6 +5,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
@@ -47,6 +48,11 @@ class OpenLibraryCacheTest {
         api.search("prueba")
         api.search("prueba")
 
+        val request = server.takeRequest()
+        assertTrue(
+            "Open Library debería poder identificar y contactar a la aplicación",
+            request.getHeader("User-Agent")?.startsWith("Visto/") == true,
+        )
         assertEquals(
             "la segunda búsqueda debería servirse de la caché",
             1,

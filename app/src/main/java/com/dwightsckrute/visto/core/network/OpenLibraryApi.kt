@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.core.network
 
+import com.dwightsckrute.visto.BuildConfig
 import com.google.gson.annotations.SerializedName
 import okhttp3.Cache
 import okhttp3.Interceptor
@@ -105,12 +106,22 @@ interface OpenLibraryApi {
                     .header("Cache-Control", "public, max-age=$seconds")
                     .build()
             }
+            val identity = Interceptor { chain ->
+                val identifiedRequest = chain.request().newBuilder()
+                    .header(
+                        "User-Agent",
+                        "Visto/${BuildConfig.VERSION_NAME} (https://github.com/dwightsckrute/Visto)",
+                    )
+                    .build()
+                chain.proceed(identifiedRequest)
+            }
             val client = OkHttpClient.Builder()
                 .apply {
                     if (cacheDir != null) {
                         cache(Cache(File(cacheDir, "openlibrary-http"), HTTP_CACHE_BYTES))
                     }
                 }
+                .addInterceptor(identity)
                 .addNetworkInterceptor(cacheHeaders)
                 .addInterceptor(logging)
                 .connectTimeout(30, TimeUnit.SECONDS)
