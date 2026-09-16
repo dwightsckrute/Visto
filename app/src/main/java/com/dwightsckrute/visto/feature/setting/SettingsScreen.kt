@@ -21,11 +21,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import com.dwightsckrute.visto.BuildConfig
 import com.dwightsckrute.visto.R
 import com.dwightsckrute.visto.core.prefs.LocalAppPrefs
 import com.dwightsckrute.visto.core.ui.components.CheckboxRow
+import com.dwightsckrute.visto.core.ui.components.AtalayaBrand
 import com.dwightsckrute.visto.core.ui.components.DialogBasic
 import com.dwightsckrute.visto.core.ui.components.LargeTopBarScaffold
 import com.dwightsckrute.visto.core.ui.components.NavigateUpBtn
@@ -138,6 +140,7 @@ fun SettingsScreen(navController: NavController) {
                     .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            AtalayaBrand(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
             SettingSection(
                 title = localized("Apariencia", "Appearance"),
                 tiles = listOf(
@@ -423,8 +426,20 @@ fun SettingsScreen(navController: NavController) {
                 )
             )
             SettingSection(
-                title = localized("Ayuda y legal", "Help and legal"),
+                title = localized("Ayuda y datos", "Help and data"),
                 tiles = listOf(
+                    SettingTile.TextTile(
+                        leading = { SettingsTileIcon(R.drawable.info_24px) },
+                        title = localized("Visto, de Atalaya Software", "Visto, by Atalaya Software"),
+                        description = localized(
+                            "Tu biblioteca, listas, notas y claves se guardan en este dispositivo. " +
+                                "Las carátulas y datos de catálogo se solicitan solo a los servicios " +
+                                "que aparecen en el aviso legal.",
+                            "Your library, lists, notes and keys stay on this device. Posters and " +
+                                "catalogue data are requested only from the services listed in the " +
+                                "legal notice.",
+                        ),
+                    ),
                     SettingTile.ActionTile(
                         leading = { SettingsTileIcon(R.drawable.info_24px) },
                         title = localized("Privacidad, avisos y licencias", "Privacy, notices and licences"),
@@ -433,6 +448,24 @@ fun SettingsScreen(navController: NavController) {
                             "What is stored, which services receive data and the full licences",
                         ),
                         onClick = { navController.navigate(NavRoutes.LEGAL) },
+                    ),
+                    SettingTile.ActionTile(
+                        leading = { SettingsTileIcon(R.drawable.refresh_24px) },
+                        title = localized("Código fuente y sugerencias", "Source code and suggestions"),
+                        description = localized(
+                            "Consulta el código de Visto o abre un aviso en GitHub",
+                            "Read Visto's source code or open an issue on GitHub",
+                        ),
+                        onClick = { openVistoWeb(context) },
+                    ),
+                    SettingTile.ActionTile(
+                        leading = { SettingsTileIcon(R.drawable.info_24px) },
+                        title = "atalayasoftware.com",
+                        description = localized(
+                            "La web de Atalaya Software, donde se publica Visto",
+                            "Atalaya Software's site, where Visto is published",
+                        ),
+                        onClick = { openExternal(context, ATALAYA_URL) },
                     ),
                     SettingTile.TextTile(
                         title = "Visto ${BuildConfig.VERSION_NAME}",
@@ -489,6 +522,17 @@ fun SettingsScreen(navController: NavController) {
         message = localized("La importación sustituirá los datos actuales. ¿Seguro que quieres continuar?", "Importing will replace your current data. Are you sure you want to continue?")
     )
 }
+
+private fun openVistoWeb(context: android.content.Context) {
+    openExternal(context, SOURCE_URL)
+}
+
+private fun openExternal(context: android.content.Context, url: String): Boolean = runCatching {
+    context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+}.isSuccess
+
+private const val SOURCE_URL = "https://github.com/dwightsckrute/Visto"
+private const val ATALAYA_URL = "https://atalayasoftware.com"
 
 @Composable
 private fun frequencyLabel(frequency: BackupFrequency): String = when (frequency) {
