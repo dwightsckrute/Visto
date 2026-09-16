@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import com.dwightsckrute.visto.core.utils.PreferencesHelper
 import com.dwightsckrute.visto.core.ui.theme.ThemeVariantType
+import com.dwightsckrute.visto.core.ui.theme.AppTextScale
 
 object AppPrefs {
     private val _appTheme = mutableStateOf("system")
@@ -12,6 +13,7 @@ object AppPrefs {
     private val _isCustomTheme = mutableStateOf(false)
     private val _useDynamicColor = mutableStateOf(false)
     private val _useAmoledBlack = mutableStateOf(false)
+    private val _textScale = mutableStateOf(AppTextScale.NORMAL)
 
     private val _defaultTab = mutableStateOf("home")
     private val _groupSeasons = mutableStateOf(false)
@@ -34,6 +36,9 @@ object AppPrefs {
         _isCustomTheme.value = PreferencesHelper.getBool("isCustomTheme") ?: false
         _useDynamicColor.value = PreferencesHelper.getBool("useDynamicColor") ?: false
         _useAmoledBlack.value = PreferencesHelper.getBool("useAmoledBlack") ?: false
+        _textScale.value = PreferencesHelper.getString("text_scale")
+            ?.let { runCatching { AppTextScale.valueOf(it) }.getOrNull() }
+            ?: AppTextScale.NORMAL
         _themeVariant.value =
             PreferencesHelper.getString("theme_variant")
                 ?.let {
@@ -93,6 +98,12 @@ object AppPrefs {
         setThemeVariant = {
             _themeVariant.value = it
             PreferencesHelper.setString("theme_variant", it.name)
+        },
+
+        textScale = _textScale.value,
+        setTextScale = {
+            _textScale.value = it
+            PreferencesHelper.setString("text_scale", it.name)
         },
 
         defaultTab = _defaultTab.value,

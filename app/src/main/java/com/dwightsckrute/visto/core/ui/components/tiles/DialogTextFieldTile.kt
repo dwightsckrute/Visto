@@ -1,19 +1,19 @@
 package com.dwightsckrute.visto.core.ui.components.tiles
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.dwightsckrute.visto.core.ui.localization.localized
+import com.dwightsckrute.visto.core.ui.components.ActionBottomSheet
+import com.dwightsckrute.visto.core.ui.components.pressScale
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DialogTextFieldTile(
     headline: String,
@@ -26,15 +26,21 @@ fun DialogTextFieldTile(
     shapes: RoundedCornerShape,
     itemBgColor: Color
 ) {
-    var showDialog by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(initialText) }
+    var showSheet by remember { mutableStateOf(false) }
+    var textFieldValue by remember(initialText) { mutableStateOf(initialText) }
+    val interactions = remember { MutableInteractionSource() }
 
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .pressScale(interactions),
         shape = shapes,
     ) {
         ListItem(
-            modifier = Modifier.clickable { showDialog = true },
+            modifier = Modifier.clickable(
+                interactionSource = interactions,
+                indication = LocalIndication.current,
+            ) { showSheet = true },
             colors = ListItemDefaults.colors(
                 containerColor = itemBgColor
             ),
@@ -55,51 +61,30 @@ fun DialogTextFieldTile(
         )
     }
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text(headline) },
-            text = {
+    if (showSheet) {
+        val sheetState = rememberModalBottomSheetState()
+        ActionBottomSheet(
+            sheetState = sheetState,
+            onCancel = { showSheet = false },
+            onConfirm = { onTextSubmitted(textFieldValue) },
+        ) { _ ->
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = headline,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                )
                 OutlinedTextField(
                     value = textFieldValue,
                     onValueChange = { textFieldValue = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
                     placeholder = { Text(placeholderTextField) },
+                    singleLine = true,
                 )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onTextSubmitted(textFieldValue)
-                        showDialog = false
-                    },
-                    shapes = ButtonDefaults.shapes()
-                ) {
-                    Text(
-                        localized("Guardar", "Save"),
-                        style = MaterialTheme.typography.labelLarge,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDialog = false },
-                    shapes = ButtonDefaults.shapes()
-                ) {
-                    Text(
-                        localized("Cancelar", "Cancel"),
-                        style = MaterialTheme.typography.labelLarge,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
             }
-        )
+        }
     }
 }

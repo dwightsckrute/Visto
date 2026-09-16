@@ -62,6 +62,7 @@ fun VistoApp() {
             themeVariantType = prefs.themeVariant,
             dynamicColor = prefs.useDynamicColor,
             amoledBlack = prefs.useAmoledBlack,
+            textScale = prefs.textScale,
             seedColor = Color(prefs.themeColor.toColorInt())
         ) {
             AppNavHost(

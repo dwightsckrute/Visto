@@ -1,10 +1,7 @@
 package com.dwightsckrute.visto.core.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -28,14 +25,10 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.dwightsckrute.visto.core.ui.localization.localized
 
@@ -75,8 +68,8 @@ fun ActionBottomSheet(
                 .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top) else BottomSheetDefaults.modalWindowInsets
         },
         scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f),
-        dragHandle = {
-            if (enableHandle) {
+        dragHandle = if (enableHandle) {
+            {
                 Surface(
                     Modifier
                         .padding(top = 22.dp, bottom = 12.dp)
@@ -85,10 +78,8 @@ fun ActionBottomSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     shape = CircleShape
                 ) {}
-            } else {
-                null
             }
-        }
+        } else null,
     ) {
         Column(
             modifier = Modifier
@@ -119,7 +110,7 @@ fun ActionBottomSheet(
                         Text(
                             cancelText,
                             color = MaterialTheme.colorScheme.onErrorContainer,
-                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleMedium,
                             maxLines = 1,
                             softWrap = false,
                             overflow = TextOverflow.Ellipsis,
@@ -153,7 +144,7 @@ fun ActionBottomSheet(
                         ) {
                             Text(
                                 confirmText,
-                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 softWrap = false,
                                 overflow = TextOverflow.Ellipsis,

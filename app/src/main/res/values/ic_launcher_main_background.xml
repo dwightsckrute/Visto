@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-        Blanco. El negro casi lleno pesaba demasiado para un icono que va a estar entre otros
-        veinte: la marca es lo que tiene que distinguirse, no el rectángulo que la rodea.
-
-        Es también el fondo de la pantalla de arranque en modo claro; el oscuro tiene el suyo en
-        `values-night`.
-    -->
-    <color name="ic_launcher_main_background">#FFFFFF</color>
+    <!-- Shared deep green links Visto visually to Palmo while the centre mark stays product-specific. -->
+    <color name="ic_launcher_main_background">#0E5C55</color>
 </resources>

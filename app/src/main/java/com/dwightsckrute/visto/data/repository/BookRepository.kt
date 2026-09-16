@@ -56,6 +56,7 @@ class BookRepository(
     private val api: OpenLibraryApi,
     private val googleBooks: GoogleBooksApi,
     private val dao: WatchlistDao,
+    private val googleBooksKey: () -> String? = GoogleBooksApiKey::userKey,
 ) {
 
     /**
@@ -107,19 +108,22 @@ class BookRepository(
      * Que falle cualquiera de las dos no impide guardar el libro. Una ficha sin resumen sigue
      * siendo una ficha; no poder añadir el libro sería perderlo.
      */
-    private suspend fun fetchOverview(book: BookResult): String? {
+    private suspend fun fetchOverview(
+        id: Long,
+        title: String,
+        authors: List<String>,
+    ): String? {
         val fromOpenLibrary = runCatching {
-            idToOpenLibraryKey(book.id)?.let { api.work(it).descriptionText }
+            idToOpenLibraryKey(id)?.let { api.work(it).descriptionText }
         }.getOrNull()
 
         val wantedLanguage = AppLanguage.currentCode()
-        if (!GoogleBooksApiKey.isConfigured()) return fromOpenLibrary
+        val key = googleBooksKey()?.trim()?.takeIf(String::isNotEmpty) ?: return fromOpenLibrary
 
         val fromGoogle = runCatching {
-            val key = GoogleBooksApiKey.userKey() ?: return@runCatching null
             val terms = listOfNotNull(
-                book.title,
-                book.authors.firstOrNull()?.let { "inauthor:$it" },
+                title,
+                authors.firstOrNull()?.let { "inauthor:$it" },
             ).joinToString(" ")
             googleBooks.volumes(query = terms, language = wantedLanguage, key = key)
                 .items
@@ -217,7 +221,7 @@ class BookRepository(
      * mejor que ningún libro.
      */
     suspend fun add(book: BookResult) {
-        val overview = fetchOverview(book)
+        val overview = fetchOverview(book.id, book.title, book.authors)
 
         dao.insert(
             WatchlistItemEntity(
@@ -231,6 +235,41 @@ class BookRepository(
                 // El autor va donde iría la fecha de estreno porque es lo que se enseña junto al
                 // título en cada fila, y es lo que se busca al mirar una lista de libros.
                 releaseDate = book.authors.firstOrNull(),
+                status = WatchStatus.WANT_TO_WATCH,
+                addedDate = Instant.now(),
+            )
+        )
+    }
+
+    /**
+     * Adds a book selected in the global search.
+     *
+     * Global search works with [SearchItem], so routing it through the generic media insert used
+     * to bypass [fetchOverview] completely. That made the Google Books key look broken: the API was
+     * never called. Keep this entry point beside the catalogue-specific one so both paths perform
+     * the same enrichment before writing the Room source of truth.
+     */
+    suspend fun addFromSearch(item: SearchItem) {
+        val author = item.releaseDate
+            ?.substringBefore(" · ")
+            ?.trim()
+            ?.takeIf(String::isNotEmpty)
+        val overview = fetchOverview(
+            id = item.id,
+            title = item.title,
+            authors = listOfNotNull(author),
+        )
+
+        dao.insert(
+            WatchlistItemEntity(
+                id = item.id,
+                mediaType = MEDIA_TYPE_BOOK,
+                title = item.title,
+                overview = overview,
+                posterPath = item.posterPath,
+                backdropPath = null,
+                genreIds = null,
+                releaseDate = author,
                 status = WatchStatus.WANT_TO_WATCH,
                 addedDate = Instant.now(),
             )

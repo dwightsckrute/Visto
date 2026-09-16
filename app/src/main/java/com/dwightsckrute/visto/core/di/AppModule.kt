@@ -88,9 +88,10 @@ object AppModule {
         watchlistDao: WatchlistDao,
         seasonDao: SeasonDao,
         movieRepository: MovieRepository,
-        tvRepository: TvRepository
+        tvRepository: TvRepository,
+        bookRepository: BookRepository,
     ): WatchlistRepository =
-        WatchlistRepository(watchlistDao, seasonDao, movieRepository, tvRepository)
+        WatchlistRepository(watchlistDao, seasonDao, movieRepository, tvRepository, bookRepository)
 
     @Provides
     @Singleton

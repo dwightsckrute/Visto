@@ -14,10 +14,15 @@ class WatchlistRepository(
     private val dao: WatchlistDao,
     private val seasonDao: SeasonDao,
     private val movieRepository: MovieRepository,
-    private val tvRepository: TvRepository
+    private val tvRepository: TvRepository,
+    private val bookRepository: BookRepository,
 ) {
 
     suspend fun addFromSearch(item: SearchItem, tvDetails: List<TvSeasonDto>? = null) {
+        if (item.mediaType == MEDIA_TYPE_BOOK) {
+            bookRepository.addFromSearch(item)
+            return
+        }
         dao.insert(
             WatchlistItemEntity(
                 id = item.id,

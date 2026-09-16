@@ -1,6 +1,7 @@
 package com.dwightsckrute.visto.core.prefs
 
 import com.dwightsckrute.visto.core.ui.theme.ThemeVariantType
+import com.dwightsckrute.visto.core.ui.theme.AppTextScale
 
 data class AppPrefsState(
     val appTheme: String,
@@ -20,6 +21,9 @@ data class AppPrefsState(
 
     val themeVariant: ThemeVariantType,
     val setThemeVariant: (ThemeVariantType) -> Unit,
+
+    val textScale: AppTextScale,
+    val setTextScale: (AppTextScale) -> Unit,
 
     val defaultTab: String,
     val setDefaultTab: (String) -> Unit,

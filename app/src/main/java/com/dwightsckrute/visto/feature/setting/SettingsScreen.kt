@@ -38,6 +38,7 @@ import com.dwightsckrute.visto.core.network.TmdbApiKey
 import com.dwightsckrute.visto.core.ui.localization.AppLanguage
 import com.dwightsckrute.visto.core.ui.localization.localized
 import com.dwightsckrute.visto.core.ui.snackbar.SnackbarManager
+import com.dwightsckrute.visto.core.ui.theme.AppTextScale
 import com.dwightsckrute.visto.core.utils.PreferencesHelper
 import com.dwightsckrute.visto.feature.setting.components.ColorPickerBtn
 import com.dwightsckrute.visto.feature.setting.components.TmdbApiKeyHelpCard
@@ -95,6 +96,12 @@ fun SettingsScreen(navController: NavController) {
         "dark" to localized("Oscuro", "Dark"),
         "light" to localized("Claro", "Light"),
         "system" to localized("Sistema", "System"),
+    )
+    val textScaleLabels = mapOf(
+        AppTextScale.COMPACT.name to localized("Compacto", "Compact"),
+        AppTextScale.NORMAL.name to localized("Normal", "Normal"),
+        AppTextScale.LARGE.name to localized("Grande", "Large"),
+        AppTextScale.HUGE.name to localized("Muy grande", "Very large"),
     )
     val languageLabels = mapOf(
         "es" to localized("Español", "Spanish"),
@@ -154,7 +161,17 @@ fun SettingsScreen(navController: NavController) {
                             )
                         },
                         title = localized("Usar un color personalizado", "Use a custom color"),
-                        description = localized("Elige un color base para generar el tema", "Choose a base colour to generate the theme"),
+                        description = if (prefs.useDynamicColor) {
+                            localized(
+                                "Lo decide el fondo de pantalla. Apaga «Colores dinámicos» para elegirlo.",
+                                "The wallpaper decides it. Turn off dynamic colors to choose it.",
+                            )
+                        } else {
+                            localized(
+                                "Elige un color base para generar el tema",
+                                "Choose a base colour to generate the theme",
+                            )
+                        },
                         checked = prefs.isCustomTheme,
                         enabled = !prefs.useDynamicColor,
                         onCheckedChange = { checked ->
@@ -171,7 +188,17 @@ fun SettingsScreen(navController: NavController) {
                             )
                         },
                         title = localized("Colores dinámicos", "Dynamic colors"),
-                        description = localized("Usar los colores del fondo de pantalla", "Use the wallpaper colours"),
+                        description = if (prefs.useDynamicColor) {
+                            localized(
+                                "Android genera la paleta desde tu fondo de pantalla",
+                                "Android derives the palette from your wallpaper",
+                            )
+                        } else {
+                            localized(
+                                "Usar los colores del fondo de pantalla",
+                                "Use the wallpaper colours",
+                            )
+                        },
                         checked = prefs.useDynamicColor,
                         enabled = isAndroid12Plus && !prefs.isCustomTheme,
                         onCheckedChange = { checked ->
@@ -185,6 +212,19 @@ fun SettingsScreen(navController: NavController) {
                         checked = prefs.useAmoledBlack,
                         enabled = prefs.appTheme != "light",
                         onCheckedChange = prefs.setAmoledBlack,
+                    ),
+                    SettingTile.DialogOptionTile(
+                        leading = { SettingsTileIcon(R.drawable.description_24px) },
+                        title = localized("Tamaño del texto", "Text size"),
+                        description = localized(
+                            "${textScaleLabels[prefs.textScale.name]} · se suma al tamaño del sistema",
+                            "${textScaleLabels[prefs.textScale.name]} · on top of the system size",
+                        ),
+                        options = AppTextScale.entries.map { it.name },
+                        selectedOption = prefs.textScale.name,
+                        optionLabel = { textScaleLabels[it] ?: it },
+                        dialogTitle = localized("Tamaño del texto", "Text size"),
+                        onOptionSelected = { prefs.setTextScale(AppTextScale.valueOf(it)) },
                     ),
                 ),
             )
