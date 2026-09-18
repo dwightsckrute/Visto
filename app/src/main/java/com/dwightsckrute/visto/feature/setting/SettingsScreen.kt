@@ -1,5 +1,9 @@
 package com.dwightsckrute.visto.feature.setting
 
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import com.dwightsckrute.visto.core.ui.components.BrandHeaderStyle
 import com.dwightsckrute.visto.core.ui.components.BrandPage
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -148,9 +152,18 @@ fun SettingsScreen(navController: NavController) {
     // La cabecera de Palmo: la firma arriba, el título debajo, y al desplazar los dos se pliegan
     // dentro de la barra —la galleta a la esquina derecha, el título a la izquierda—. El rebote al
     // llegar a los extremos viene incluido en `BrandPage`.
+    // Los márgenes del sistema los pone quien usa `BrandPage`: en Palmo es la pantalla del
+    // carrusel, y aquí no hay ninguna encima. Sin esto la cabecera se metía debajo de la barra de
+    // estado y la última fila quedaba pegada al borde de abajo.
+    //
+    // `statusBarsPadding` y no dibujar por debajo: el fondo de la cabecera y el del `NavHost` son
+    // el mismo color, así que la franja de la barra de estado se ve continua igualmente.
+    val systemBars = WindowInsets.systemBars.asPaddingValues()
+
     BrandPage(
         title = localized("Ajustes", "Settings"),
-        bottomPadding = 0.dp,
+        modifier = Modifier.statusBarsPadding(),
+        bottomPadding = systemBars.calculateBottomPadding() + 24.dp,
         style = BrandHeaderStyle.MARK,
         navigationIcon = { NavigateUpBtn(navController) },
         contentPadding = 0.dp,
