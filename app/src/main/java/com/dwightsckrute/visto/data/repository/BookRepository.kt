@@ -108,7 +108,7 @@ class BookRepository(
      * Que falle cualquiera de las dos no impide guardar el libro. Una ficha sin resumen sigue
      * siendo una ficha; no poder añadir el libro sería perderlo.
      */
-    private suspend fun fetchOverview(
+    suspend fun fetchOverview(
         id: Long,
         title: String,
         authors: List<String>,
@@ -141,6 +141,28 @@ class BookRepository(
      * añadir el libro: guardarlo habría pedido una columna nueva para algo que solo hace falta
      * cuando se abre la ficha.
      */
+    /**
+     * Vuelve a pedir la sinopsis de un libro ya guardado, y la guarda si llega.
+     *
+     * Hacía falta porque la sinopsis se pedía **una sola vez, al guardar el libro**. Si en ese
+     * momento no había red, o Open Library no tenía descripción y todavía no había clave de Google
+     * Books configurada, el campo quedaba vacío para siempre: la ficha decía "no tiene sinopsis"
+     * sin haberlo vuelto a intentar nunca, y no había forma de que se arreglara sola.
+     *
+     * Devuelve lo que acabe habiendo, que puede seguir siendo nulo: hay libros sin descripción en
+     * ninguna de las dos fuentes, y eso es un resultado, no un fallo.
+     */
+    suspend fun refreshOverview(bookId: Long): String? {
+        val item = dao.findById(bookId) ?: return null
+        if (!item.overview.isNullOrBlank()) return item.overview
+
+        // El autor se guardó donde iría la fecha de estreno, que es de donde lo lee todo lo demás.
+        val authors = listOfNotNull(item.releaseDate?.takeIf(String::isNotBlank))
+        val fresh = fetchOverview(bookId, item.title, authors)?.takeIf(String::isNotBlank)
+        if (fresh != null) dao.updateOverview(bookId, fresh)
+        return fresh
+    }
+
     suspend fun authorOf(bookId: Long): AuthorInfo? {
         // El candado evita que dos aperturas seguidas de la misma ficha lancen los dos juegos de
         // peticiones a la vez, que es justo lo que pasa al volver atrás y entrar de nuevo.

@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.books
 
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import com.dwightsckrute.visto.feature.shared.media.components.MediaRatingDialogContent
 import androidx.compose.material3.TextButton
 import androidx.compose.foundation.layout.Spacer
@@ -90,6 +92,7 @@ fun BookDetailScreen(id: Long, navController: NavController) {
     val flow = remember(id) { viewModel.item(id) }
     val book by flow.collectAsStateWithLifecycle()
     val author by detailViewModel.author.collectAsStateWithLifecycle()
+    val overview by detailViewModel.overview.collectAsStateWithLifecycle()
 
     LaunchedEffect(id) { detailViewModel.load(id) }
 
@@ -280,7 +283,18 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                 }
             }
 
-            author?.let { info ->
+            if (author is Loadable.Loading) {
+                item {
+                    MediaSectionCard(
+                        title = localized("El autor", "The author"),
+                        titleIcon = R.drawable.article_person_24px,
+                    ) {
+                        SectionLoading()
+                    }
+                }
+            }
+
+            (author as? Loadable.Ready)?.value?.let { info ->
                 item {
                     MediaSectionCard(
                         title = localized("El autor", "The author"),
@@ -375,16 +389,25 @@ fun BookDetailScreen(id: Long, navController: NavController) {
                     title = localized("Sinopsis", "Synopsis"),
                     titleIcon = R.drawable.description_24px,
                 ) {
-                    Text(
-                        text = item.overview?.takeIf { it.isNotBlank() }
-                            ?: localized(
-                                "Open Library no tiene sinopsis de este libro.",
-                                "Open Library has no synopsis for this book.",
-                            ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = Spacing.lg),
-                    )
+                    // Lo guardado manda: si el libro ya trae sinopsis se enseña sin esperar a
+                    // nadie. Solo cuando no la hay se mira lo que esté llegando de la red, y
+                    // hasta que llegue no se afirma que no existe.
+                    val stored = item.overview?.takeIf { it.isNotBlank() }
+                    val fetched = (overview as? Loadable.Ready)?.value
+
+                    when {
+                        stored != null -> BookOverviewText(stored)
+                        fetched != null -> BookOverviewText(fetched)
+                        overview is Loadable.Loading -> SectionLoading()
+                        else -> BookOverviewText(
+                            localized(
+                                "No hemos encontrado sinopsis de este libro en Open Library ni en " +
+                                    "Google Books.",
+                                "We could not find a synopsis for this book on Open Library or " +
+                                    "Google Books.",
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -489,3 +512,36 @@ private fun ReadDateRow(
  * espaciador equivalente; aquí va como relleno de la lista, que es lo mismo dicho una sola vez.
  */
 private val FLOATING_BAR_CLEARANCE = 112.dp
+
+/** El cuerpo de la sinopsis, para no repetir tipografía y márgenes en cada rama. */
+@Composable
+private fun BookOverviewText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = Spacing.lg),
+    )
+}
+
+/**
+ * Lo que se enseña mientras algo viene de la red.
+ *
+ * Open Library tarda entre dos y seis segundos, y sin nada en medio la ficha se abría afirmando
+ * que el libro no tiene sinopsis para desdecirse después. Un indicador ocupa el mismo sitio y no
+ * afirma nada.
+ */
+@Composable
+private fun SectionLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(22.dp),
+            strokeWidth = 2.5.dp,
+        )
+    }
+}

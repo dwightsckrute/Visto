@@ -58,6 +58,13 @@ interface WatchlistDao {
     @Query("SELECT * FROM watchlist WHERE id = :id LIMIT 1")
     fun getById(id: Long): Flow<WatchlistItemEntity?>
 
+    /** El mismo elemento, una sola vez. Para quien necesita mirarlo, no seguirlo. */
+    @Query("SELECT * FROM watchlist WHERE id = :id LIMIT 1")
+    suspend fun findById(id: Long): WatchlistItemEntity?
+
+    @Query("UPDATE watchlist SET overview = :overview WHERE id = :id")
+    suspend fun updateOverview(id: Long, overview: String)
+
     @Query("UPDATE watchlist SET notes = :note WHERE id = :id")
     suspend fun setUserNote(id: Long, note: String)
 

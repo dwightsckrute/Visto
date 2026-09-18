@@ -62,7 +62,13 @@ fun MainScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
                 title = {
-                    Text(selectedDestination.label)
+                    // En Inicio no: el saludo que hay justo debajo ya dice dónde estás, y
+                    // "Inicio" encima de "Buenas tardes" son dos encabezados seguidos diciendo lo
+                    // mismo. Las demás secciones sí lo necesitan, porque su contenido empieza
+                    // directamente con una lista.
+                    if (selectedDestination != MainDestination.Home) {
+                        Text(selectedDestination.label)
+                    }
                 },
                 actions = {
                     TooltipIconBtn(

@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.setting
 
+import com.dwightsckrute.visto.core.ui.components.BrandHeaderStyle
+import com.dwightsckrute.visto.core.ui.components.BrandPage
 import androidx.compose.foundation.layout.fillMaxWidth
 import com.dwightsckrute.visto.core.ui.components.AtalayaBadge
 import androidx.compose.ui.Alignment
@@ -143,33 +145,17 @@ fun SettingsScreen(navController: NavController) {
         "There is no email app. The address is $SUPPORT_EMAIL",
     )
 
-    LargeTopBarScaffold(
+    // La cabecera de Palmo: la firma arriba, el título debajo, y al desplazar los dos se pliegan
+    // dentro de la barra —la galleta a la esquina derecha, el título a la izquierda—. El rebote al
+    // llegar a los extremos viene incluido en `BrandPage`.
+    BrandPage(
         title = localized("Ajustes", "Settings"),
+        bottomPadding = 0.dp,
+        style = BrandHeaderStyle.MARK,
         navigationIcon = { NavigateUpBtn(navController) },
-    ) { paddingValues ->
-            // El rebote de Palmo en lugar del estirado de serie de Android: al llegar al final
-            // el contenido se separa del borde y vuelve con un muelle. Se provee por
-            // `LocalOverscrollFactory` y no con un modificador porque `verticalScroll` le pide su
-            // efecto a ese local, así que basta con envolver lo que se desplaza.
-        CompositionLocalProvider(LocalOverscrollFactory provides rememberBounceOverscrollFactory()) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // La firma, centrada y sola. Antes era una tarjeta a lo ancho con el nombre completo:
-            // una presentación arriba de unos ajustes, que nadie abre para eso.
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                AtalayaBadge()
-            }
+        contentPadding = 0.dp,
+        spacing = 10.dp,
+    ) {
             SettingSection(
                 title = localized("Apariencia", "Appearance"),
                 tiles = listOf(
@@ -537,8 +523,6 @@ fun SettingsScreen(navController: NavController) {
                     )
                 )
             )
-        }
-        }
     }
 
 
