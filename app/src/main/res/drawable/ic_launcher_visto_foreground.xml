@@ -6,17 +6,19 @@
     forma clara en blanco sobre un color macizo**. Un contorno fino es justo lo que se pierde
     cuando el lanzador aplana el icono a un color para sus temas; una masa sólida no.
 
-    Los párpados **se afilan hacia las esquinas**. La primera versión era un trazo de grosor
-    constante con remates redondos, y por eso se veía basta: un ojo dibujado tiene el párpado
-    grueso en medio y afilado donde se juntan. Aquí no hay trazo — hay una almendra con otra
-    recortada dentro, y la distancia entre las dos es la que da el grosor: máximo en el centro y
-    cero en las puntas.
+    Los párpados **se afilan hacia las esquinas**. Un trazo de grosor constante con remates
+    redondos se veía basto, porque un ojo dibujado tiene el párpado grueso en medio y afilado
+    donde se juntan. Aquí no hay trazo — hay una almendra con otra recortada dentro, y la
+    distancia entre las dos es la que da el grosor: máximo en el centro y cero en las puntas.
+
+    Más alto que rasgado, y con la pupila grande. Rebajando la altura el dibujo tira a hoja, y con
+    la pupila pequeña se pierde a 48 dp, que es donde se decide si un icono se reconoce.
 
     Todo en un único trazo con `evenOdd`, que es lo que permite que la capa monocroma sea
     literalmente este mismo dibujo: la almendra exterior rellena, la interior hueca y la pupila
     —contada tres veces— otra vez rellena.
 
-    Geometría pensada para la máscara adaptativa, como en Palmo: la almendra llega a 29 desde el
+    Geometría pensada para la máscara adaptativa, como en Palmo: la almendra llega a 28 desde el
     centro y no alcanza los 33 de la zona segura circular. Un icono que se pasa de ahí pierde el
     dibujo justo por donde el lanzador recorta.
 -->
@@ -28,5 +30,5 @@
     <path
         android:fillColor="#FFFFFFFF"
         android:fillType="evenOdd"
-        android:pathData="M25,54 Q54,20 83,54 Q54,88 25,54 Z M30.5,54 Q54,32 77.5,54 Q54,76 30.5,54 Z M45.5,54 A8.5,8.5 0 1 0 62.5,54 A8.5,8.5 0 1 0 45.5,54 Z" />
+        android:pathData="M26,54 Q54,16 82,54 Q54,92 26,54 Z M31.5,54 Q54,29 76.5,54 Q54,79 31.5,54 Z M44.5,54 A9.5,9.5 0 1 0 63.5,54 A9.5,9.5 0 1 0 44.5,54 Z" />
 </vector>

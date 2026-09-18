@@ -59,7 +59,7 @@ abstract class VistoDatabase : RoomDatabase() {
     companion object {
         private const val DATABASE_NAME = "visto.db"
 
-        /** Como se llamaba el fichero cuando la aplicación se llamaba WatchMaster. */
+        /** Como se llamaba el fichero antes de que la aplicación se llamara Visto. */
         private const val LEGACY_DATABASE_NAME = "watchmaster.db"
 
         @Volatile

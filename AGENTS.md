@@ -2,7 +2,7 @@
 
 ## Project
 
-Visto is a single-module Android application written in Kotlin and Jetpack Compose. It is a personal fork of WatchMaster for tracking movies, TV shows, seasons, episodes, ratings, notes, and custom lists. The UI supports Spanish and English.
+Visto is a single-module Android application written in Kotlin and Jetpack Compose, made by Atalaya Software, for tracking movies, TV shows, seasons, episodes, books, ratings, notes, and custom lists. The UI supports Spanish and English.
 
 The main source tree is `app/src/main/java/com/dwightsckrute/visto`:
 
@@ -180,7 +180,7 @@ A code task is complete only when the relevant build/tests pass, or the remainin
 
 ## Releases and Git
 
-- `origin` is the Visto fork and `upstream` is the original WatchMaster project. Do not push personal changes to `upstream`.
+- `origin` is Visto's own repository. Never push to any other remote that may be configured.
 - The active development branch is `personal-es` unless the user explicitly chooses another branch.
 - Before a release, increment both `versionCode` (monotonically) and `versionName` in `app/build.gradle.kts`.
 - Release tags use `visto-X.Y.Z`. Pushing such a tag triggers `.github/workflows/release.yml`, which runs `test lint assembleRelease` and publishes the signed APK plus SHA-256 checksum.

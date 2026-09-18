@@ -53,9 +53,35 @@ fun AtalayaBrand(
     }
 }
 
+/**
+ * El icono solo, sin el nombre.
+ *
+ * Es lo que se ve al abrir la aplicación: una firma, no una presentación. El nombre completo vive en
+ * la pantalla de aviso legal, que es donde alguien va a buscar de quién es esto.
+ */
+@Composable
+fun AtalayaMark(
+    modifier: Modifier = Modifier,
+    size: Dp = MARK_SIZE,
+    color: Color = AtalayaBrandColors.foreground,
+) {
+    Image(
+        painter = painterResource(R.drawable.atalaya_mark),
+        contentDescription = "Atalaya Software",
+        colorFilter = ColorFilter.tint(color),
+        modifier = modifier.height(size),
+        contentScale = ContentScale.FillHeight,
+    )
+}
+
+/** Los colores del logotipo, tomados del propio fichero. No salen del tema: son de la marca. */
+
 object AtalayaBrandColors {
     val background = Color(0xFF171713)
     val foreground = Color(0xFFF7F5EF)
 }
 
 private const val WORDMARK_RATIO = 0.78f
+
+/** El alto de la firma cuando nadie pide otro. */
+private val MARK_SIZE = 20.dp

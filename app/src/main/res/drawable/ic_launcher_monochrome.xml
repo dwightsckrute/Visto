@@ -13,5 +13,5 @@
     <path
         android:fillColor="#FFFFFFFF"
         android:fillType="evenOdd"
-        android:pathData="M25,54 Q54,20 83,54 Q54,88 25,54 Z M30.5,54 Q54,32 77.5,54 Q54,76 30.5,54 Z M45.5,54 A8.5,8.5 0 1 0 62.5,54 A8.5,8.5 0 1 0 45.5,54 Z" />
+        android:pathData="M26,54 Q54,16 82,54 Q54,92 26,54 Z M31.5,54 Q54,29 76.5,54 Q54,79 31.5,54 Z M44.5,54 A9.5,9.5 0 1 0 63.5,54 A9.5,9.5 0 1 0 44.5,54 Z" />
 </vector>

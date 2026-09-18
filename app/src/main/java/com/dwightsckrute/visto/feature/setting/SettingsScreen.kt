@@ -1,5 +1,9 @@
 package com.dwightsckrute.visto.feature.setting
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import com.dwightsckrute.visto.core.ui.components.AtalayaBadge
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
 import android.content.Context
 import com.dwightsckrute.visto.core.ui.components.rememberBounceOverscrollFactory
 import androidx.compose.runtime.CompositionLocalProvider
@@ -156,7 +160,16 @@ fun SettingsScreen(navController: NavController) {
                     .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            AtalayaBrand(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+            // La firma, centrada y sola. Antes era una tarjeta a lo ancho con el nombre completo:
+            // una presentación arriba de unos ajustes, que nadie abre para eso.
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                AtalayaBadge()
+            }
             SettingSection(
                 title = localized("Apariencia", "Appearance"),
                 tiles = listOf(
