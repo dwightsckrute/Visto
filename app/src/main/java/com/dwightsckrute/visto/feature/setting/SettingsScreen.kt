@@ -1,5 +1,6 @@
 package com.dwightsckrute.visto.feature.setting
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.asPaddingValues
@@ -162,7 +163,19 @@ fun SettingsScreen(navController: NavController) {
 
     BrandPage(
         title = localized("Ajustes", "Settings"),
-        modifier = Modifier.statusBarsPadding(),
+        // Opaca y a pantalla completa, que es lo que hacía el andamio al que sustituye.
+        //
+        // `BrandPage` sólo ocupa el ancho y no pinta fondo: en Palmo vive dentro de una página del
+        // carrusel, que ya lo pinta. Aquí es la pantalla entera, así que sin esto quedaba
+        // transparente por debajo del contenido y al entrar deslizando se veían las dos pantallas
+        // superpuestas.
+        //
+        // El fondo va antes del margen de la barra de estado: el color tiene que llegar al borde,
+        // y lo que se aparta es el contenido.
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .statusBarsPadding(),
         bottomPadding = systemBars.calculateBottomPadding() + 24.dp,
         style = BrandHeaderStyle.MARK,
         navigationIcon = { NavigateUpBtn(navController) },

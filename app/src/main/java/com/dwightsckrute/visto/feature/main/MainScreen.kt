@@ -1,5 +1,13 @@
 package com.dwightsckrute.visto.feature.main
 
+import com.dwightsckrute.visto.feature.home.components.homeGreeting
+import androidx.compose.material3.MaterialTheme.motionScheme
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -51,6 +59,25 @@ fun MainScreen(
 
     val scrollBehaviorTopBar = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    // El saludo de Inicio sube a la barra cuando el grande se va, como el título de Ajustes.
+    //
+    // El disparador es el desplazamiento del contenido y no el plegado de la barra: esta barra
+    // entra y sale entera en lugar de encoger, así que su fracción de plegado mide si la barra se
+    // ve, no si el saludo sigue ahí. Lo que hace falta saber es lo segundo.
+    val homeListState = rememberLazyListState()
+    val greetingInBar by remember {
+        derivedStateOf {
+            homeListState.firstVisibleItemIndex > 0 ||
+                homeListState.firstVisibleItemScrollOffset > GREETING_HANDOVER_PX
+        }
+    }
+    val greetingAlpha by animateFloatAsState(
+        targetValue = if (greetingInBar) 1f else 0f,
+        animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+        label = "greeting-in-bar",
+    )
+    val greeting = homeGreeting()
+
     val stateHolder = rememberSaveableStateHolder()
 
     Scaffold(
@@ -66,7 +93,14 @@ fun MainScreen(
                     // "Inicio" encima de "Buenas tardes" son dos encabezados seguidos diciendo lo
                     // mismo. Las demás secciones sí lo necesitan, porque su contenido empieza
                     // directamente con una lista.
-                    if (selectedDestination != MainDestination.Home) {
+                    if (selectedDestination == MainDestination.Home) {
+                        // El saludo, que aparece al desplazar. `graphicsLayer` y no un `if`: así
+                        // el hueco ya está medido y la barra no da un salto cuando entra.
+                        Text(
+                            text = greeting,
+                            modifier = Modifier.graphicsLayer { alpha = greetingAlpha },
+                        )
+                    } else {
                         Text(selectedDestination.label)
                     }
                 },
@@ -129,7 +163,8 @@ fun MainScreen(
                 stateHolder.SaveableStateProvider(destination.name) {
                     when (destination) {
                         MainDestination.Home -> HomeScreen(
-                            navController
+                            navController,
+                            listState = homeListState,
                         )
 
                         MainDestination.Movies -> MovieHomeScreen(
@@ -155,3 +190,10 @@ fun MainScreen(
         }
     }
 }
+
+/**
+ * Cuánto hay que desplazar Inicio para que el saludo pase a la barra.
+ *
+ * Un poco más que nada: con el relevo en cero, el saludo de arriba parpadea al menor roce.
+ */
+private const val GREETING_HANDOVER_PX = 24

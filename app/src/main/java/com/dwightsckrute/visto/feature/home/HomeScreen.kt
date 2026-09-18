@@ -1,5 +1,7 @@
 package com.dwightsckrute.visto.feature.home
 
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -71,6 +73,9 @@ import com.dwightsckrute.visto.feature.home.components.HomeProgressList
 @Composable
 fun HomeScreen(
     navController: NavController,
+    // Izado porque lo lee la barra de arriba: el saludo sube a ella cuando el de aquí se va. Sin
+    // compartir el estado, la barra no tiene forma de saber que ya no se ve.
+    listState: LazyListState = rememberLazyListState(),
     viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -81,6 +86,7 @@ fun HomeScreen(
     }
 
     LazyColumn(
+        state = listState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 112.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),

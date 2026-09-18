@@ -37,19 +37,30 @@ import java.time.LocalTime
  * la jerarquía la marca la tipografía y no un contenedor más, que es lo que pide Material 3
  * Expressive y lo que evita apilar tarjetas dentro de tarjetas.
  */
+/**
+ * El saludo según la hora.
+ *
+ * Aparte, porque lo usan dos sitios: el encabezado de Inicio y la barra de arriba, donde aparece al
+ * desplazar. Calculado dos veces podrían discrepar justo al cruzar una hora.
+ */
+@Composable
+fun homeGreeting(): String {
+    val hour = LocalTime.now().hour
+    return when {
+        hour < 6 -> localized("Buenas noches", "Good night")
+        hour < 13 -> localized("Buenos días", "Good morning")
+        hour < 21 -> localized("Buenas tardes", "Good afternoon")
+        else -> localized("Buenas noches", "Good evening")
+    }
+}
+
 @Composable
 fun HomeGreeting(
     inProgress: Int,
     watchedThisMonth: Int,
     modifier: Modifier = Modifier,
 ) {
-    val hour = LocalTime.now().hour
-    val greeting = when {
-        hour < 6 -> localized("Buenas noches", "Good night")
-        hour < 13 -> localized("Buenos días", "Good morning")
-        hour < 21 -> localized("Buenas tardes", "Good afternoon")
-        else -> localized("Buenas noches", "Good evening")
-    }
+    val greeting = homeGreeting()
 
     val context = when {
         inProgress > 0 && watchedThisMonth > 0 -> localized(

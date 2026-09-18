@@ -35,8 +35,8 @@ android {
         applicationId = "com.dwightsckrute.visto"
         minSdk = 24
         targetSdk = 36
-        versionCode = 34
-        versionName = "2.0.1-beta.20"
+        versionCode = 35
+        versionName = "2.0.1-beta.21"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
