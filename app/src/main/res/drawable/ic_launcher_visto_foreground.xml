@@ -1,19 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A compact eye mark keeps the original Visto idea while reading cleanly at launcher size. -->
+<!--
+    Un ojo: lo que la aplicación registra es lo que has visto.
+
+    Con la gramática de Palmo, que es lo que hace que estos iconos se adapten bien: **una sola
+    forma clara en blanco sobre un color macizo**. Lo anterior era una ficha contorneada, y un
+    contorno es justo lo que se pierde cuando el lanzador aplana el icono a un solo color para sus
+    temas —ahí una masa sólida gana siempre—.
+
+    Dos párpados y una pupila, nada más. Sin piezas superpuestas ni degradados: al teñirlo entero
+    de un color sigue siendo el mismo dibujo, que es lo que no conseguía ninguna versión anterior.
+
+    Geometría pensada para la máscara adaptativa, igual que en Palmo: el párpado llega a 26 desde
+    el centro y el trazo son 10, así que el extremo del remate queda en 31 y no alcanza los 33 de
+    la zona segura circular. Un icono que se pasa de ahí pierde el trazo justo por donde el
+    lanzador recorta.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:pivotX="54"
-        android:pivotY="54"
-        android:scaleX="1"
-        android:scaleY="1"
-        android:translateY="0">
-        <path android:fillColor="#FF183B45" android:pathData="M21,54 C29,36 43,29 54,29s25,7 33,25c-8,18 -22,25 -33,25S29,72 21,54Z" />
-        <path android:fillColor="#FFFFFFFF" android:pathData="M34,54 C39,43 47,39 54,39s15,4 20,15c-5,11 -13,15 -20,15S39,65 34,54Z" />
-        <path android:fillColor="#FF183B45" android:pathData="M64,54a10,10 0,1 1,-20 0a10,10 0,1 1,20 0" />
-        <path android:fillColor="#FFFFAC8D" android:pathData="M57,48a3,3 0,1 1,-6 0a3,3 0,1 1,6 0" />
-    </group>
+    <!-- Párpado de arriba. -->
+    <path
+        android:pathData="M28,54 Q54,24 80,54"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="10"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+    <!-- Párpado de abajo. -->
+    <path
+        android:pathData="M28,54 Q54,84 80,54"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="10"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+    <!-- La pupila, maciza para que aguante los 48 dp sin desdibujarse. -->
+    <path
+        android:pathData="M45,54 A9,9 0 1 0 63,54 A9,9 0 1 0 45,54 Z"
+        android:fillColor="#FFFFFFFF" />
 </vector>

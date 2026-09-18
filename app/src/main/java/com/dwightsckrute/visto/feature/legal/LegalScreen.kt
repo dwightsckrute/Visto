@@ -1,5 +1,9 @@
 package com.dwightsckrute.visto.feature.legal
 
+import com.dwightsckrute.visto.core.ui.components.rememberBounceOverscrollFactory
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.foundation.LocalOverscrollFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.Image
@@ -49,6 +53,11 @@ fun LegalScreen(onNavigateUp: () -> Unit) {
         title = localized("Privacidad y avisos", "Privacy and notices"),
         navigationIcon = { NavigateUpBtn(onNavigateUp) },
     ) { padding ->
+            // El rebote de Palmo en lugar del estirado de serie de Android: al llegar al final
+            // el contenido se separa del borde y vuelve con un muelle. Se provee por
+            // `LocalOverscrollFactory` y no con un modificador porque `verticalScroll` le pide su
+            // efecto a ese local, así que basta con envolver lo que se desplaza.
+        CompositionLocalProvider(LocalOverscrollFactory provides rememberBounceOverscrollFactory()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -235,6 +244,7 @@ fun LegalScreen(onNavigateUp: () -> Unit) {
             }
 
             Spacer(Modifier.height(Spacing.xxl))
+        }
         }
     }
 }

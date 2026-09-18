@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Warm coral requested for Visto; the white original WatchMaster mark stays unchanged. -->
-    <color name="ic_launcher_main_background">#FFAC8D</color>
+    <!--
+        Verde profundo. Como en Palmo, el fondo es un color macizo y la marca va en blanco: es lo
+        que deja la silueta limpia cuando el lanzador la tiñe para sus temas.
+
+        Es también el fondo de la pantalla de arranque, en los dos modos: una marca blanca sobre
+        color aguanta igual de día que de noche, así que ya no hace falta una variante nocturna.
+    -->
+    <color name="ic_launcher_main_background">#114B3A</color>
 </resources>

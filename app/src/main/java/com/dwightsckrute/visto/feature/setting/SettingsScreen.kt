@@ -1,5 +1,10 @@
 package com.dwightsckrute.visto.feature.setting
 
+import android.content.Context
+import com.dwightsckrute.visto.core.ui.components.rememberBounceOverscrollFactory
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.foundation.LocalOverscrollFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
@@ -128,10 +133,21 @@ fun SettingsScreen(navController: NavController) {
         }
     }
 
+    // `localized` es composable, así que el aviso se resuelve aquí y no dentro del `onClick`.
+    val noMailLabel = localized(
+        "No hay ninguna aplicación de correo. La dirección es $SUPPORT_EMAIL",
+        "There is no email app. The address is $SUPPORT_EMAIL",
+    )
+
     LargeTopBarScaffold(
         title = localized("Ajustes", "Settings"),
         navigationIcon = { NavigateUpBtn(navController) },
     ) { paddingValues ->
+            // El rebote de Palmo en lugar del estirado de serie de Android: al llegar al final
+            // el contenido se separa del borde y vuelve con un muelle. Se provee por
+            // `LocalOverscrollFactory` y no con un modificador porque `verticalScroll` le pide su
+            // efecto a ese local, así que basta con envolver lo que se desplaza.
+        CompositionLocalProvider(LocalOverscrollFactory provides rememberBounceOverscrollFactory()) {
         Column(
             modifier =
                 Modifier
@@ -441,7 +457,7 @@ fun SettingsScreen(navController: NavController) {
                         ),
                     ),
                     SettingTile.ActionTile(
-                        leading = { SettingsTileIcon(R.drawable.info_24px) },
+                        leading = { SettingsTileIcon(R.drawable.privacy_tip_24px) },
                         title = localized("Privacidad, avisos y licencias", "Privacy, notices and licences"),
                         description = localized(
                             "Qué se guarda, qué servicios reciben datos y las licencias completas",
@@ -450,7 +466,7 @@ fun SettingsScreen(navController: NavController) {
                         onClick = { navController.navigate(NavRoutes.LEGAL) },
                     ),
                     SettingTile.ActionTile(
-                        leading = { SettingsTileIcon(R.drawable.refresh_24px) },
+                        leading = { SettingsTileIcon(R.drawable.open_in_new_24px) },
                         title = localized("Código fuente y sugerencias", "Source code and suggestions"),
                         description = localized(
                             "Consulta el código de Visto o abre un aviso en GitHub",
@@ -459,13 +475,38 @@ fun SettingsScreen(navController: NavController) {
                         onClick = { openVistoWeb(context) },
                     ),
                     SettingTile.ActionTile(
-                        leading = { SettingsTileIcon(R.drawable.info_24px) },
+                        leading = { SettingsTileIcon(R.drawable.open_in_new_24px) },
                         title = "atalayasoftware.com",
                         description = localized(
                             "La web de Atalaya Software, donde se publica Visto",
                             "Atalaya Software's site, where Visto is published",
                         ),
                         onClick = { openExternal(context, ATALAYA_URL) },
+                    ),
+                    SettingTile.ActionTile(
+                        leading = { SettingsTileIcon(R.drawable.mail_24px) },
+                        title = localized("Escribir a Visto", "Write to Visto"),
+                        description = localized(
+                            "Errores y sugerencias, a $SUPPORT_EMAIL",
+                            "Bugs and suggestions, to $SUPPORT_EMAIL",
+                        ),
+                        onClick = {
+                            if (!writeToVisto(context)) {
+                                SnackbarManager.show(noMailLabel)
+                            }
+                        },
+                    ),
+                    // Lo único que hay para sostener la aplicación. Va aquí abajo, entre el correo
+                    // y la versión, y no en la pantalla de inicio: una aplicación que te pide
+                    // dinero nada más abrirla es lo que Visto no quiere ser.
+                    SettingTile.ActionTile(
+                        leading = { SettingsTileIcon(R.drawable.local_cafe_24px) },
+                        title = localized("Invítame a un café", "Buy me a coffee"),
+                        description = localized(
+                            "Visto es gratis y sin anuncios. Si te sirve, esto la mantiene.",
+                            "Visto is free and ad-free. If it helps you, this keeps it going.",
+                        ),
+                        onClick = { openExternal(context, KOFI_URL) },
                     ),
                     SettingTile.TextTile(
                         title = "Visto ${BuildConfig.VERSION_NAME}",
@@ -477,6 +518,7 @@ fun SettingsScreen(navController: NavController) {
                     )
                 )
             )
+        }
         }
     }
 
@@ -533,6 +575,26 @@ private fun openExternal(context: android.content.Context, url: String): Boolean
 
 private const val SOURCE_URL = "https://github.com/dwightsckrute/Visto"
 private const val ATALAYA_URL = "https://atalayasoftware.com"
+
+private const val KOFI_URL = "https://ko-fi.com/atalayasoftware"
+
+private const val SUPPORT_EMAIL = "visto@atalayasoftware.com"
+
+/**
+ * Abre el correo con el asunto puesto, y dice si ha podido.
+ *
+ * Devuelve `false` en lugar de dejar que se caiga: hay teléfonos sin ninguna aplicación de correo,
+ * y ahí lo útil es enseñar la dirección para copiarla, no un error.
+ *
+ * `ACTION_SENDTO` con `mailto:` y no `ACTION_SEND`, que abriría también mensajería y redes: aquí
+ * se quiere escribir un correo a una dirección concreta.
+ */
+private fun writeToVisto(context: Context): Boolean {
+    val intent = Intent(Intent.ACTION_SENDTO, "mailto:$SUPPORT_EMAIL".toUri()).apply {
+        putExtra(Intent.EXTRA_SUBJECT, "Visto ${BuildConfig.VERSION_NAME}")
+    }
+    return runCatching { context.startActivity(intent) }.isSuccess
+}
 
 @Composable
 private fun frequencyLabel(frequency: BackupFrequency): String = when (frequency) {
