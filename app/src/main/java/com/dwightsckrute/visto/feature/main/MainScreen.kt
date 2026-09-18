@@ -59,23 +59,28 @@ fun MainScreen(
 
     val scrollBehaviorTopBar = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    // El saludo de Inicio sube a la barra cuando el grande se va, como el título de Ajustes.
+    // El saludo de Inicio pasa a la barra al desplazar, como el título de Ajustes.
     //
-    // El disparador es el desplazamiento del contenido y no el plegado de la barra: esta barra
+    // Es un **relevo**, no dos piezas que aparecen y desaparecen por su cuenta: el mismo recorrido
+    // que aparta el saludo grande trae el pequeño, así que mientras uno se va el otro llega y en
+    // ningún momento se ven los dos enteros. El primer intento los animaba por separado con un
+    // umbral, y había un tramo con saludo arriba y abajo a la vez.
+    //
+    // El recorrido sale del desplazamiento del contenido y no del plegado de la barra: esta barra
     // entra y sale entera en lugar de encoger, así que su fracción de plegado mide si la barra se
-    // ve, no si el saludo sigue ahí. Lo que hace falta saber es lo segundo.
+    // ve, no si el saludo sigue ahí — que es lo que hace falta saber.
     val homeListState = rememberLazyListState()
-    val greetingInBar by remember {
+    val handover by remember {
         derivedStateOf {
-            homeListState.firstVisibleItemIndex > 0 ||
-                homeListState.firstVisibleItemScrollOffset > GREETING_HANDOVER_PX
+            val first = homeListState.layoutInfo.visibleItemsInfo.firstOrNull()
+            when {
+                homeListState.firstVisibleItemIndex > 0 -> 1f
+                first == null || first.size == 0 -> 0f
+                else -> (homeListState.firstVisibleItemScrollOffset / first.size.toFloat())
+                    .coerceIn(0f, 1f)
+            }
         }
     }
-    val greetingAlpha by animateFloatAsState(
-        targetValue = if (greetingInBar) 1f else 0f,
-        animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
-        label = "greeting-in-bar",
-    )
     val greeting = homeGreeting()
 
     val stateHolder = rememberSaveableStateHolder()
@@ -98,7 +103,11 @@ fun MainScreen(
                         // el hueco ya está medido y la barra no da un salto cuando entra.
                         Text(
                             text = greeting,
-                            modifier = Modifier.graphicsLayer { alpha = greetingAlpha },
+                            // Llega desde abajo con el mismo recorrido: no aparece, sube.
+                            modifier = Modifier.graphicsLayer {
+                                alpha = handover
+                                translationY = (1f - handover) * GREETING_RISE_PX
+                            },
                         )
                     } else {
                         Text(selectedDestination.label)
@@ -165,6 +174,7 @@ fun MainScreen(
                         MainDestination.Home -> HomeScreen(
                             navController,
                             listState = homeListState,
+                            greetingAlpha = { 1f - handover },
                         )
 
                         MainDestination.Movies -> MovieHomeScreen(
@@ -191,9 +201,5 @@ fun MainScreen(
     }
 }
 
-/**
- * Cuánto hay que desplazar Inicio para que el saludo pase a la barra.
- *
- * Un poco más que nada: con el relevo en cero, el saludo de arriba parpadea al menor roce.
- */
-private const val GREETING_HANDOVER_PX = 24
+/** Desde cuánto más abajo llega el saludo a la barra, en píxeles de capa gráfica. */
+private const val GREETING_RISE_PX = 28f

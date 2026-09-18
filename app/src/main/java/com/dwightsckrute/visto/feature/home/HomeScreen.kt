@@ -76,6 +76,8 @@ fun HomeScreen(
     // Izado porque lo lee la barra de arriba: el saludo sube a ella cuando el de aquí se va. Sin
     // compartir el estado, la barra no tiene forma de saber que ya no se ve.
     listState: LazyListState = rememberLazyListState(),
+    /** Se apaga a la vez que el de la barra se enciende. Como lambda: cambia en cada frame. */
+    greetingAlpha: () -> Float = { 1f },
     viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -95,7 +97,9 @@ fun HomeScreen(
             HomeGreeting(
                 inProgress = state.inProgressCount,
                 watchedThisMonth = state.watchedThisMonth,
-                modifier = Modifier.animateItem(),
+                modifier = Modifier
+                    .animateItem()
+                    .graphicsLayer { alpha = greetingAlpha() },
             )
         }
 
