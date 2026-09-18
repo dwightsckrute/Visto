@@ -466,13 +466,19 @@ fun SettingsScreen(navController: NavController) {
                         onClick = { navController.navigate(NavRoutes.LEGAL) },
                     ),
                     SettingTile.ActionTile(
-                        leading = { SettingsTileIcon(R.drawable.open_in_new_24px) },
-                        title = localized("Código fuente y sugerencias", "Source code and suggestions"),
+                        leading = { SettingsTileIcon(R.drawable.mail_24px) },
+                        title = localized("Colaborar en Visto", "Contribute to Visto"),
                         description = localized(
-                            "Consulta el código de Visto o abre un aviso en GitHub",
-                            "Read Visto's source code or open an issue on GitHub",
+                            "Visto es código abierto, pero se desarrolla con un equipo escogido. " +
+                                "Si quieres participar, escríbenos y lo hablamos.",
+                            "Visto is open source, but it is developed with a chosen team. If you " +
+                                "want to take part, write to us and we will talk.",
                         ),
-                        onClick = { openVistoWeb(context) },
+                        onClick = {
+                            if (!writeToVisto(context, collaborate = true)) {
+                                SnackbarManager.show(noMailLabel)
+                            }
+                        },
                     ),
                     SettingTile.ActionTile(
                         leading = { SettingsTileIcon(R.drawable.open_in_new_24px) },
@@ -511,8 +517,8 @@ fun SettingsScreen(navController: NavController) {
                     SettingTile.TextTile(
                         title = "Visto ${BuildConfig.VERSION_NAME}",
                         description = localized(
-                            "Bifurcación personal de WatchMaster · GNU GPL v3",
-                            "Personal WatchMaster fork · GNU GPL v3",
+                            "De Atalaya Software · GNU GPL v3",
+                            "By Atalaya Software · GNU GPL v3",
                         ),
                         leading = { SettingsTileIcon(R.drawable.info_24px) },
                     )
@@ -565,15 +571,10 @@ fun SettingsScreen(navController: NavController) {
     )
 }
 
-private fun openVistoWeb(context: android.content.Context) {
-    openExternal(context, SOURCE_URL)
-}
-
 private fun openExternal(context: android.content.Context, url: String): Boolean = runCatching {
     context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
 }.isSuccess
 
-private const val SOURCE_URL = "https://github.com/dwightsckrute/Visto"
 private const val ATALAYA_URL = "https://atalayasoftware.com"
 
 private const val KOFI_URL = "https://ko-fi.com/atalayasoftware"
@@ -589,9 +590,16 @@ private const val SUPPORT_EMAIL = "visto@atalayasoftware.com"
  * `ACTION_SENDTO` con `mailto:` y no `ACTION_SEND`, que abriría también mensajería y redes: aquí
  * se quiere escribir un correo a una dirección concreta.
  */
-private fun writeToVisto(context: Context): Boolean {
+private fun writeToVisto(context: Context, collaborate: Boolean = false): Boolean {
+    // El asunto ya trae la versión y, si viene de la fila de colaborar, lo dice: así el correo
+    // llega clasificado sin que haya que pedirle nada a quien escribe.
+    val subject = if (collaborate) {
+        "Visto ${BuildConfig.VERSION_NAME} · colaborar"
+    } else {
+        "Visto ${BuildConfig.VERSION_NAME}"
+    }
     val intent = Intent(Intent.ACTION_SENDTO, "mailto:$SUPPORT_EMAIL".toUri()).apply {
-        putExtra(Intent.EXTRA_SUBJECT, "Visto ${BuildConfig.VERSION_NAME}")
+        putExtra(Intent.EXTRA_SUBJECT, subject)
     }
     return runCatching { context.startActivity(intent) }.isSuccess
 }

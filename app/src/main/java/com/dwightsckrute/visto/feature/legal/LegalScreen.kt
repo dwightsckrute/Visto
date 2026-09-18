@@ -68,12 +68,22 @@ fun LegalScreen(onNavigateUp: () -> Unit) {
             LegalSection(title = localized("Acerca de Visto", "About Visto")) {
                 LegalBody(
                     localized(
-                        "Visto es una bifurcación personal de WatchMaster mantenida por Atalaya " +
-                            "Software. El trabajo original y las modificaciones pertenecen a sus " +
+                        "Visto lo desarrolla Atalaya Software.",
+                        "Visto is developed by Atalaya Software.",
+                    )
+                )
+                // Este párrafo no es promocional y no puede quitarse: la GPL v3 obliga a conservar
+                // los avisos de autoría del trabajo del que parte el código. Dejó de encabezar la
+                // pantalla —Visto ya no se presenta como una bifurcación— pero el crédito sigue
+                // donde tiene que estar, en el aviso legal.
+                LegalBody(
+                    localized(
+                        "Parte del código procede de WatchMaster, de Pranshul Gupta, bajo la misma " +
+                            "licencia. El trabajo original y las modificaciones pertenecen a sus " +
                             "respectivos autores.",
-                        "Visto is a personal fork of WatchMaster maintained by Atalaya Software. " +
-                            "The original work and the modifications belong to their respective " +
-                            "authors.",
+                        "Some of the code comes from WatchMaster, by Pranshul Gupta, under the same " +
+                            "licence. The original work and the modifications belong to their " +
+                            "respective authors.",
                     )
                 )
                 LegalBody(

@@ -5,7 +5,7 @@
   <p><a href="https://github.com/dwightsckrute/Visto/releases/latest">Descargar la última versión</a></p>
 </div>
 
-Visto es una aplicación Android en español e inglés para guardar películas, series y libros, organizar listas y registrar el progreso de lo que ves y lees. Nace como una versión personal de [WatchMaster](https://github.com/PranshulGG/WatchMaster) y mantiene el proyecto original como `upstream`.
+Visto es una aplicación Android en español e inglés para guardar películas, series y libros, organizar listas y registrar el progreso de lo que ves y lees. La desarrolla [Atalaya Software](https://atalayasoftware.com).
 
 ## Características
 

@@ -39,7 +39,20 @@ import com.dwightsckrute.visto.core.ui.theme.Spacing
  * una nota bajo el título de una ficha, o una chapa dentro de la cabecera de una sección. Mismo
  * diseño, mismas proporciones, dos escalas; no ocho.
  */
-enum class PillSize { Large, Small }
+enum class PillSize {
+    Large,
+
+    /**
+     * El intermedio, para píldoras que **se tocan**.
+     *
+     * La pequeña mide 24 dp de alto: vale para una chapa que sólo informa, pero como selector queda
+     * por debajo de cualquier objetivo táctil razonable y se lee pequeña. Esta es la altura de una
+     * chip de Material y conserva el diseño de la píldora.
+     */
+    Medium,
+
+    Small,
+}
 
 @Composable
 fun AppPill(
@@ -55,31 +68,22 @@ fun AppPill(
 ) {
     val metrics = size.metrics()
 
-    Surface(
-        shape = RoundedCornerShape(metrics.radius),
-        color = container,
-        contentColor = onContainer,
-        // Sin `onClick` la píldora es exactamente lo que era: una etiqueta. Sólo las que llevan
-        // a algún sitio reciben ondas y el rol de botón, para no prometer un destino que no
-        // existe.
-        onClick = onClick ?: {},
-        enabled = onClick != null,
-        // La cifra y su etiqueta se anuncian como una sola frase; leerlas por separado no dice
-        // nada ("38", "Guardado").
-        //
-        // `clearAndSetSemantics` borra también lo que declaran los nodos de dentro, y el gesto
-        // de pulsar de `Surface` es uno de ellos: sin volver a declararlo aquí, una píldora que
-        // lleva a algún sitio se anunciaría como texto y quedaría fuera del alcance de quien
-        // navega con TalkBack.
-        modifier = modifier.clearAndSetSemantics {
-            this.contentDescription = contentDescription
-                ?: listOfNotNull(value, label).joinToString(" ")
-            if (onClick != null) {
-                this.role = Role.Button
-                onClick { onClick(); true }
-            }
-        },
-    ) {
+    // La semántica es la misma en las dos ramas: la cifra y su etiqueta se anuncian como una sola
+    // frase, porque leerlas por separado no dice nada ("38", "Guardado").
+    //
+    // `clearAndSetSemantics` borra también lo que declaran los nodos de dentro, y el gesto de pulsar
+    // de `Surface` es uno de ellos: sin volver a declararlo aquí, una píldora que lleva a algún sitio
+    // se anunciaría como texto y quedaría fuera del alcance de quien navega con TalkBack.
+    val semantics = modifier.clearAndSetSemantics {
+        this.contentDescription = contentDescription
+            ?: listOfNotNull(value, label).joinToString(" ")
+        if (onClick != null) {
+            this.role = Role.Button
+            onClick { onClick(); true }
+        }
+    }
+
+    val content: @Composable () -> Unit = {
         Row(
             modifier = Modifier
                 .heightIn(min = metrics.minHeight)
@@ -113,6 +117,35 @@ fun AppPill(
             )
         }
     }
+
+    // Dos ramas, y la de abajo es un arreglo, no una simetría.
+    //
+    // Antes era una sola con `onClick = onClick ?: {}` y `enabled = onClick != null`. Pero un
+    // `Surface` clicable deshabilitado **se sigue tragando los toques**: `clickable(enabled = false)`
+    // consume el gesto a propósito, para que no lo reciba lo que hay debajo. Y estas píldoras se usan
+    // como remate a la derecha de las filas de Ajustes —la chapa de un permiso, el "Ver" de un
+    // resumen—, así que tocar esa parte de la tarjeta no hacía nada: el toque moría en una etiqueta.
+    //
+    // Una píldora sin acción tiene que ser transparente a los eventos, y para eso hay que usar el
+    // `Surface` que no es un botón.
+    if (onClick == null) {
+        Surface(
+            shape = RoundedCornerShape(metrics.radius),
+            color = container,
+            contentColor = onContainer,
+            modifier = semantics,
+            content = content,
+        )
+    } else {
+        Surface(
+            shape = RoundedCornerShape(metrics.radius),
+            color = container,
+            contentColor = onContainer,
+            onClick = onClick,
+            modifier = semantics,
+            content = content,
+        )
+    }
 }
 
 /** El círculo tras el icono. Sale del color de contenido para no añadir un color más al tema. */
@@ -127,6 +160,8 @@ private class PillMetrics(
     val icon: Dp,
     /** El círculo tras el icono. Solo en la grande: en la pequeña era casi toda su altura. */
     val iconWell: Boolean,
+    /** true en el tamaño intermedio: sube la etiqueta un escalón sin llegar al de la grande. */
+    val mediumLabel: Boolean = false,
     val large: Boolean,
 ) {
     @Composable
@@ -137,10 +172,12 @@ private class PillMetrics(
     }
 
     @Composable
-    fun labelStyle() = if (large) {
-        MaterialTheme.typography.labelLarge
-    } else {
-        MaterialTheme.typography.labelSmall
+    fun labelStyle() = when {
+        large -> MaterialTheme.typography.labelLarge
+        // El intermedio necesita su propio escalón: con el de la pequeña, una píldora de 40 dp de
+        // alto llevaba dentro el texto más pequeño de la aplicación.
+        mediumLabel -> MaterialTheme.typography.labelLarge
+        else -> MaterialTheme.typography.labelSmall
     }
 }
 
@@ -155,6 +192,18 @@ private fun PillSize.metrics(): PillMetrics = when (this) {
         iconWell = true,
         large = true,
     )
+    PillSize.Medium -> PillMetrics(
+        radius = ShapeRadius.ExtraLarge,
+        minHeight = 40.dp,
+        horizontal = Spacing.md,
+        vertical = Spacing.sm,
+        gap = Spacing.xs,
+        icon = 16.dp,
+        iconWell = false,
+        large = false,
+        mediumLabel = true,
+    )
+
     // Sin el círculo del icono y con menos aire vertical. Con ellos, tres géneros y una nota
     // bajo el título de una ficha pesaban más que el propio título.
     PillSize.Small -> PillMetrics(

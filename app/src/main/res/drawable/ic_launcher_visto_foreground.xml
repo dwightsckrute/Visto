@@ -3,39 +3,30 @@
     Un ojo: lo que la aplicación registra es lo que has visto.
 
     Con la gramática de Palmo, que es lo que hace que estos iconos se adapten bien: **una sola
-    forma clara en blanco sobre un color macizo**. Lo anterior era una ficha contorneada, y un
-    contorno es justo lo que se pierde cuando el lanzador aplana el icono a un solo color para sus
-    temas —ahí una masa sólida gana siempre—.
+    forma clara en blanco sobre un color macizo**. Un contorno fino es justo lo que se pierde
+    cuando el lanzador aplana el icono a un color para sus temas; una masa sólida no.
 
-    Dos párpados y una pupila, nada más. Sin piezas superpuestas ni degradados: al teñirlo entero
-    de un color sigue siendo el mismo dibujo, que es lo que no conseguía ninguna versión anterior.
+    Los párpados **se afilan hacia las esquinas**. La primera versión era un trazo de grosor
+    constante con remates redondos, y por eso se veía basta: un ojo dibujado tiene el párpado
+    grueso en medio y afilado donde se juntan. Aquí no hay trazo — hay una almendra con otra
+    recortada dentro, y la distancia entre las dos es la que da el grosor: máximo en el centro y
+    cero en las puntas.
 
-    Geometría pensada para la máscara adaptativa, igual que en Palmo: el párpado llega a 26 desde
-    el centro y el trazo son 10, así que el extremo del remate queda en 31 y no alcanza los 33 de
-    la zona segura circular. Un icono que se pasa de ahí pierde el trazo justo por donde el
-    lanzador recorta.
+    Todo en un único trazo con `evenOdd`, que es lo que permite que la capa monocroma sea
+    literalmente este mismo dibujo: la almendra exterior rellena, la interior hueca y la pupila
+    —contada tres veces— otra vez rellena.
+
+    Geometría pensada para la máscara adaptativa, como en Palmo: la almendra llega a 29 desde el
+    centro y no alcanza los 33 de la zona segura circular. Un icono que se pasa de ahí pierde el
+    dibujo justo por donde el lanzador recorta.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Párpado de arriba. -->
     <path
-        android:pathData="M28,54 Q54,24 80,54"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="10"
-        android:fillColor="#00000000"
-        android:strokeLineCap="round" />
-    <!-- Párpado de abajo. -->
-    <path
-        android:pathData="M28,54 Q54,84 80,54"
-        android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="10"
-        android:fillColor="#00000000"
-        android:strokeLineCap="round" />
-    <!-- La pupila, maciza para que aguante los 48 dp sin desdibujarse. -->
-    <path
-        android:pathData="M45,54 A9,9 0 1 0 63,54 A9,9 0 1 0 45,54 Z"
-        android:fillColor="#FFFFFFFF" />
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M25,54 Q54,20 83,54 Q54,88 25,54 Z M30.5,54 Q54,32 77.5,54 Q54,76 30.5,54 Z M45.5,54 A8.5,8.5 0 1 0 62.5,54 A8.5,8.5 0 1 0 45.5,54 Z" />
 </vector>
